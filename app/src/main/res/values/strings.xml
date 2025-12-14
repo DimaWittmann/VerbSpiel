@@ -15,4 +15,14 @@
     <string name="stats_failed">%1$d failed</string>
     <string name="stats_top_correct">Most correct combos</string>
     <string name="stats_top_failed">Most failed combos</string>
+    <string name="filter_words">Filter words</string>
+    <string name="filter_mode_mixed">Mode: Mixed (all words)</string>
+    <string name="filter_mode_prefix">Mode: Prefix \"%1$s\"</string>
+    <string name="filter_mode_root">Mode: Root \"%1$s\"</string>
+    <string name="filter_choose_type">Choose filter</string>
+    <string name="filter_type_prefix">Filter by prefix</string>
+    <string name="filter_type_root">Filter by root</string>
+    <string name="filter_type_clear">Mixed (clear filter)</string>
+    <string name="filter_choose_value">Pick one</string>
+    <string name="filter_no_matches">No words match this filter.</string>
 </resources>

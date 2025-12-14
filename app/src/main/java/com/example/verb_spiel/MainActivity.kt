@@ -10,11 +10,12 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import android.text.Html
-import android.widget.EditText
 import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity
 import android.util.TypedValue
 import android.widget.ProgressBar
+import androidx.appcompat.app.AlertDialog
+import android.widget.Toast
 import kotlinx.coroutines.*
 import java.io.BufferedReader
 
@@ -29,23 +30,136 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listRight: NumberPicker
     private lateinit var buttonCombine: Button
     private lateinit var buttonStats: Button
+    private lateinit var buttonFilter: Button
+    private lateinit var filterStatus: TextView
     private lateinit var progressBar: ProgressBar
 
     // Variables to track the currently selected items in each list.
     private var selectedLeft: String? = null
     private var selectedRight: String? = null
     private lateinit var selectedWords: MutableList<Word>
+    private lateinit var allWords: List<Word>
     private var wordI: Int = 0
     private var centerWords: MutableList<String> = mutableListOf()
+    private lateinit var centerAdapter: ArrayAdapter<String>
+    private var leftItems: Array<String> = emptyArray()
+    private var rightItems: Array<String> = emptyArray()
     private var numberOfTries: Int = 0
+    private var activeFilter: Filter? = null
 
     private val repo by lazy { WordRepository.getInstance(this) }
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    private data class Filter(val type: FilterType, val value: String)
+    private enum class FilterType { PREFIX, ROOT }
 
     private suspend fun recordShown(word: Word): Word {
         val updated = word.copy(timesShown = word.timesShown + 1, lastShownAt = System.currentTimeMillis())
         repo.updateWordStats(updated)
         return updated
+    }
+
+    private fun resetRound(pool: List<Word>) {
+        val filtered = pool
+        if (filtered.isEmpty()) {
+            selectedWords = mutableListOf()
+            leftItems = emptyArray()
+            rightItems = emptyArray()
+            messageText.text = getString(R.string.filter_no_matches)
+            translationText.text = ""
+            exampleText.text = ""
+            centerWords.clear()
+            centerAdapter.notifyDataSetChanged()
+            return
+        }
+
+        selectedWords = filtered.shuffled().take(10.coerceAtMost(filtered.size)).toMutableList()
+        wordI = 0
+        numberOfTries = 0
+        centerWords.clear()
+        centerAdapter.notifyDataSetChanged()
+
+        leftItems = selectedWords.map { it.prefix }.shuffled().toTypedArray()
+        rightItems = selectedWords.map { it.root }.shuffled().toTypedArray()
+        createNumberPicker(listLeft, leftItems)
+        createNumberPicker(listRight, rightItems)
+        selectedLeft = leftItems.firstOrNull()
+        selectedRight = rightItems.firstOrNull()
+
+        progressBar.max = selectedWords.size
+        progressBar.setProgress(0, true)
+
+        if (selectedWords.isNotEmpty()) {
+            val first = selectedWords[0]
+            messageText.text = Html.fromHtml(
+                "Greetings Madam or Sir<br>Next word: <b>${first.translation}</b>",
+                Html.FROM_HTML_MODE_LEGACY
+            )
+            translationText.text = ""
+            exampleText.text = "Select correct prefix and root"
+
+            activityScope.launch {
+                selectedWords[0] = recordShown(first)
+            }
+        }
+    }
+
+    private fun showFilterChooser() {
+        val options = arrayOf(
+            getString(R.string.filter_type_prefix),
+            getString(R.string.filter_type_root),
+            getString(R.string.filter_type_clear)
+        )
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.filter_choose_type))
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> showValueChooser(FilterType.PREFIX)
+                    1 -> showValueChooser(FilterType.ROOT)
+                    else -> applyFilter(null)
+                }
+            }
+            .show()
+    }
+
+    private fun showValueChooser(type: FilterType) {
+        val values = when (type) {
+            FilterType.PREFIX -> allWords.map { it.prefix }.distinct().sorted()
+            FilterType.ROOT -> allWords.map { it.root }.distinct().sorted()
+        }
+        if (values.isEmpty()) {
+            Toast.makeText(this, R.string.filter_no_matches, Toast.LENGTH_SHORT).show()
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.filter_choose_value))
+            .setItems(values.toTypedArray()) { _, which ->
+                val chosen = values[which]
+                applyFilter(Filter(type, chosen))
+            }
+            .show()
+    }
+
+    private fun applyFilter(filter: Filter?) {
+        activeFilter = filter
+        val filteredPool = when (filter?.type) {
+            FilterType.PREFIX -> allWords.filter { it.prefix == filter.value }
+            FilterType.ROOT -> allWords.filter { it.root == filter.value }
+            else -> allWords
+        }
+        updateFilterStatus()
+        resetRound(filteredPool)
+    }
+
+    private fun updateFilterStatus() {
+        val text = when (val f = activeFilter) {
+            null -> getString(R.string.filter_mode_mixed)
+            else -> when (f.type) {
+                FilterType.PREFIX -> getString(R.string.filter_mode_prefix, f.value)
+                FilterType.ROOT -> getString(R.string.filter_mode_root, f.value)
+            }
+        }
+        filterStatus.text = text
     }
 
     private suspend fun recordAttempt(word: Word, isCorrect: Boolean): Word {
@@ -112,7 +226,7 @@ class MainActivity : AppCompatActivity() {
         // Link this activity with its layout.
         setContentView(R.layout.activity_main)
 
-        val words = runBlocking {
+        allWords = runBlocking {
             if (repo.isEmpty()) {
                 val words = parseCsvFile()
                 repo.addWords(words)
@@ -129,42 +243,20 @@ class MainActivity : AppCompatActivity() {
         listRight = findViewById(R.id.list_right)
         buttonCombine = findViewById(R.id.button_combine)
         buttonStats = findViewById(R.id.button_stats)
+        buttonFilter = findViewById(R.id.button_filter)
+        filterStatus = findViewById(R.id.filter_status)
         progressBar = findViewById(R.id.progress_bar)
 
         progressBar.max = 10
         progressBar.min = 0
         progressBar.setProgress(0)
 
-        selectedWords = words.shuffled().take(10).toMutableList()
-
-        val prefixes = selectedWords.map { it.prefix }.toTypedArray()
-        val roots = selectedWords.map { it.root }.toTypedArray()
-
-        // Sample data for the left and right lists.
-        val leftItems = prefixes
-        val rightItems = roots
-        leftItems.shuffle()
-        rightItems.shuffle()
-
-        val centerAdapter =
+        centerAdapter =
             ArrayAdapter(this, R.layout.list_item_center, R.id.list_item_text, centerWords)
         listCenter.adapter = centerAdapter
 
-        createNumberPicker(listLeft, leftItems)
-        createNumberPicker(listRight, rightItems)
-        selectedLeft = leftItems[0]
-        selectedRight = rightItems[0]
-
-        messageText.text = Html.fromHtml(
-            "Greetings Madam or Sir<br>Next word: <b>${selectedWords[wordI].translation}</b>",
-            Html.FROM_HTML_MODE_LEGACY
-        )
-        translationText.text = ""
-        exampleText.text = "Select correct prefix and root"
-
-        activityScope.launch {
-            selectedWords[wordI] = recordShown(selectedWords[wordI])
-        }
+        updateFilterStatus()
+        resetRound(allWords)
 
         listLeft.setOnValueChangedListener { _, _, newValue ->
             selectedLeft = leftItems[newValue]
@@ -190,13 +282,15 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, StatsActivity::class.java))
         }
 
+        buttonFilter.setOnClickListener { showFilterChooser() }
+
         // When the "Combine" button is clicked, combine the selected items.
         buttonCombine.setOnClickListener {
             if (selectedLeft == null || selectedRight == null) {
                 return@setOnClickListener
             }
 
-            if (selectedWords.size <= wordI) {
+            if (selectedWords.isEmpty() || selectedWords.size <= wordI) {
                 return@setOnClickListener
             }
 
