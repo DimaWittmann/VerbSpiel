@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/activity_main.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Top TextView to display combined message -->
+    <TextView
+        android:id="@+id/top_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/no_selection_yet"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Middle horizontal layout with two lists side by side -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <!-- Left ListView -->
+        <ListView
+            android:id="@+id/list_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:choiceMode="singleChoice"
+            android:dividerHeight="1dp" />
+
+        <!-- Right ListView -->
+        <ListView
+            android:id="@+id/list_right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:choiceMode="singleChoice"
+            android:dividerHeight="2dp" />
+    </LinearLayout>
+
+    <!-- Button to combine selections -->
+    <Button
+        android:id="@+id/button_combine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/combine"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>
