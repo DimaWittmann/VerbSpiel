@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
+import android.text.Html
 import androidx.appcompat.app.AppCompatActivity
 import java.io.BufferedReader
 
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var selectedWords: Array<Word>
     private var wordI: Int = 0
     private var centerWords: MutableList<String> = mutableListOf()
+    private var numberOfTries: Int = 0
 
     private fun parseCsvFile(): List<Word> {
         val records = mutableListOf<Word>()
@@ -92,6 +94,8 @@ class MainActivity : AppCompatActivity() {
         // Sample data for the left and right lists.
         val leftItems = prefixes
         val rightItems = roots
+        leftItems.shuffle()
+        rightItems.shuffle()
 
         // Create adapters using the standard Android layout for single-choice items.
         val leftAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_activated_1, leftItems)
@@ -101,8 +105,9 @@ class MainActivity : AppCompatActivity() {
         listLeft.adapter = leftAdapter
         listRight.adapter = rightAdapter
         listCenter.adapter = centerAdapter
-        messageText.text = "Next word"
-        translationText.text = "${selected_words[wordI].translation}"
+
+        messageText.text = Html.fromHtml("Greetings Madam or Sir<br>Next word: <b>${selected_words[wordI].translation}</b>", Html.FROM_HTML_MODE_LEGACY)
+        translationText.text = ""
         exampleText.text = "Select correct prefix and root"
 
         // When an item in the left list is clicked, store the selection.
@@ -132,27 +137,55 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            if (selected_words.size <= wordI) {
+                return@setOnClickListener
+            }
+
             val currentWord = selected_words[wordI].prefix + selected_words[wordI].root
             val currentTranslation = selected_words[wordI].translation
             val currentExample = selected_words[wordI].example
 
             if (selectedLeft == selected_words[wordI].prefix && selectedRight == selected_words[wordI].root) {
                 wordI += 1
+                numberOfTries = 0
                 centerAdapter.add(currentWord)
 
                 if (selected_words.size <= wordI) {
-                    messageText.text = "Great Success!"
+                    messageText.text = Html.fromHtml("Great Success!", Html.FROM_HTML_MODE_LEGACY)
                     translationText.text = "$currentWord\n$currentTranslation"
                     exampleText.text = "$currentExample"
+                    return@setOnClickListener
                 }
 
                 val nextTranslation = selected_words[wordI].translation;
 
-                messageText.text = "Correct!\nNext word: $nextTranslation"
+                messageText.text = Html.fromHtml("Correct!<br>Next word: <b>${nextTranslation}</b>", Html.FROM_HTML_MODE_LEGACY)
                 translationText.text = "$currentWord\n$currentTranslation"
                 exampleText.text = "$currentExample"
             } else {
-                messageText.text = "Wrong! Current word: $currentTranslation"
+                numberOfTries += 1
+
+                if (numberOfTries >= selected_words.size) {
+                    wordI += 1
+                    //numberOfTries = 0
+
+                    if (wordI >= selected_words.size) {
+                        messageText.text = Html.fromHtml(
+                            "This is the last word. Try harder!</b><br>Next word: <b>${selected_words[wordI].translation}</b>",
+                            Html.FROM_HTML_MODE_LEGACY
+                        )
+                    } else {
+                        messageText.text = Html.fromHtml(
+                            "Wrong $numberOfTries times!<b> Let's try another</b><br>Next word: <b>${selected_words[wordI].translation}</b>",
+                            Html.FROM_HTML_MODE_LEGACY
+                        )
+                    }
+                } else {
+                    messageText.text = Html.fromHtml(
+                        "Wrong!<br>Next word: $currentTranslation",
+                        Html.FROM_HTML_MODE_LEGACY
+                    )
+                }
             }
         }
     }
