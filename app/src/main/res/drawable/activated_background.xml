@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- When activated, use your custom color or drawable -->
+    <item
+        android:state_activated="true"
+        android:drawable="@color/activated_color" />
+    <!-- Otherwise, transparent -->
+    <item android:drawable="@android:color/transparent" />
+</selector>

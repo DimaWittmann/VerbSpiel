@@ -2,6 +2,8 @@ package com.example.verb_spiel
 
 import android.os.Bundle
 import android.util.Log
+import android.content.Intent
+import android.net.Uri
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
@@ -19,8 +21,12 @@ data class Word (
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var topText: TextView
+    private lateinit var messageText: TextView
+    private lateinit var translationText: TextView
+    private lateinit var exampleText: TextView
+
     private lateinit var listLeft: ListView
+    private lateinit var listCenter: ListView
     private lateinit var listRight: ListView
     private lateinit var buttonCombine: Button
 
@@ -29,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private var selectedRight: String? = null
     private lateinit var selectedWords: Array<Word>
     private var wordI: Int = 0
-
+    private var centerWords: MutableList<String> = mutableListOf()
 
     private fun parseCsvFile(): List<Word> {
         val records = mutableListOf<Word>()
@@ -69,8 +75,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Find views by their IDs.
-        topText = findViewById(R.id.top_text)
+        messageText = findViewById(R.id.message_text)
+        translationText = findViewById(R.id.translation_text)
+        exampleText = findViewById(R.id.example_text)
         listLeft = findViewById(R.id.list_left)
+        listCenter = findViewById(R.id.list_center)
         listRight = findViewById(R.id.list_right)
         buttonCombine = findViewById(R.id.button_combine)
 
@@ -85,12 +94,16 @@ class MainActivity : AppCompatActivity() {
         val rightItems = roots
 
         // Create adapters using the standard Android layout for single-choice items.
-        val leftAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, leftItems)
-        val rightAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, rightItems)
+        val leftAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_activated_1, leftItems)
+        val rightAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_activated_1, rightItems)
+        val centerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, centerWords)
 
         listLeft.adapter = leftAdapter
         listRight.adapter = rightAdapter
-        topText.text = "Next word: ${selected_words[wordI].translation}"
+        listCenter.adapter = centerAdapter
+        messageText.text = "Next word"
+        translationText.text = "${selected_words[wordI].translation}"
+        exampleText.text = "Select correct prefix and root"
 
         // When an item in the left list is clicked, store the selection.
         listLeft.setOnItemClickListener { _, _, position, _ ->
@@ -100,6 +113,17 @@ class MainActivity : AppCompatActivity() {
         // When an item in the right list is clicked, store the selection.
         listRight.setOnItemClickListener { _, _, position, _ ->
             selectedRight = rightItems[position]
+        }
+
+        listCenter.setOnItemClickListener { _, _, position, _ ->
+            // Get the clicked item from your backing list (centerWords)
+            val selectedItem = centerWords[position]
+            // Build a URL from the selected item.
+            // For example, if you want to search the item on Example.com:
+            val url = "https://de.wiktionary.org/wiki/" + Uri.encode(selectedItem)
+            // Create an intent to view the URL.
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
         }
 
         // When the "Combine" button is clicked, combine the selected items.
@@ -114,18 +138,21 @@ class MainActivity : AppCompatActivity() {
 
             if (selectedLeft == selected_words[wordI].prefix && selectedRight == selected_words[wordI].root) {
                 wordI += 1
+                centerAdapter.add(currentWord)
 
                 if (selected_words.size <= wordI) {
-                    topText.text =
-                        "Great Success!\n$currentWord\n$currentTranslation\n$currentExample"
+                    messageText.text = "Great Success!"
+                    translationText.text = "$currentWord\n$currentTranslation"
+                    exampleText.text = "$currentExample"
                 }
 
                 val nextTranslation = selected_words[wordI].translation;
 
-                topText.text =
-                    "Correct!\nNext word: $nextTranslation \n $currentWord \n $currentTranslation\n $currentExample"
+                messageText.text = "Correct!\nNext word: $nextTranslation"
+                translationText.text = "$currentWord\n$currentTranslation"
+                exampleText.text = "$currentExample"
             } else {
-                topText.text = "Selected: $currentTranslation"
+                messageText.text = "Wrong! Current word: $currentTranslation"
             }
         }
     }

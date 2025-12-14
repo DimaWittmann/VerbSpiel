@@ -9,13 +9,29 @@
 
     <!-- Top TextView to display combined message -->
     <TextView
-        android:id="@+id/top_text"
+        android:id="@+id/message_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/no_selection_yet"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginBottom="8dp"
         android:gravity="center_vertical"
-        android:layout_marginBottom="8dp" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/translation_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/example_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="italic" />
 
     <!-- Middle horizontal layout with two lists side by side -->
     <LinearLayout
@@ -36,10 +52,18 @@
 
         <!-- Right ListView -->
         <ListView
+            android:id="@+id/list_center"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:choiceMode="singleChoice"
+            android:dividerHeight="2dp" />
+
+        <ListView
             android:id="@+id/list_right"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:choiceMode="singleChoice"
             android:dividerHeight="2dp" />
     </LinearLayout>
@@ -49,8 +73,8 @@
         android:id="@+id/button_combine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/combine"
         android:layout_gravity="center"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:text="@string/combine" />
 
 </LinearLayout>
