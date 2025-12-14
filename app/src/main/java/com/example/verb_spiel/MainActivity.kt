@@ -1,13 +1,11 @@
 package com.example.verb_spiel
 
-import com.example.verb_spiel.R
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.io.BufferedReader
 
@@ -29,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     // Variables to track the currently selected items in each list.
     private var selectedLeft: String? = null
     private var selectedRight: String? = null
+    private lateinit var selectedWords: Array<Word>
+    private var wordI: Int = 0
 
 
     private fun parseCsvFile(): List<Word> {
@@ -74,8 +74,8 @@ class MainActivity : AppCompatActivity() {
         listRight = findViewById(R.id.list_right)
         buttonCombine = findViewById(R.id.button_combine)
 
-        val words = parseCsvFile();
-        val selected_words = words.shuffled().take(10);
+        val words = parseCsvFile()
+        val selected_words = words.shuffled().take(10)
 
         val prefixes = selected_words.map { it.prefix }.toTypedArray()
         val roots = selected_words.map { it.root }.toTypedArray()
@@ -90,6 +90,7 @@ class MainActivity : AppCompatActivity() {
 
         listLeft.adapter = leftAdapter
         listRight.adapter = rightAdapter
+        topText.text = "Next word: ${selected_words[wordI].translation}"
 
         // When an item in the left list is clicked, store the selection.
         listLeft.setOnItemClickListener { _, _, position, _ ->
@@ -103,10 +104,28 @@ class MainActivity : AppCompatActivity() {
 
         // When the "Combine" button is clicked, combine the selected items.
         buttonCombine.setOnClickListener {
-            if (selectedLeft != null && selectedRight != null) {
-                topText.text = "Selected: $selectedLeft + $selectedRight"
+            if (selectedLeft == null || selectedRight == null) {
+                return@setOnClickListener
+            }
+
+            val currentWord = selected_words[wordI].prefix + selected_words[wordI].root
+            val currentTranslation = selected_words[wordI].translation
+            val currentExample = selected_words[wordI].example
+
+            if (selectedLeft == selected_words[wordI].prefix && selectedRight == selected_words[wordI].root) {
+                wordI += 1
+
+                if (selected_words.size <= wordI) {
+                    topText.text =
+                        "Great Success!\n$currentWord\n$currentTranslation\n$currentExample"
+                }
+
+                val nextTranslation = selected_words[wordI].translation;
+
+                topText.text =
+                    "Correct!\nNext word: $nextTranslation \n $currentWord \n $currentTranslation\n $currentExample"
             } else {
-                Toast.makeText(this, "Please select an item in both lists.", Toast.LENGTH_SHORT).show()
+                topText.text = "Selected: $currentTranslation"
             }
         }
     }
