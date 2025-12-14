@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- res/layout/activity_main.xml -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:dividerPadding="4dp"
     android:orientation="vertical"
     android:padding="16dp">
 
     <!-- Top TextView to display combined message -->
+
+    <!-- Middle horizontal layout with two lists side by side -->
     <TextView
         android:id="@+id/message_text"
         android:layout_width="match_parent"
@@ -32,42 +34,62 @@
         android:textSize="18sp"
         android:textStyle="italic" />
 
-    <!-- Middle horizontal layout with two lists side by side -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:baselineAligned="false"
         android:orientation="horizontal">
 
         <!-- Left ListView -->
-        <ListView
+
+        <!-- Right ListView -->
+        <NumberPicker
             android:id="@+id/list_left"
+            style="@android:style/Widget.Material.Light.NumberPicker"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:choiceMode="singleChoice"
             android:dividerHeight="1dp" />
 
-        <!-- Right ListView -->
-        <ListView
-            android:id="@+id/list_center"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:choiceMode="singleChoice"
-            android:dividerHeight="2dp" />
+        <View
+            android:id="@+id/view"
+            android:layout_width="5dp"
+            android:layout_height="wrap_content"
+            android:background="@color/teal_200" />
 
-        <ListView
+        <NumberPicker
             android:id="@+id/list_right"
+            style="@android:style/Widget.Material.NumberPicker"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
             android:choiceMode="singleChoice"
-            android:dividerHeight="2dp" />
+            android:dividerHeight="2dp">
+
+        </NumberPicker>
     </LinearLayout>
 
     <!-- Button to combine selections -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ListView
+        android:id="@+id/list_center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:choiceMode="singleChoice"
+        android:dividerHeight="2dp"
+        android:footerDividersEnabled="true"
+        android:headerDividersEnabled="true" />
+
     <Button
         android:id="@+id/button_combine"
         android:layout_width="wrap_content"

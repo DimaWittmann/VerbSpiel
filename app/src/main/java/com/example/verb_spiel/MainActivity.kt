@@ -4,14 +4,18 @@ import android.os.Bundle
 import android.util.Log
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import android.text.Html
+import android.widget.EditText
+import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity
+import android.util.TypedValue
+import android.widget.ProgressBar
 import java.io.BufferedReader
-
 
 data class Word (
     val prefix: String,
@@ -26,10 +30,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var translationText: TextView
     private lateinit var exampleText: TextView
 
-    private lateinit var listLeft: ListView
+    private lateinit var listLeft: NumberPicker
     private lateinit var listCenter: ListView
-    private lateinit var listRight: ListView
+    private lateinit var listRight: NumberPicker
     private lateinit var buttonCombine: Button
+    private lateinit var progressBar: ProgressBar
 
     // Variables to track the currently selected items in each list.
     private var selectedLeft: String? = null
@@ -71,6 +76,22 @@ class MainActivity : AppCompatActivity() {
         return records
     }
 
+    private fun createNumberPicker(np: NumberPicker, items: Array<String>) {
+        np.minValue = 0
+        np.maxValue = items.size - 1
+        np.wrapSelectorWheel = true
+        np.displayedValues = items
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val desiredSp = 24f
+            val sizeInPx = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP,
+                desiredSp,
+                resources.displayMetrics
+            )
+            np.setTextSize(sizeInPx)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Link this activity with its layout.
@@ -84,6 +105,11 @@ class MainActivity : AppCompatActivity() {
         listCenter = findViewById(R.id.list_center)
         listRight = findViewById(R.id.list_right)
         buttonCombine = findViewById(R.id.button_combine)
+        progressBar = findViewById(R.id.progress_bar)
+
+        progressBar.max = 10
+        progressBar.min = 0
+        progressBar.setProgress(0)
 
         val words = parseCsvFile()
         val selected_words = words.shuffled().take(10)
@@ -97,27 +123,25 @@ class MainActivity : AppCompatActivity() {
         leftItems.shuffle()
         rightItems.shuffle()
 
-        // Create adapters using the standard Android layout for single-choice items.
-        val leftAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_activated_1, leftItems)
-        val rightAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_activated_1, rightItems)
-        val centerAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, centerWords)
-
-        listLeft.adapter = leftAdapter
-        listRight.adapter = rightAdapter
+        val centerAdapter = ArrayAdapter(this, R.layout.list_item_center, R.id.list_item_text, centerWords)
         listCenter.adapter = centerAdapter
+
+        createNumberPicker(listLeft, leftItems)
+        createNumberPicker(listRight, rightItems)
+        selectedLeft = leftItems[0]
+        selectedRight = rightItems[0]
 
         messageText.text = Html.fromHtml("Greetings Madam or Sir<br>Next word: <b>${selected_words[wordI].translation}</b>", Html.FROM_HTML_MODE_LEGACY)
         translationText.text = ""
         exampleText.text = "Select correct prefix and root"
 
-        // When an item in the left list is clicked, store the selection.
-        listLeft.setOnItemClickListener { _, _, position, _ ->
-            selectedLeft = leftItems[position]
+        listLeft.setOnValueChangedListener { _, _, newValue ->
+            selectedLeft = leftItems[newValue]
         }
 
         // When an item in the right list is clicked, store the selection.
-        listRight.setOnItemClickListener { _, _, position, _ ->
-            selectedRight = rightItems[position]
+        listRight.setOnValueChangedListener { _, _, newValue ->
+            selectedRight = rightItems[newValue]
         }
 
         listCenter.setOnItemClickListener { _, _, position, _ ->
@@ -148,7 +172,7 @@ class MainActivity : AppCompatActivity() {
             if (selectedLeft == selected_words[wordI].prefix && selectedRight == selected_words[wordI].root) {
                 wordI += 1
                 numberOfTries = 0
-                centerAdapter.add(currentWord)
+                centerAdapter.insert(currentWord, 0)
 
                 if (selected_words.size <= wordI) {
                     messageText.text = Html.fromHtml("Great Success!", Html.FROM_HTML_MODE_LEGACY)
@@ -167,7 +191,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (numberOfTries >= selected_words.size) {
                     wordI += 1
-                    //numberOfTries = 0
+                    numberOfTries = 0
 
                     if (wordI >= selected_words.size) {
                         messageText.text = Html.fromHtml(
@@ -179,6 +203,9 @@ class MainActivity : AppCompatActivity() {
                             "Wrong $numberOfTries times!<b> Let's try another</b><br>Next word: <b>${selected_words[wordI].translation}</b>",
                             Html.FROM_HTML_MODE_LEGACY
                         )
+
+                        translationText.text = "$currentWord\n$currentTranslation"
+                        exampleText.text = "$currentExample"
                     }
                 } else {
                     messageText.text = Html.fromHtml(
@@ -187,6 +214,8 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
+            progressBar.setProgress(numberOfTries, true)
         }
     }
+
 }
