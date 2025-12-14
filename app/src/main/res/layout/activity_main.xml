@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/activity_main.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:dividerPadding="4dp"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Top TextView to display combined message -->
-
-    <!-- Middle horizontal layout with two lists side by side -->
     <TextView
         android:id="@+id/message_text"
         android:layout_width="match_parent"
@@ -33,7 +30,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:textSize="24sp" />
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:padding="6dp"
+        android:background="@drawable/translation_chip"
+        android:elevation="2dp" />
 
     <TextView
         android:id="@+id/example_text"
@@ -45,44 +46,80 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <!-- Left ListView -->
-
-        <!-- Right ListView -->
-        <NumberPicker
-            android:id="@+id/list_left"
-            style="@android:style/Widget.Material.Light.NumberPicker"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:choiceMode="singleChoice"
-            android:dividerHeight="1dp" />
+            app:cardElevation="2dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/teal_700">
 
-        <View
-            android:id="@+id/view"
-            android:layout_width="5dp"
-            android:layout_height="wrap_content"
-            android:background="@color/teal_200" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="8dp">
 
-        <NumberPicker
-            android:id="@+id/list_right"
-            style="@android:style/Widget.Material.NumberPicker"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_prefix"
+                    android:textStyle="bold" />
+
+                <NumberPicker
+                    android:id="@+id/list_left"
+                    style="@android:style/Widget.Material.Light.NumberPicker"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:choiceMode="singleChoice"
+                    android:dividerHeight="1dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:choiceMode="singleChoice"
-            android:dividerHeight="2dp">
+            app:cardElevation="2dp"
+            app:cardUseCompatPadding="true"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/teal_700">
 
-        </NumberPicker>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_root"
+                    android:textStyle="bold" />
+
+                <NumberPicker
+                    android:id="@+id/list_right"
+                    style="@android:style/Widget.Material.NumberPicker"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:choiceMode="singleChoice"
+                    android:dividerHeight="2dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
-    <!-- Button to combine selections -->
     <ProgressBar
         android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleHorizontal"

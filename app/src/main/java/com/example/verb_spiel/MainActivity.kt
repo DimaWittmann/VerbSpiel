@@ -4,18 +4,20 @@ import android.os.Bundle
 import android.util.Log
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import android.text.Html
-import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity
-import android.util.TypedValue
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import android.widget.Toast
+import android.os.Build
+import android.util.TypedValue
+import android.widget.NumberPicker
+import android.graphics.drawable.ColorDrawable
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.*
 import java.io.BufferedReader
 
@@ -92,10 +94,10 @@ class MainActivity : AppCompatActivity() {
         if (selectedWords.isNotEmpty()) {
             val first = selectedWords[0]
             messageText.text = Html.fromHtml(
-                "Greetings Madam or Sir<br>Next word: <b>${first.translation}</b>",
+                "${getString(R.string.msg_greeting)}<br>${getString(R.string.msg_next_word)}",
                 Html.FROM_HTML_MODE_LEGACY
             )
-            translationText.text = ""
+            translationText.text = first.translation
             exampleText.text = "Select correct prefix and root"
 
             activityScope.launch {
@@ -174,6 +176,7 @@ class MainActivity : AppCompatActivity() {
         return updatedWord
     }
 
+
     private fun parseCsvFile(): List<Word> {
         val records = mutableListOf<Word>()
         try {
@@ -204,20 +207,6 @@ class MainActivity : AppCompatActivity() {
             Log.e("CSV", "Error reading CSV file", e)
         }
         return records
-    }
-
-    private fun createNumberPicker(np: NumberPicker, items: Array<String>) {
-        np.minValue = 0
-        np.maxValue = items.size - 1
-        np.wrapSelectorWheel = true
-        np.displayedValues = items
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val desiredSp = 24f
-            val sizeInPx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, desiredSp, resources.displayMetrics
-            )
-            np.setTextSize(sizeInPx)
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -259,12 +248,15 @@ class MainActivity : AppCompatActivity() {
         resetRound(allWords)
 
         listLeft.setOnValueChangedListener { _, _, newValue ->
-            selectedLeft = leftItems[newValue]
+            if (leftItems.isNotEmpty()) {
+                selectedLeft = leftItems[newValue]
+            }
         }
 
-        // When an item in the right list is clicked, store the selection.
         listRight.setOnValueChangedListener { _, _, newValue ->
-            selectedRight = rightItems[newValue]
+            if (rightItems.isNotEmpty()) {
+                selectedRight = rightItems[newValue]
+            }
         }
 
         listCenter.setOnItemClickListener { _, _, position, _ ->
@@ -312,7 +304,7 @@ class MainActivity : AppCompatActivity() {
                 centerAdapter.insert(combinedWord, 0)
 
                 if (selectedWords.size <= wordI) {
-                    messageText.text = Html.fromHtml("Great Success!", Html.FROM_HTML_MODE_LEGACY)
+                    messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
                     translationText.text = "$combinedWord\n$currentTranslation"
                     exampleText.text = "$currentExample"
                     return@setOnClickListener
@@ -321,11 +313,11 @@ class MainActivity : AppCompatActivity() {
                 val nextWord = selectedWords[wordI]
 
                 messageText.text = Html.fromHtml(
-                    "Correct!<br>Next word: <b>${nextWord.translation}</b>",
+                    getString(R.string.msg_correct),
                     Html.FROM_HTML_MODE_LEGACY
                 )
-                translationText.text = "$combinedWord\n$currentTranslation"
-                exampleText.text = "$currentExample"
+                translationText.text = nextWord.translation
+                exampleText.text = nextWord.example
 
                 val nextIndex = wordI
                 activityScope.launch {
@@ -339,10 +331,7 @@ class MainActivity : AppCompatActivity() {
                     numberOfTries = 0
 
                     if (wordI >= selectedWords.size) {
-                        messageText.text = Html.fromHtml(
-                            "This is the last word. Try harder!</b>",
-                            Html.FROM_HTML_MODE_LEGACY
-                        )
+                        messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
                         translationText.text = "$combinedWord\n$currentTranslation"
                         exampleText.text = "$currentExample"
                     } else {
@@ -352,8 +341,8 @@ class MainActivity : AppCompatActivity() {
                             Html.FROM_HTML_MODE_LEGACY
                         )
 
-                        translationText.text = "$combinedWord\n$currentTranslation"
-                        exampleText.text = "$currentExample"
+                        translationText.text = nextWord.translation
+                        exampleText.text = nextWord.example
 
                         val nextIndex = wordI
                         activityScope.launch {
@@ -362,11 +351,51 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     messageText.text = Html.fromHtml(
-                        "Wrong!<br>Next word: $currentTranslation", Html.FROM_HTML_MODE_LEGACY
+                        getString(R.string.msg_wrong), Html.FROM_HTML_MODE_LEGACY
                     )
+                    translationText.text = currentTranslation
+                    exampleText.text = currentExample
                 }
             }
             progressBar.setProgress(numberOfTries, true)
+        }
+    }
+
+    private fun createNumberPicker(np: NumberPicker, items: Array<String>) {
+        np.minValue = 0
+        np.maxValue = items.size - 1
+        np.wrapSelectorWheel = true
+        np.displayedValues = items
+        styleNumberPicker(np)
+    }
+
+    private fun styleNumberPicker(np: NumberPicker) {
+        val desiredSp = 16f
+        for (i in 0 until np.childCount) {
+            val child = np.getChildAt(i)
+            if (child is TextView) {
+                child.setTextSize(TypedValue.COMPLEX_UNIT_SP, desiredSp)
+                child.setTextColor(ContextCompat.getColor(this, R.color.black))
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val sizeInPx = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, desiredSp, resources.displayMetrics
+            )
+            np.setTextSize(sizeInPx)
+        } else {
+            try {
+                val fields = NumberPicker::class.java.declaredFields
+                for (field in fields) {
+                    if (field.name == "mSelectionDivider") {
+                        field.isAccessible = true
+                        field.set(np, ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
+                        break
+                    }
+                }
+            } catch (ignored: Exception) {
+            }
         }
     }
 
