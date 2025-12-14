@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private suspend fun recordShown(word: Word): Word {
-        val updated = word.copy(timesShown = word.timesShown + 1)
+        val updated = word.copy(timesShown = word.timesShown + 1, lastShownAt = System.currentTimeMillis())
         repo.updateWordStats(updated)
         return updated
     }
@@ -52,7 +52,9 @@ class MainActivity : AppCompatActivity() {
         val updatedWord = word.copy(
             triesCount = word.triesCount + 1,
             correctCount = if (isCorrect) word.correctCount + 1 else word.correctCount,
-            failedCount = if (!isCorrect) word.failedCount + 1 else word.failedCount
+            failedCount = if (!isCorrect) word.failedCount + 1 else word.failedCount,
+            lastCorrectAt = if (isCorrect) System.currentTimeMillis() else word.lastCorrectAt,
+            lastFailedAt = if (!isCorrect) System.currentTimeMillis() else word.lastFailedAt
         )
         repo.updateWordStats(updatedWord)
         return updatedWord

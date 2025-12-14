@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-@Database(entities = [Word::class], version = 1)
+@Database(entities = [Word::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun wordDao(): WordDao
 }
@@ -32,13 +32,28 @@ data class Word(
     val timesShown: Int = 0,
     val correctCount: Int = 0,
     val failedCount: Int = 0,
-    val triesCount: Int = 0
+    val triesCount: Int = 0,
+    val lastShownAt: Long = 0L,
+    val lastCorrectAt: Long = 0L,
+    val lastFailedAt: Long = 0L
 )
 
 @Dao
 interface WordDao {
     @Query("SELECT * FROM words")
     suspend fun getAllWords(): List<Word>
+
+    @Query("SELECT * FROM words WHERE failedCount > 0 ORDER BY lastFailedAt DESC LIMIT :limit")
+    suspend fun getRecentFailures(limit: Int = 20): List<Word>
+
+    @Query("SELECT * FROM words WHERE correctCount > 0 ORDER BY lastCorrectAt DESC LIMIT :limit")
+    suspend fun getRecentCorrect(limit: Int = 20): List<Word>
+
+    @Query("SELECT * FROM words WHERE correctCount > 0 ORDER BY correctCount DESC LIMIT :limit")
+    suspend fun getTopCorrect(limit: Int = 20): List<Word>
+
+    @Query("SELECT * FROM words WHERE failedCount > 0 ORDER BY failedCount DESC LIMIT :limit")
+    suspend fun getTopFailed(limit: Int = 20): List<Word>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWord(word: Word)
@@ -61,7 +76,9 @@ class WordRepository(context: Context) {
     private val db = Room.databaseBuilder(
         context.applicationContext,
         AppDatabase::class.java, "my-app-database"
-    ).build()
+    )
+        .fallbackToDestructiveMigration()
+        .build()
 
     private val wordDao = db.wordDao()
 
@@ -79,6 +96,22 @@ class WordRepository(context: Context) {
 
     suspend fun updateWordStats(word: Word) = withContext(Dispatchers.IO) {
         wordDao.updateWord(word)
+    }
+
+    suspend fun getRecentFailures(limit: Int = 20): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getRecentFailures(limit)
+    }
+
+    suspend fun getRecentCorrect(limit: Int = 20): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getRecentCorrect(limit)
+    }
+
+    suspend fun getTopCorrect(limit: Int = 20): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getTopCorrect(limit)
+    }
+
+    suspend fun getTopFailed(limit: Int = 20): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getTopFailed(limit)
     }
 
     companion object {
