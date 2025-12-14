@@ -15,14 +15,8 @@ import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity
 import android.util.TypedValue
 import android.widget.ProgressBar
+import kotlinx.coroutines.*
 import java.io.BufferedReader
-
-data class Word (
-    val prefix: String,
-    val root: String,
-    val translation: String,
-    val example: String,
-    )
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,15 +28,35 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listCenter: ListView
     private lateinit var listRight: NumberPicker
     private lateinit var buttonCombine: Button
+    private lateinit var buttonStats: Button
     private lateinit var progressBar: ProgressBar
 
     // Variables to track the currently selected items in each list.
     private var selectedLeft: String? = null
     private var selectedRight: String? = null
-    private lateinit var selectedWords: Array<Word>
+    private lateinit var selectedWords: MutableList<Word>
     private var wordI: Int = 0
     private var centerWords: MutableList<String> = mutableListOf()
     private var numberOfTries: Int = 0
+
+    private val repo by lazy { WordRepository.getInstance(this) }
+    private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    private suspend fun recordShown(word: Word): Word {
+        val updated = word.copy(timesShown = word.timesShown + 1)
+        repo.updateWordStats(updated)
+        return updated
+    }
+
+    private suspend fun recordAttempt(word: Word, isCorrect: Boolean): Word {
+        val updatedWord = word.copy(
+            triesCount = word.triesCount + 1,
+            correctCount = if (isCorrect) word.correctCount + 1 else word.correctCount,
+            failedCount = if (!isCorrect) word.failedCount + 1 else word.failedCount
+        )
+        repo.updateWordStats(updatedWord)
+        return updatedWord
+    }
 
     private fun parseCsvFile(): List<Word> {
         val records = mutableListOf<Word>()
@@ -84,9 +98,7 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val desiredSp = 24f
             val sizeInPx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP,
-                desiredSp,
-                resources.displayMetrics
+                TypedValue.COMPLEX_UNIT_SP, desiredSp, resources.displayMetrics
             )
             np.setTextSize(sizeInPx)
         }
@@ -94,8 +106,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         // Link this activity with its layout.
         setContentView(R.layout.activity_main)
+
+        val words = runBlocking {
+            if (repo.isEmpty()) {
+                val words = parseCsvFile()
+                repo.addWords(words)
+            }
+            repo.getAllWords()
+        }
 
         // Find views by their IDs.
         messageText = findViewById(R.id.message_text)
@@ -105,17 +126,17 @@ class MainActivity : AppCompatActivity() {
         listCenter = findViewById(R.id.list_center)
         listRight = findViewById(R.id.list_right)
         buttonCombine = findViewById(R.id.button_combine)
+        buttonStats = findViewById(R.id.button_stats)
         progressBar = findViewById(R.id.progress_bar)
 
         progressBar.max = 10
         progressBar.min = 0
         progressBar.setProgress(0)
 
-        val words = parseCsvFile()
-        val selected_words = words.shuffled().take(10)
+        selectedWords = words.shuffled().take(10).toMutableList()
 
-        val prefixes = selected_words.map { it.prefix }.toTypedArray()
-        val roots = selected_words.map { it.root }.toTypedArray()
+        val prefixes = selectedWords.map { it.prefix }.toTypedArray()
+        val roots = selectedWords.map { it.root }.toTypedArray()
 
         // Sample data for the left and right lists.
         val leftItems = prefixes
@@ -123,7 +144,8 @@ class MainActivity : AppCompatActivity() {
         leftItems.shuffle()
         rightItems.shuffle()
 
-        val centerAdapter = ArrayAdapter(this, R.layout.list_item_center, R.id.list_item_text, centerWords)
+        val centerAdapter =
+            ArrayAdapter(this, R.layout.list_item_center, R.id.list_item_text, centerWords)
         listCenter.adapter = centerAdapter
 
         createNumberPicker(listLeft, leftItems)
@@ -131,9 +153,16 @@ class MainActivity : AppCompatActivity() {
         selectedLeft = leftItems[0]
         selectedRight = rightItems[0]
 
-        messageText.text = Html.fromHtml("Greetings Madam or Sir<br>Next word: <b>${selected_words[wordI].translation}</b>", Html.FROM_HTML_MODE_LEGACY)
+        messageText.text = Html.fromHtml(
+            "Greetings Madam or Sir<br>Next word: <b>${selectedWords[wordI].translation}</b>",
+            Html.FROM_HTML_MODE_LEGACY
+        )
         translationText.text = ""
         exampleText.text = "Select correct prefix and root"
+
+        activityScope.launch {
+            selectedWords[wordI] = recordShown(selectedWords[wordI])
+        }
 
         listLeft.setOnValueChangedListener { _, _, newValue ->
             selectedLeft = leftItems[newValue]
@@ -155,62 +184,89 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        buttonStats.setOnClickListener {
+            startActivity(Intent(this, StatsActivity::class.java))
+        }
+
         // When the "Combine" button is clicked, combine the selected items.
         buttonCombine.setOnClickListener {
             if (selectedLeft == null || selectedRight == null) {
                 return@setOnClickListener
             }
 
-            if (selected_words.size <= wordI) {
+            if (selectedWords.size <= wordI) {
                 return@setOnClickListener
             }
 
-            val currentWord = selected_words[wordI].prefix + selected_words[wordI].root
-            val currentTranslation = selected_words[wordI].translation
-            val currentExample = selected_words[wordI].example
+            val currentIndex = wordI
+            val currentWord = selectedWords[currentIndex]
+            val combinedWord = currentWord.prefix + currentWord.root
+            val currentTranslation = currentWord.translation
+            val currentExample = currentWord.example
 
-            if (selectedLeft == selected_words[wordI].prefix && selectedRight == selected_words[wordI].root) {
+            val isCorrect =
+                (selectedLeft == selectedWords[currentIndex].prefix && selectedRight == selectedWords[currentIndex].root)
+            activityScope.launch {
+                selectedWords[currentIndex] = recordAttempt(currentWord, isCorrect)
+            }
+
+            if (isCorrect) {
                 wordI += 1
                 numberOfTries = 0
-                centerAdapter.insert(currentWord, 0)
+                centerAdapter.insert(combinedWord, 0)
 
-                if (selected_words.size <= wordI) {
+                if (selectedWords.size <= wordI) {
                     messageText.text = Html.fromHtml("Great Success!", Html.FROM_HTML_MODE_LEGACY)
-                    translationText.text = "$currentWord\n$currentTranslation"
+                    translationText.text = "$combinedWord\n$currentTranslation"
                     exampleText.text = "$currentExample"
                     return@setOnClickListener
                 }
 
-                val nextTranslation = selected_words[wordI].translation;
+                val nextWord = selectedWords[wordI]
 
-                messageText.text = Html.fromHtml("Correct!<br>Next word: <b>${nextTranslation}</b>", Html.FROM_HTML_MODE_LEGACY)
-                translationText.text = "$currentWord\n$currentTranslation"
+                messageText.text = Html.fromHtml(
+                    "Correct!<br>Next word: <b>${nextWord.translation}</b>",
+                    Html.FROM_HTML_MODE_LEGACY
+                )
+                translationText.text = "$combinedWord\n$currentTranslation"
                 exampleText.text = "$currentExample"
+
+                val nextIndex = wordI
+                activityScope.launch {
+                    selectedWords[nextIndex] = recordShown(nextWord)
+                }
             } else {
                 numberOfTries += 1
 
-                if (numberOfTries >= selected_words.size) {
+                if (numberOfTries >= selectedWords.size) {
                     wordI += 1
                     numberOfTries = 0
 
-                    if (wordI >= selected_words.size) {
+                    if (wordI >= selectedWords.size) {
                         messageText.text = Html.fromHtml(
-                            "This is the last word. Try harder!</b><br>Next word: <b>${selected_words[wordI].translation}</b>",
+                            "This is the last word. Try harder!</b>",
                             Html.FROM_HTML_MODE_LEGACY
                         )
+                        translationText.text = "$combinedWord\n$currentTranslation"
+                        exampleText.text = "$currentExample"
                     } else {
+                        val nextWord = selectedWords[wordI]
                         messageText.text = Html.fromHtml(
-                            "Wrong $numberOfTries times!<b> Let's try another</b><br>Next word: <b>${selected_words[wordI].translation}</b>",
+                            "Wrong $numberOfTries times!<b> Let's try another</b><br>Next word: <b>${nextWord.translation}</b>",
                             Html.FROM_HTML_MODE_LEGACY
                         )
 
-                        translationText.text = "$currentWord\n$currentTranslation"
+                        translationText.text = "$combinedWord\n$currentTranslation"
                         exampleText.text = "$currentExample"
+
+                        val nextIndex = wordI
+                        activityScope.launch {
+                            selectedWords[nextIndex] = recordShown(nextWord)
+                        }
                     }
                 } else {
                     messageText.text = Html.fromHtml(
-                        "Wrong!<br>Next word: $currentTranslation",
-                        Html.FROM_HTML_MODE_LEGACY
+                        "Wrong!<br>Next word: $currentTranslation", Html.FROM_HTML_MODE_LEGACY
                     )
                 }
             }
@@ -218,4 +274,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        activityScope.cancel()
+    }
 }
