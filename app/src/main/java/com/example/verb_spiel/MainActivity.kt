@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonCombine: Button
     private lateinit var buttonStats: Button
     private lateinit var buttonFilter: Button
+    private lateinit var buttonSkip: Button
     private lateinit var filterStatus: TextView
     private lateinit var progressBar: ProgressBar
 
@@ -240,6 +241,7 @@ class MainActivity : AppCompatActivity() {
         buttonCombine = findViewById(R.id.button_combine)
         buttonStats = findViewById(R.id.button_stats)
         buttonFilter = findViewById(R.id.button_filter)
+        buttonSkip = findViewById(R.id.button_skip)
         filterStatus = findViewById(R.id.filter_status)
         progressBar = findViewById(R.id.progress_bar)
 
@@ -282,6 +284,44 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonFilter.setOnClickListener { showFilterChooser() }
+        buttonSkip.setOnClickListener {
+            if (selectedWords.isEmpty() || selectedWords.size <= wordI) {
+                return@setOnClickListener
+            }
+            val currentIndex = wordI
+            val currentWord = selectedWords[currentIndex]
+            val combinedWord = currentWord.prefix + currentWord.root
+            val currentTranslation = currentWord.translation
+            val currentExample = currentWord.example
+
+            activityScope.launch {
+                selectedWords[currentIndex] = recordAttempt(currentWord, false)
+            }
+
+            wordI += 1
+            numberOfTries = 0
+            translationText.text = currentTranslation
+            exampleText.text = currentExample
+
+            if (wordI >= selectedWords.size) {
+                messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
+                translationText.text = "$combinedWord\n$currentTranslation"
+                exampleText.text = "$currentExample"
+                return@setOnClickListener
+            }
+
+            val nextWord = selectedWords[wordI]
+            messageText.text = Html.fromHtml(
+                buildNextMessage(getString(R.string.msg_skipped), nextWord.translation),
+                Html.FROM_HTML_MODE_LEGACY
+            )
+
+            val nextIndex = wordI
+            activityScope.launch {
+                selectedWords[nextIndex] = recordShown(nextWord)
+            }
+            progressBar.setProgress(numberOfTries, true)
+        }
 
         // When the "Combine" button is clicked, combine the selected items.
         buttonCombine.setOnClickListener {

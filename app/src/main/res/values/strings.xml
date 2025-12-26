@@ -32,4 +32,6 @@
     <string name="msg_correct">OK</string>
     <string name="msg_wrong">Falsch</string>
     <string name="msg_done">Fertig – stark!</string>
+    <string name="skip">Skip</string>
+    <string name="msg_skipped">Skipped</string>
 </resources>
