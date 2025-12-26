@@ -34,8 +34,21 @@ class TopWordsFragment : Fragment() {
         failedList.emptyView = failedEmpty
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val topCorrect = repo.getTopCorrect(20)
-            val topFailed = repo.getTopFailed(20)
+            val allShown = repo.getAllWords().filter { it.timesShown > 0 || it.triesCount > 0 }
+            val topCorrect = allShown.sortedWith(
+                compareByDescending<Word> { it.correctCount }
+                    .thenByDescending {
+                        if (it.triesCount == 0) 0 else (it.correctCount * 100 / it.triesCount)
+                    }
+                    .thenByDescending { it.triesCount }
+            )
+            val topFailed = allShown.sortedWith(
+                compareByDescending<Word> { it.failedCount }
+                    .thenByDescending {
+                        if (it.triesCount == 0) 0 else (it.failedCount * 100 / it.triesCount)
+                    }
+                    .thenByDescending { it.triesCount }
+            )
 
             val correctItems = topCorrect.map { word ->
                 val accuracy =

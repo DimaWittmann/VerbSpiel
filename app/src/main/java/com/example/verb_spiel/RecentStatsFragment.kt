@@ -10,8 +10,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class RecentStatsFragment : Fragment() {
 
@@ -32,6 +33,7 @@ class RecentStatsFragment : Fragment() {
         list.emptyView = empty
 
         val type = arguments?.getString(ARG_TYPE) ?: TYPE_FAILURES
+        val dateFormat = SimpleDateFormat("dd MMM yy", Locale.getDefault())
 
         viewLifecycleOwner.lifecycleScope.launch {
             val words = when (type) {
@@ -44,8 +46,7 @@ class RecentStatsFragment : Fragment() {
                     TYPE_CORRECT -> word.lastCorrectAt
                     else -> word.lastFailedAt
                 }
-                val formattedDate =
-                    if (stamp > 0) DateFormat.getDateTimeInstance().format(Date(stamp)) else ""
+                val formattedDate = if (stamp > 0) dateFormat.format(Date(stamp)) else ""
                 val attempts = if (type == TYPE_CORRECT) word.correctCount else word.failedCount
                 "${word.prefix}${word.root} • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
             }
