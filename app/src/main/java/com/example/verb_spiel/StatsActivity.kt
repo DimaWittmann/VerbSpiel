@@ -26,7 +26,8 @@ class StatsActivity : AppCompatActivity() {
             tab.text = when (position) {
                 0 -> getString(R.string.tab_recent_failures)
                 1 -> getString(R.string.tab_recent_correct)
-                else -> getString(R.string.tab_top_words)
+                2 -> getString(R.string.tab_top_words)
+                else -> getString(R.string.tab_retired_words)
             }
         }.attach()
 

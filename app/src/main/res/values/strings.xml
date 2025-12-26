@@ -6,10 +6,11 @@
     <string name="stats_title">Practice statistics</string>
     <string name="stats_summary">Shown %1$d | Correct %2$d | Wrong %3$d | Accuracy %4$d%%</string>
     <string name="stats_summary_placeholder">Loading stats...</string>
-    <string name="stats_empty_state">No attempts yet. Play a round to see your progress.</string>
+    <string name="stats_empty_state">No learned words. Play a round to see your progress.</string>
     <string name="tab_recent_failures">Recent failures</string>
     <string name="tab_recent_correct">Recent correct</string>
     <string name="tab_top_words">Top words</string>
+    <string name="tab_retired_words">Retired</string>
     <string name="stats_attempts">%1$d times</string>
     <string name="stats_correct">%1$d correct</string>
     <string name="stats_failed">%1$d failed</string>
