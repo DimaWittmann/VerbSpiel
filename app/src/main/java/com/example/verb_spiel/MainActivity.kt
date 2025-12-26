@@ -65,7 +65,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resetRound(pool: List<Word>) {
-        val filtered = pool
+        val filtered = if (activeFilter == null) {
+            pool.filterNot { isRetiredWord(it) }
+        } else {
+            pool
+        }
         if (filtered.isEmpty()) {
             selectedWords = mutableListOf()
             leftItems = emptyArray()

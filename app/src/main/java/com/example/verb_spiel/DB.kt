@@ -38,6 +38,14 @@ data class Word(
     val lastFailedAt: Long = 0L
 )
 
+fun isRetiredWord(word: Word): Boolean {
+    return if (word.failedCount == 0) {
+        word.correctCount >= 2
+    } else {
+        word.correctCount >= 4
+    }
+}
+
 @Dao
 interface WordDao {
     @Query("SELECT * FROM words")
@@ -84,6 +92,12 @@ class WordRepository(context: Context) {
 
     suspend fun getAllWords(): List<Word> = withContext(Dispatchers.IO) {
         wordDao.getAllWords()
+    }
+
+    suspend fun getRetiredWords(): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getAllWords()
+            .filter { isRetiredWord(it) }
+            .sortedByDescending { it.correctCount - it.failedCount }
     }
 
     suspend fun addWord(word: Word) = withContext(Dispatchers.IO) { wordDao.insertWord(word) }
