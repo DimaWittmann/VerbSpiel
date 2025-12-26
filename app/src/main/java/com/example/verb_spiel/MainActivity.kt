@@ -48,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     private var rightItems: Array<String> = emptyArray()
     private var numberOfTries: Int = 0
     private var activeFilter: Filter? = null
+    private var lastResultTranslation: String = ""
+    private var lastResultExample: String = ""
 
     private val repo by lazy { WordRepository.getInstance(this) }
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -94,10 +96,10 @@ class MainActivity : AppCompatActivity() {
         if (selectedWords.isNotEmpty()) {
             val first = selectedWords[0]
             messageText.text = Html.fromHtml(
-                "${getString(R.string.msg_greeting)}<br>${getString(R.string.msg_next_word)}",
+                buildNextMessage(getString(R.string.msg_greeting), first.translation),
                 Html.FROM_HTML_MODE_LEGACY
             )
-            translationText.text = first.translation
+            translationText.text = ""
             exampleText.text = "Select correct prefix and root"
 
             activityScope.launch {
@@ -162,6 +164,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         filterStatus.text = text
+    }
+
+    private fun buildNextMessage(status: String, translation: String): String {
+        val highlighted = "<font color=\"#00897B\"><b>$translation</b></font>"
+        return "$status<br>${getString(R.string.msg_next_word)}: $highlighted"
     }
 
     private suspend fun recordAttempt(word: Word, isCorrect: Boolean): Word {
@@ -303,6 +310,11 @@ class MainActivity : AppCompatActivity() {
                 numberOfTries = 0
                 centerAdapter.insert(combinedWord, 0)
 
+                lastResultTranslation = currentTranslation
+                lastResultExample = currentExample
+                translationText.text = currentTranslation
+                exampleText.text = currentExample
+
                 if (selectedWords.size <= wordI) {
                     messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
                     translationText.text = "$combinedWord\n$currentTranslation"
@@ -313,11 +325,11 @@ class MainActivity : AppCompatActivity() {
                 val nextWord = selectedWords[wordI]
 
                 messageText.text = Html.fromHtml(
-                    getString(R.string.msg_correct),
+                    buildNextMessage(getString(R.string.msg_correct), nextWord.translation),
                     Html.FROM_HTML_MODE_LEGACY
                 )
-                translationText.text = nextWord.translation
-                exampleText.text = nextWord.example
+                translationText.text = lastResultTranslation
+                exampleText.text = lastResultExample
 
                 val nextIndex = wordI
                 activityScope.launch {
@@ -337,12 +349,15 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         val nextWord = selectedWords[wordI]
                         messageText.text = Html.fromHtml(
-                            "Wrong $numberOfTries times!<b> Let's try another</b><br>Next word: <b>${nextWord.translation}</b>",
+                            buildNextMessage(
+                                "Wrong $numberOfTries times! Let's try another",
+                                nextWord.translation
+                            ),
                             Html.FROM_HTML_MODE_LEGACY
                         )
 
-                        translationText.text = nextWord.translation
-                        exampleText.text = nextWord.example
+                        translationText.text = currentTranslation
+                        exampleText.text = currentExample
 
                         val nextIndex = wordI
                         activityScope.launch {
@@ -351,10 +366,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     messageText.text = Html.fromHtml(
-                        getString(R.string.msg_wrong), Html.FROM_HTML_MODE_LEGACY
+                        buildNextMessage(getString(R.string.msg_wrong), currentTranslation),
+                        Html.FROM_HTML_MODE_LEGACY
                     )
-                    translationText.text = currentTranslation
-                    exampleText.text = currentExample
+                    translationText.text = lastResultTranslation
+                    exampleText.text = lastResultExample
                 }
             }
             progressBar.setProgress(numberOfTries, true)
