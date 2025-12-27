@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity() {
     private fun showValueChooser(type: FilterType) {
         val values = when (type) {
             FilterType.PREFIX -> allWords.map { it.prefix }.distinct().sorted()
-            FilterType.ROOT -> allWords.map { rootLabel(it) }.distinct().sorted()
+            FilterType.ROOT -> allWords.map { it.root }.distinct().sorted()
         }
         if (values.isEmpty()) {
             Toast.makeText(this, R.string.filter_no_matches, Toast.LENGTH_SHORT).show()
@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         activeFilter = filter
         val filteredPool = when (filter?.type) {
             FilterType.PREFIX -> allWords.filter { it.prefix == filter.value }
-            FilterType.ROOT -> allWords.filter { rootLabel(it) == filter.value }
+            FilterType.ROOT -> allWords.filter { it.root == filter.value }
             else -> allWords
         }
         updateFilterStatus()
@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity() {
             null -> allWords
             else -> when (f.type) {
                 FilterType.PREFIX -> allWords.filter { it.prefix == f.value }
-                FilterType.ROOT -> allWords.filter { rootLabel(it) == f.value }
+                FilterType.ROOT -> allWords.filter { it.root == f.value }
             }
         }
     }
