@@ -1,4 +1,4 @@
-version:1
+version:2
 prefix;root;translation;example
 an;fangen;to begin, start;Wir fangen jetzt mit der Arbeit an.
 an;kommen;to arrive;Der Zug kommt in fünf Minuten an.
@@ -253,6 +253,16 @@ zurück;zahlen;to pay back;Ich zahle dir das Geld morgen zurück.
 zurück;verfolgen;to trace back;Wir können die Ursache bis zum Anfang zurückverfolgen.
 zurück;behalten;to keep for oneself;Ich behalte einen Teil davon zurück.
 zurück;weisen;to reject, refuse;Das Gericht weist die Klage zurück.
+ab;weisen;to reject;Die Firma weist die Forderung ab.
+aus;weisen;to expel, deport;Die Polizei weist den Täter aus.
+ein;weisen;to admit (to a hospital);Der Arzt weist ihn in die Klinik ein.
+hin;weisen;to point out;Die Lehrerin weist auf den Fehler hin.
+nach;weisen;to prove;Er kann seine Aussage nicht nachweisen.
+zu;weisen;to assign;Der Chef weist ihr neue Aufgaben zu.
+ver;weisen;to refer, direct;Man verweist auf die Dokumente.
+auf;weisen;to exhibit, show;Der Bericht weist große Lücken auf.
+unter;weisen;to instruct;Der Meister unterweist die Azubis.
+er;weisen;to show, render;Wir erweisen ihm Respekt.
 zurück;weichen;to back away;Er weicht langsam zurück.
 zurück;bauen;to dismantle;Die Stadt baut die alten Anlagen zurück.
 zurück;verlangen;to ask for something back;Er verlangt sein Buch zurück.
@@ -371,25 +381,25 @@ hinter;fragen;to question, scrutinize;Wir hinterfragen das System kritisch.
 hinter;gehen;to deceive, betray;Sie hat ihn hintergangen.
 hinter;ziehen;to evade (taxes, etc.);Er hat Steuern hinterzogen.
 hinter;legen;to deposit;Ich hinterlege das Geld auf der Bank.
-hinter;herlaufen;to run after;Der Hund läuft dem Ball hinterher.
-hinter;herfahren;to drive after;Er fährt dem Bus hinterher.
-hinter;herziehen;to pull behind;Sie zieht den Koffer hinter sich her.
+hinterher;laufen;to run after;Der Hund läuft dem Ball hinterher.
+hinterher;fahren;to drive after;Er fährt dem Bus hinterher.
+hinterher;ziehen;to pull behind;Sie zieht den Koffer hinter sich her.
 hinter;bleiben;to stay behind;Er bleibt nach dem Unterricht hinter.
 hinter;treiben;to thwart, undermine;Sie hintertreibt seine Pläne.
 hinter;kommen;to find out;Ich bin noch nicht dahinter gekommen, wie es funktioniert.
-hinter;herschicken;to send after;Ich schicke ihm die Unterlagen hinterher.
+hinterher;schicken;to send after;Ich schicke ihm die Unterlagen hinterher.
 hinter;sich bringen;to get something over with;Ich bringe die Prüfung schnell hinter mich.
 hinter;denken;to suspect hidden motives;Man muss manchmal etwas Böses dahinterdenken.
-hinter;herwerfen;to throw after someone;Sie wirft ihm den Schlüssel hinterher.
+hinterher;werfen;to throw after someone;Sie wirft ihm den Schlüssel hinterher.
 hinter;bringen;to inform secretly;Er hat mir hinterbracht, was wirklich geschah.
 hinter;sinnen;to reflect upon (archaic);Man kann lange über das Problem hintersinnen.
-hinter;hersagen;to repeat after someone;Das Kind sagt jedes Wort hinterher.
-hinter;herspionieren;to spy after someone;Er spioniert ihr ständig hinterher.
-hinter;hertauchen;to dive after something;Der Taucher taucht dem Schatz hinterher.
-hinter;hertelefonieren;to call repeatedly;Ich muss dem Kundenservice hinterhertelefonieren.
-hinter;herstürmen;to rush after;Der Fan stürmt dem Star hinterher.
-hinter;herwinken;to wave after someone;Sie winkt ihrem Freund hinterher.
-hinter;herpfeifen;to whistle after (wolf-whistle);Die Bauarbeiter pfeifen den Passanten hinterher.
+hinterher;sagen;to repeat after someone;Das Kind sagt jedes Wort hinterher.
+hinterher;spionieren;to spy after someone;Er spioniert ihr ständig hinterher.
+hinterher;tauchen;to dive after something;Der Taucher taucht dem Schatz hinterher.
+hinterher;telefonieren;to call repeatedly;Ich muss dem Kundenservice hinterhertelefonieren.
+hinterher;stürmen;to rush after;Der Fan stürmt dem Star hinterher.
+hinterher;winken;to wave after someone;Sie winkt ihrem Freund hinterher.
+hinterher;pfeifen;to whistle after (wolf-whistle);Die Bauarbeiter pfeifen den Passanten hinterher.
 miss;verstehen;to misunderstand;Bitte missversteh meine Worte nicht.
 miss;brauchen;to misuse, abuse;Er missbraucht seine Macht.
 miss;lingen;to fail;Der Versuch misslingt leider.
