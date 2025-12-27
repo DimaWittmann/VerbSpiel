@@ -483,9 +483,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createNumberPicker(np: NumberPicker, items: Array<String>) {
+        np.displayedValues = null
+        if (items.isEmpty()) {
+            np.minValue = 0
+            np.maxValue = 0
+            np.wrapSelectorWheel = false
+            return
+        }
         np.minValue = 0
         np.maxValue = items.size - 1
-        np.wrapSelectorWheel = true
+        np.wrapSelectorWheel = items.size > 1
         np.displayedValues = items
         styleNumberPicker(np)
     }
