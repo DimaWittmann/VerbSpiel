@@ -59,7 +59,11 @@ class MainActivity : AppCompatActivity() {
     private enum class FilterType { PREFIX, ROOT }
 
     private suspend fun recordShown(word: Word): Word {
-        val updated = word.copy(timesShown = word.timesShown + 1, lastShownAt = System.currentTimeMillis())
+        val latest = repo.getWordById(word.id) ?: word
+        val updated = latest.copy(
+            timesShown = latest.timesShown + 1,
+            lastShownAt = System.currentTimeMillis()
+        )
         repo.updateWordStats(updated)
         return updated
     }
@@ -177,12 +181,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun recordAttempt(word: Word, isCorrect: Boolean): Word {
-        val updatedWord = word.copy(
-            triesCount = word.triesCount + 1,
-            correctCount = if (isCorrect) word.correctCount + 1 else word.correctCount,
-            failedCount = if (!isCorrect) word.failedCount + 1 else word.failedCount,
-            lastCorrectAt = if (isCorrect) System.currentTimeMillis() else word.lastCorrectAt,
-            lastFailedAt = if (!isCorrect) System.currentTimeMillis() else word.lastFailedAt
+        val latest = repo.getWordById(word.id) ?: word
+        val updatedWord = latest.copy(
+            triesCount = latest.triesCount + 1,
+            correctCount = if (isCorrect) latest.correctCount + 1 else latest.correctCount,
+            failedCount = if (!isCorrect) latest.failedCount + 1 else latest.failedCount,
+            lastCorrectAt = if (isCorrect) System.currentTimeMillis() else latest.lastCorrectAt,
+            lastFailedAt = if (!isCorrect) System.currentTimeMillis() else latest.lastFailedAt
         )
         repo.updateWordStats(updatedWord)
         return updatedWord

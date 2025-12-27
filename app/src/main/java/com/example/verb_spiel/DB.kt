@@ -120,6 +120,10 @@ class WordRepository(context: Context) {
         wordDao.getAllWords()
     }
 
+    suspend fun getWordById(id: Int): Word? = withContext(Dispatchers.IO) {
+        wordDao.getWordById(id)
+    }
+
     suspend fun getWordVersion(): Int = withContext(Dispatchers.IO) {
         metaDao.getMeta(META_WORDS_VERSION)?.intValue ?: 0
     }
