@@ -561,3 +561,37 @@ er;innern;to remember;Ich erinnere mich an den Urlaub.
 über;legen;to consider;Überlege es dir gut.
 durch;führen;to conduct;Wir führen das Experiment durch.
 durch;halten;to persevere;Halte noch etwas durch.
+an;nehmen;to accept;Ich nehme dein Angebot an.
+ein;nehmen;to take in, ingest;Er nimmt die Tablette ein.
+hin;nehmen;to accept, put up with;Ich nehme das so hin.
+an;stellen;to employ;Die Firma stellt ihn an.
+ab;stellen;to switch off;Stell bitte den Motor ab.
+auf;stellen;to set up;Wir stellen die Stühle auf.
+um;stellen;to rearrange;Wir stellen die Möbel um.
+zu;stellen;to deliver, provide;Der Lieferant stellt die Ware zu.
+ver;stellen;to misplace;Ich habe den Schlüssel verstellt.
+dar;stellen;to depict;Der Film stellt die Zeit gut dar.
+be;stellen;to order (goods);Wir bestellen eine Pizza.
+her;stellen;to produce;Die Fabrik stellt Autos her.
+auf;geben;to give up;Gib nicht auf.
+ver;geben;to forgive;Ich vergebe dir.
+auf;kommen;to arise;Ein Verdacht kommt auf.
+aus;kommen;to manage, get by;Wir kommen mit wenig Geld aus.
+ein;kommen;to come in;Komm bitte kurz ein.
+um;kommen;to perish;Er ist bei dem Unfall umgekommen.
+über;kommen;to overcome;Die Angst überkommt ihn.
+ab;gehen;to go off (alarm);Der Alarm ging los.
+ein;gehen;to enter, engage;Wir gehen einen Vertrag ein.
+los;gehen;to set off;Wann geht es los?
+durch;gehen;to go through;Wir gehen den Plan noch einmal durch.
+über;gehen;to overlook;Man darf den Fehler nicht übergehen.
+ab;kriegen;to get off, remove;Ich kriege den Fleck nicht ab.
+an;kriegen;to get to start working;Das alte Radio kriegen wir nicht mehr an.
+auf;kriegen;to get open;Ich kriege die Dose nicht auf.
+her;kriegen;to get hold of;Kannst du mir das Buch herkriegen?
+hin;kriegen;to manage, get done;Wir kriegen das heute noch hin.
+mit;kriegen;to notice;Hast du das Gespräch mitgekriegt?
+rein;kriegen;to get inside;Ich kriege den Tisch nicht rein.
+rum;kriegen;to get around;Er kriegt die Kurve nicht rum.
+weg;kriegen;to get rid of;Wir kriegen die Fehler nicht weg.
+zusammen;kriegen;to get together;Wir kriegen das Team zusammen.
