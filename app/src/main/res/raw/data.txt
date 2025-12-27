@@ -1,3 +1,4 @@
+version:1
 prefix;root;translation;example
 an;fangen;to begin, start;Wir fangen jetzt mit der Arbeit an.
 an;kommen;to arrive;Der Zug kommt in fünf Minuten an.

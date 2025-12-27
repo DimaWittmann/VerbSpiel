@@ -189,20 +189,25 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun parseCsvFile(): List<Word> {
+    private data class WordFile(val version: Int, val words: List<Word>)
+
+    private fun parseWordFile(): WordFile {
         val records = mutableListOf<Word>()
+        var version = 0
         try {
-            // Open the CSV file from res/raw (ensure your file is named exactly my_csv_file.csv)
             val inputStream = resources.openRawResource(R.raw.data)
             val reader: BufferedReader = inputStream.bufferedReader()
             val lines = reader.readLines()
             reader.close()
 
-            // Assuming the first line is a header, skip it
-            for (line in lines.drop(1)) {
-                // Split the line on semicolons.
+            if (lines.isNotEmpty() && lines[0].startsWith("version:")) {
+                version = lines[0].removePrefix("version:").trim().toIntOrNull() ?: 0
+            }
+
+            val startIndex = if (lines.firstOrNull()?.startsWith("version:") == true) 2 else 1
+
+            for (line in lines.drop(startIndex)) {
                 val tokens = line.split(";")
-                // Ensure we have at least 4 tokens for the expected schema.
                 if (tokens.size == 4) {
                     val record = Word(
                         prefix = tokens[0].trim(),
@@ -218,7 +223,7 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("CSV", "Error reading CSV file", e)
         }
-        return records
+        return WordFile(version, records)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -228,9 +233,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         allWords = runBlocking {
+            val parsed = parseWordFile()
             if (repo.isEmpty()) {
-                val words = parseCsvFile()
-                repo.addWords(words)
+                repo.addWords(parsed.words)
+                repo.setWordVersion(parsed.version)
+            } else {
+                val currentVersion = repo.getWordVersion()
+                if (currentVersion != parsed.version) {
+                    repo.syncWords(parsed.words)
+                    repo.setWordVersion(parsed.version)
+                }
             }
             repo.getAllWords()
         }
