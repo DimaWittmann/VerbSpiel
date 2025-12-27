@@ -34,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonStats: Button
     private lateinit var buttonFilter: Button
     private lateinit var buttonSkip: Button
+    private lateinit var buttonResetPrimary: Button
+    private lateinit var buttonReset: Button
     private lateinit var filterStatus: TextView
     private lateinit var progressBar: ProgressBar
 
@@ -83,9 +85,11 @@ class MainActivity : AppCompatActivity() {
             exampleText.text = ""
             centerWords.clear()
             centerAdapter.notifyDataSetChanged()
+            setRoundEnded(true)
             return
         }
 
+        setRoundEnded(false)
         selectedWords = filtered.shuffled().take(10.coerceAtMost(filtered.size)).toMutableList()
         wordI = 0
         numberOfTries = 0
@@ -180,6 +184,23 @@ class MainActivity : AppCompatActivity() {
         return "$status<br>${getString(R.string.msg_next_word)}: $highlighted"
     }
 
+    private fun getCurrentPool(): List<Word> {
+        return when (val f = activeFilter) {
+            null -> allWords
+            else -> when (f.type) {
+                FilterType.PREFIX -> allWords.filter { it.prefix == f.value }
+                FilterType.ROOT -> allWords.filter { it.root == f.value }
+            }
+        }
+    }
+
+    private fun setRoundEnded(ended: Boolean) {
+        buttonCombine.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
+        buttonSkip.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
+        buttonReset.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
+        buttonResetPrimary.visibility = if (ended) android.view.View.VISIBLE else android.view.View.GONE
+    }
+
     private suspend fun recordAttempt(word: Word, isCorrect: Boolean): Word {
         val latest = repo.getWordById(word.id) ?: word
         val updatedWord = latest.copy(
@@ -263,6 +284,8 @@ class MainActivity : AppCompatActivity() {
         buttonStats = findViewById(R.id.button_stats)
         buttonFilter = findViewById(R.id.button_filter)
         buttonSkip = findViewById(R.id.button_skip)
+        buttonResetPrimary = findViewById(R.id.button_reset_primary)
+        buttonReset = findViewById(R.id.button_reset)
         filterStatus = findViewById(R.id.filter_status)
         progressBar = findViewById(R.id.progress_bar)
 
@@ -305,6 +328,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonFilter.setOnClickListener { showFilterChooser() }
+        buttonResetPrimary.setOnClickListener { resetRound(getCurrentPool()) }
+        buttonReset.setOnClickListener { resetRound(getCurrentPool()) }
         buttonSkip.setOnClickListener {
             if (selectedWords.isEmpty() || selectedWords.size <= wordI) {
                 return@setOnClickListener
@@ -328,6 +353,7 @@ class MainActivity : AppCompatActivity() {
                 messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
                 translationText.text = "$combinedWord\n$currentTranslation"
                 exampleText.text = "$currentExample"
+                setRoundEnded(true)
                 return@setOnClickListener
             }
 
@@ -380,6 +406,7 @@ class MainActivity : AppCompatActivity() {
                     messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
                     translationText.text = "$combinedWord\n$currentTranslation"
                     exampleText.text = "$currentExample"
+                    setRoundEnded(true)
                     return@setOnClickListener
                 }
 
@@ -407,6 +434,7 @@ class MainActivity : AppCompatActivity() {
                         messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
                         translationText.text = "$combinedWord\n$currentTranslation"
                         exampleText.text = "$currentExample"
+                        setRoundEnded(true)
                     } else {
                         val nextWord = selectedWords[wordI]
                         messageText.text = Html.fromHtml(

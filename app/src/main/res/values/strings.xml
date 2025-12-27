@@ -35,4 +35,5 @@
     <string name="msg_done">Fertig – stark!</string>
     <string name="skip">Skip</string>
     <string name="msg_skipped">Skipped</string>
+    <string name="reset_round">Reset round</string>
 </resources>
