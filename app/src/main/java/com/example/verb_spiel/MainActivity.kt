@@ -60,6 +60,10 @@ class MainActivity : AppCompatActivity() {
     private data class Filter(val type: FilterType, val value: String)
     private enum class FilterType { PREFIX, ROOT }
 
+    private fun rootLabel(word: Word): String {
+        return formatRoot(word.root, word.isReflexive)
+    }
+
     private suspend fun recordShown(word: Word): Word {
         val latest = repo.getWordById(word.id) ?: word
         val updated = latest.copy(
@@ -97,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         centerAdapter.notifyDataSetChanged()
 
         leftItems = selectedWords.map { it.prefix }.shuffled().toTypedArray()
-        rightItems = selectedWords.map { it.root }.shuffled().toTypedArray()
+        rightItems = selectedWords.map { rootLabel(it) }.shuffled().toTypedArray()
         createNumberPicker(listLeft, leftItems)
         createNumberPicker(listRight, rightItems)
         selectedLeft = leftItems.firstOrNull()
@@ -142,7 +146,7 @@ class MainActivity : AppCompatActivity() {
     private fun showValueChooser(type: FilterType) {
         val values = when (type) {
             FilterType.PREFIX -> allWords.map { it.prefix }.distinct().sorted()
-            FilterType.ROOT -> allWords.map { it.root }.distinct().sorted()
+            FilterType.ROOT -> allWords.map { rootLabel(it) }.distinct().sorted()
         }
         if (values.isEmpty()) {
             Toast.makeText(this, R.string.filter_no_matches, Toast.LENGTH_SHORT).show()
@@ -161,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         activeFilter = filter
         val filteredPool = when (filter?.type) {
             FilterType.PREFIX -> allWords.filter { it.prefix == filter.value }
-            FilterType.ROOT -> allWords.filter { it.root == filter.value }
+            FilterType.ROOT -> allWords.filter { rootLabel(it) == filter.value }
             else -> allWords
         }
         updateFilterStatus()
@@ -189,7 +193,7 @@ class MainActivity : AppCompatActivity() {
             null -> allWords
             else -> when (f.type) {
                 FilterType.PREFIX -> allWords.filter { it.prefix == f.value }
-                FilterType.ROOT -> allWords.filter { it.root == f.value }
+                FilterType.ROOT -> allWords.filter { rootLabel(it) == f.value }
             }
         }
     }
@@ -235,9 +239,11 @@ class MainActivity : AppCompatActivity() {
             for (line in lines.drop(startIndex)) {
                 val tokens = line.split(";")
                 if (tokens.size == 4) {
+                    val rootData = parseRootField(tokens[1].trim())
                     val record = Word(
                         prefix = tokens[0].trim(),
-                        root = tokens[1].trim(),
+                        root = rootData.root,
+                        isReflexive = rootData.isReflexive,
                         translation = tokens[2].trim(),
                         example = tokens[3].trim()
                     )
@@ -250,6 +256,16 @@ class MainActivity : AppCompatActivity() {
             Log.e("CSV", "Error reading CSV file", e)
         }
         return WordFile(version, records)
+    }
+
+    private data class RootData(val root: String, val isReflexive: Boolean)
+
+    private fun parseRootField(raw: String): RootData {
+        val parts = raw.split('|').map { it.trim() }.filter { it.isNotEmpty() }
+        val rootPart = parts.firstOrNull().orEmpty()
+        val reflexive = parts.any { it.contains("sich") } || rootPart.contains("(sich)")
+        val cleanedRoot = rootPart.replace(" (sich)", "").replace("(sich)", "").trim()
+        return RootData(cleanedRoot, reflexive)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -336,7 +352,7 @@ class MainActivity : AppCompatActivity() {
             }
             val currentIndex = wordI
             val currentWord = selectedWords[currentIndex]
-            val combinedWord = currentWord.prefix + currentWord.root
+            val combinedWord = formatWord(currentWord)
             val currentTranslation = currentWord.translation
             val currentExample = currentWord.example
 
@@ -382,12 +398,12 @@ class MainActivity : AppCompatActivity() {
 
             val currentIndex = wordI
             val currentWord = selectedWords[currentIndex]
-            val combinedWord = currentWord.prefix + currentWord.root
+            val combinedWord = formatWord(currentWord)
             val currentTranslation = currentWord.translation
             val currentExample = currentWord.example
 
             val isCorrect =
-                (selectedLeft == selectedWords[currentIndex].prefix && selectedRight == selectedWords[currentIndex].root)
+                (selectedLeft == selectedWords[currentIndex].prefix && selectedRight == rootLabel(selectedWords[currentIndex]))
             activityScope.launch {
                 selectedWords[currentIndex] = recordAttempt(currentWord, isCorrect)
             }

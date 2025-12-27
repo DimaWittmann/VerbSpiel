@@ -34,7 +34,7 @@ class RetiredWordsFragment : Fragment() {
 
             val items = words.map { word ->
                 val delta = word.correctCount - word.failedCount
-                "${word.prefix}${word.root} • +$delta • ${getString(R.string.stats_correct, word.correctCount)}"
+                "${formatWord(word)} • +$delta • ${getString(R.string.stats_correct, word.correctCount)}"
             }
 
             list.adapter = ArrayAdapter(

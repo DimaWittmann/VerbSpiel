@@ -53,13 +53,13 @@ class TopWordsFragment : Fragment() {
             val correctItems = topCorrect.map { word ->
                 val accuracy =
                     if (word.triesCount == 0) 0 else (word.correctCount * 100 / word.triesCount)
-                "${word.prefix}${word.root} • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
+                "${formatWord(word)} • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
             }
 
             val failedItems = topFailed.map { word ->
                 val accuracy =
                     if (word.triesCount == 0) 0 else (word.correctCount * 100 / word.triesCount)
-                "${word.prefix}${word.root} • ${getString(R.string.stats_failed, word.failedCount)} • ${accuracy}%"
+                "${formatWord(word)} • ${getString(R.string.stats_failed, word.failedCount)} • ${accuracy}%"
             }
 
             correctList.adapter = ArrayAdapter(

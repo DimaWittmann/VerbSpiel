@@ -48,7 +48,7 @@ class RecentStatsFragment : Fragment() {
                 }
                 val formattedDate = if (stamp > 0) dateFormat.format(Date(stamp)) else ""
                 val attempts = if (type == TYPE_CORRECT) word.correctCount else word.failedCount
-                "${word.prefix}${word.root} • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
+                "${formatWord(word)} • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
             }
 
             list.adapter = ArrayAdapter(

@@ -29,6 +29,7 @@ data class Word(
     val id: Int = 0,
     val prefix: String,
     val root: String,
+    val isReflexive: Boolean = false,
     val translation: String,
     val example: String,
     // Statistics
@@ -47,6 +48,14 @@ data class AppMeta(
     val key: String,
     val intValue: Int
 )
+
+fun formatRoot(root: String, isReflexive: Boolean): String {
+    return if (isReflexive) "$root (sich)" else root
+}
+
+fun formatWord(word: Word): String {
+    return word.prefix + formatRoot(word.root, word.isReflexive)
+}
 
 fun isRetiredWord(word: Word): Boolean {
     return if (word.failedCount == 0) {
@@ -152,25 +161,26 @@ class WordRepository(context: Context) {
 
     suspend fun syncWords(newWords: List<Word>) = withContext(Dispatchers.IO) {
         val existing = wordDao.getAllWords()
-        val existingMap = existing.associateBy { "${it.prefix};${it.root}" }
-        val newMap = newWords.associateBy { "${it.prefix};${it.root}" }
+        val existingMap = existing.associateBy { wordKey(it) }
+        val newMap = newWords.associateBy { wordKey(it) }
 
-        val toDelete = existing.filter { !newMap.containsKey("${it.prefix};${it.root}") }
+        val toDelete = existing.filter { !newMap.containsKey(wordKey(it)) }
         if (toDelete.isNotEmpty()) {
             wordDao.deleteWordsByIds(toDelete.map { it.id })
         }
 
-        val toInsert = newWords.filter { !existingMap.containsKey("${it.prefix};${it.root}") }
+        val toInsert = newWords.filter { !existingMap.containsKey(wordKey(it)) }
         if (toInsert.isNotEmpty()) {
             wordDao.insertWords(toInsert)
         }
 
         val toUpdate = existing.mapNotNull { old ->
-            val fresh = newMap["${old.prefix};${old.root}"] ?: return@mapNotNull null
-            if (old.translation == fresh.translation && old.example == fresh.example) return@mapNotNull null
+            val fresh = newMap[wordKey(old)] ?: return@mapNotNull null
+            if (old.example == fresh.example) return@mapNotNull null
             old.copy(
                 prefix = fresh.prefix,
                 root = fresh.root,
+                isReflexive = fresh.isReflexive,
                 translation = fresh.translation,
                 example = fresh.example
             )
@@ -199,6 +209,10 @@ class WordRepository(context: Context) {
     companion object {
         private const val META_WORDS_VERSION = "words_version"
 
+        private fun wordKey(word: Word): String {
+            return "${word.prefix};${word.root};${word.isReflexive};${word.translation}"
+        }
+
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE words ADD COLUMN timesShown INTEGER NOT NULL DEFAULT 0")
@@ -214,6 +228,10 @@ class WordRepository(context: Context) {
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("CREATE TABLE IF NOT EXISTS app_meta (key TEXT NOT NULL, intValue INTEGER NOT NULL, PRIMARY KEY(key))")
+                db.execSQL("ALTER TABLE words ADD COLUMN isReflexive INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("UPDATE words SET isReflexive = CASE WHEN root LIKE '%(sich)%' THEN 1 ELSE 0 END")
+                db.execSQL("UPDATE words SET root = REPLACE(root, ' (sich)', '')")
+                db.execSQL("UPDATE words SET root = REPLACE(root, '(sich)', '')")
             }
         }
 
