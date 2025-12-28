@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -17,6 +16,7 @@ import java.util.Locale
 class RecentStatsFragment : Fragment() {
 
     private val repo by lazy { WordRepository.getInstance(requireContext()) }
+    private lateinit var adapter: StatsWordAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,23 +39,70 @@ class RecentStatsFragment : Fragment() {
             val words = when (type) {
                 TYPE_CORRECT -> repo.getRecentCorrect(50)
                 else -> repo.getRecentFailures(50)
-            }
+            }.toMutableList()
 
-            val items = words.map { word ->
-                val stamp = when (type) {
-                    TYPE_CORRECT -> word.lastCorrectAt
-                    else -> word.lastFailedAt
-                }
-                val formattedDate = if (stamp > 0) dateFormat.format(Date(stamp)) else ""
-                val attempts = if (type == TYPE_CORRECT) word.correctCount else word.failedCount
-                "${formatWord(word)} • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
-            }
-
-            list.adapter = ArrayAdapter(
+            adapter = StatsWordAdapter(
                 requireContext(),
-                android.R.layout.simple_list_item_1,
-                items
+                words,
+                formatter = { word ->
+                    val stamp = when (type) {
+                        TYPE_CORRECT -> word.lastCorrectAt
+                        else -> word.lastFailedAt
+                    }
+                    val formattedDate = if (stamp > 0) dateFormat.format(Date(stamp)) else ""
+                    val attempts = if (type == TYPE_CORRECT) word.correctCount else word.failedCount
+                    "${formatWord(word)} • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
+                },
+                onOptionsClick = { word ->
+                    showWordOptions(word, adapter)
+                }
             )
+            list.adapter = adapter
+        }
+    }
+
+    private fun showWordOptions(word: Word, adapter: StatsWordAdapter) {
+        val favoriteLabel = if (word.isFavorite) {
+            getString(R.string.remove_from_favorites)
+        } else {
+            getString(R.string.add_to_favorites)
+        }
+        val options = arrayOf(
+            favoriteLabel,
+            getString(R.string.add_to_learned)
+        )
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle(formatWord(word))
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> toggleFavorite(word, adapter)
+                    1 -> markLearned(word, adapter)
+                }
+            }
+            .show()
+    }
+
+    private fun toggleFavorite(word: Word, adapter: StatsWordAdapter) {
+        val updated = word.copy(isFavorite = !word.isFavorite)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repo.updateWordStats(updated)
+            adapter.updateWord(updated)
+        }
+    }
+
+    private fun markLearned(word: Word, adapter: StatsWordAdapter) {
+        if (word.isLearned) {
+            android.widget.Toast.makeText(
+                requireContext(),
+                R.string.already_learned,
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+        val updated = word.copy(isLearned = true)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repo.updateWordStats(updated)
+            adapter.updateWord(updated)
         }
     }
 
