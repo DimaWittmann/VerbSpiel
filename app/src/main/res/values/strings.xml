@@ -11,6 +11,7 @@
     <string name="tab_recent_correct">Recent correct</string>
     <string name="tab_top_words">Top words</string>
     <string name="tab_retired_words">Retired</string>
+    <string name="tab_favorites">Favorites</string>
     <string name="stats_attempts">%1$d times</string>
     <string name="stats_correct">%1$d correct</string>
     <string name="stats_failed">%1$d failed</string>
@@ -23,9 +24,11 @@
     <string name="filter_choose_type">Choose filter</string>
     <string name="filter_type_prefix">Filter by prefix</string>
     <string name="filter_type_root">Filter by root</string>
+    <string name="filter_type_favorites">Favorites only</string>
     <string name="filter_type_clear">Mixed (clear filter)</string>
     <string name="filter_choose_value">Pick one</string>
     <string name="filter_no_matches">No words match this filter.</string>
+    <string name="filter_mode_favorites">Mode: Favorites</string>
     <string name="label_prefix">Pick a prefix</string>
     <string name="label_root">Pick a root</string>
     <string name="msg_greeting">Los geht’s!</string>

@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private data class Filter(val type: FilterType, val value: String)
-    private enum class FilterType { PREFIX, ROOT }
+    private enum class FilterType { PREFIX, ROOT, FAVORITES }
 
     private fun rootLabel(word: Word): String {
         return formatRoot(word.root, word.isReflexive)
@@ -128,6 +128,7 @@ class MainActivity : AppCompatActivity() {
         val options = arrayOf(
             getString(R.string.filter_type_prefix),
             getString(R.string.filter_type_root),
+            getString(R.string.filter_type_favorites),
             getString(R.string.filter_type_clear)
         )
         AlertDialog.Builder(this)
@@ -136,6 +137,7 @@ class MainActivity : AppCompatActivity() {
                 when (which) {
                     0 -> showValueChooser(FilterType.PREFIX)
                     1 -> showValueChooser(FilterType.ROOT)
+                    2 -> applyFilter(Filter(FilterType.FAVORITES, ""))
                     else -> applyFilter(null)
                 }
             }
@@ -195,9 +197,14 @@ class MainActivity : AppCompatActivity() {
         val values = when (type) {
             FilterType.PREFIX -> allWords.map { it.prefix }.distinct().sorted()
             FilterType.ROOT -> allWords.map { it.root }.distinct().sorted()
+            FilterType.FAVORITES -> emptyList()
         }
         if (values.isEmpty()) {
-            Toast.makeText(this, R.string.filter_no_matches, Toast.LENGTH_SHORT).show()
+            if (type == FilterType.FAVORITES) {
+                applyFilter(Filter(FilterType.FAVORITES, ""))
+            } else {
+                Toast.makeText(this, R.string.filter_no_matches, Toast.LENGTH_SHORT).show()
+            }
             return
         }
         AlertDialog.Builder(this)
@@ -214,6 +221,7 @@ class MainActivity : AppCompatActivity() {
         val filteredPool = when (filter?.type) {
             FilterType.PREFIX -> allWords.filter { it.prefix == filter.value }
             FilterType.ROOT -> allWords.filter { it.root == filter.value }
+            FilterType.FAVORITES -> allWords.filter { it.isFavorite }
             else -> allWords
         }
         updateFilterStatus()
@@ -226,6 +234,7 @@ class MainActivity : AppCompatActivity() {
             else -> when (f.type) {
                 FilterType.PREFIX -> getString(R.string.filter_mode_prefix, f.value)
                 FilterType.ROOT -> getString(R.string.filter_mode_root, f.value)
+                FilterType.FAVORITES -> getString(R.string.filter_mode_favorites)
             }
         }
         filterStatus.text = text
@@ -242,6 +251,7 @@ class MainActivity : AppCompatActivity() {
             else -> when (f.type) {
                 FilterType.PREFIX -> allWords.filter { it.prefix == f.value }
                 FilterType.ROOT -> allWords.filter { it.root == f.value }
+                FilterType.FAVORITES -> allWords.filter { it.isFavorite }
             }
         }
     }
