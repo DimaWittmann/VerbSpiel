@@ -362,8 +362,11 @@ class MainActivity : AppCompatActivity() {
 
             wordI += 1
             numberOfTries = 0
-            translationText.text = currentTranslation
-            exampleText.text = currentExample
+            centerAdapter.insert(combinedWord, 0)
+            lastResultTranslation = "$combinedWord\n$currentTranslation"
+            lastResultExample = currentExample
+            translationText.text = lastResultTranslation
+            exampleText.text = lastResultExample
 
             if (wordI >= selectedWords.size) {
                 messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
@@ -413,9 +416,9 @@ class MainActivity : AppCompatActivity() {
                 numberOfTries = 0
                 centerAdapter.insert(combinedWord, 0)
 
-                lastResultTranslation = currentTranslation
+                lastResultTranslation = "$combinedWord\n$currentTranslation"
                 lastResultExample = currentExample
-                translationText.text = currentTranslation
+                translationText.text = lastResultTranslation
                 exampleText.text = currentExample
 
                 if (selectedWords.size <= wordI) {
@@ -445,6 +448,9 @@ class MainActivity : AppCompatActivity() {
                 if (numberOfTries >= selectedWords.size) {
                     wordI += 1
                     numberOfTries = 0
+                    centerAdapter.insert(combinedWord, 0)
+                    lastResultTranslation = "$combinedWord\n$currentTranslation"
+                    lastResultExample = currentExample
 
                     if (wordI >= selectedWords.size) {
                         messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
@@ -461,8 +467,8 @@ class MainActivity : AppCompatActivity() {
                             Html.FROM_HTML_MODE_LEGACY
                         )
 
-                        translationText.text = currentTranslation
-                        exampleText.text = currentExample
+                        translationText.text = lastResultTranslation
+                        exampleText.text = lastResultExample
 
                         val nextIndex = wordI
                         activityScope.launch {
