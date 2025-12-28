@@ -30,7 +30,9 @@ class RetiredWordsFragment : Fragment() {
         list.emptyView = empty
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val words = repo.getRetiredWords()
+            val words = repo.getAllWords()
+                .filter { word -> word.isLearned || isRetiredWord(word) }
+                .sortedByDescending { it.correctCount - it.failedCount }
 
             val items = words.map { word ->
                 val delta = word.correctCount - word.failedCount
@@ -44,4 +46,5 @@ class RetiredWordsFragment : Fragment() {
             )
         }
     }
+
 }

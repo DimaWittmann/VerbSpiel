@@ -17,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-@Database(entities = [Word::class, AppMeta::class], version = 3)
+@Database(entities = [Word::class, AppMeta::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun wordDao(): WordDao
     abstract fun metaDao(): MetaDao
@@ -32,6 +32,8 @@ data class Word(
     val isReflexive: Boolean = false,
     val translation: String,
     val example: String,
+    val isFavorite: Boolean = false,
+    val isLearned: Boolean = false,
     // Statistics
     val timesShown: Int = 0,
     val correctCount: Int = 0,
@@ -119,7 +121,7 @@ class WordRepository(context: Context) {
         context.applicationContext,
         AppDatabase::class.java, "my-app-database"
     )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
         .build()
 
     private val wordDao = db.wordDao()
@@ -232,6 +234,13 @@ class WordRepository(context: Context) {
                 db.execSQL("UPDATE words SET isReflexive = CASE WHEN root LIKE '%(sich)%' THEN 1 ELSE 0 END")
                 db.execSQL("UPDATE words SET root = REPLACE(root, ' (sich)', '')")
                 db.execSQL("UPDATE words SET root = REPLACE(root, '(sich)', '')")
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE words ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE words ADD COLUMN isLearned INTEGER NOT NULL DEFAULT 0")
             }
         }
 

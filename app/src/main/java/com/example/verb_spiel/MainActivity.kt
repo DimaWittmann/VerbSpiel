@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.content.Intent
 import android.net.Uri
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
@@ -45,8 +44,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var selectedWords: MutableList<Word>
     private lateinit var allWords: List<Word>
     private var wordI: Int = 0
-    private var centerWords: MutableList<String> = mutableListOf()
-    private lateinit var centerAdapter: ArrayAdapter<String>
+    private var centerWords: MutableList<Word> = mutableListOf()
+    private lateinit var centerAdapter: CenterWordAdapter
     private var leftItems: Array<String> = emptyArray()
     private var rightItems: Array<String> = emptyArray()
     private var numberOfTries: Int = 0
@@ -141,6 +140,55 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             .show()
+    }
+
+    private fun showWordOptions(word: Word) {
+        val favoriteLabel = if (word.isFavorite) {
+            getString(R.string.remove_from_favorites)
+        } else {
+            getString(R.string.add_to_favorites)
+        }
+        val options = arrayOf(
+            favoriteLabel,
+            getString(R.string.add_to_learned)
+        )
+        AlertDialog.Builder(this)
+            .setTitle(formatWord(word))
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> toggleFavorite(word)
+                    1 -> markLearned(word)
+                }
+            }
+            .show()
+    }
+
+    private fun toggleFavorite(word: Word) {
+        val updated = word.copy(isFavorite = !word.isFavorite)
+        activityScope.launch {
+            repo.updateWordStats(updated)
+            updateCenterWord(updated)
+        }
+    }
+
+    private fun markLearned(word: Word) {
+        if (word.isLearned) {
+            Toast.makeText(this, R.string.already_learned, Toast.LENGTH_SHORT).show()
+            return
+        }
+        val updated = word.copy(isLearned = true)
+        activityScope.launch {
+            repo.updateWordStats(updated)
+            updateCenterWord(updated)
+        }
+    }
+
+    private fun updateCenterWord(updated: Word) {
+        val index = centerWords.indexOfFirst { it.id == updated.id }
+        if (index >= 0) {
+            centerWords[index] = updated
+            centerAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun showValueChooser(type: FilterType) {
@@ -309,8 +357,9 @@ class MainActivity : AppCompatActivity() {
         progressBar.min = 0
         progressBar.setProgress(0)
 
-        centerAdapter =
-            ArrayAdapter(this, R.layout.list_item_center, R.id.list_item_text, centerWords)
+        centerAdapter = CenterWordAdapter(this, centerWords) { word ->
+            showWordOptions(word)
+        }
         listCenter.adapter = centerAdapter
 
         updateFilterStatus()
@@ -331,9 +380,8 @@ class MainActivity : AppCompatActivity() {
         listCenter.setOnItemClickListener { _, _, position, _ ->
             // Get the clicked item from your backing list (centerWords)
             val selectedItem = centerWords[position]
-            // Build a URL from the selected item.
-            // For example, if you want to search the item on Example.com:
-            val url = "https://de.wiktionary.org/wiki/" + Uri.encode(selectedItem)
+            val url = "https://de.wiktionary.org/wiki/" +
+                Uri.encode(selectedItem.prefix + selectedItem.root)
             // Create an intent to view the URL.
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
@@ -362,7 +410,7 @@ class MainActivity : AppCompatActivity() {
 
             wordI += 1
             numberOfTries = 0
-            centerAdapter.insert(combinedWord, 0)
+            centerAdapter.insertWord(currentWord)
             lastResultTranslation = "$combinedWord\n$currentTranslation"
             lastResultExample = currentExample
             translationText.text = lastResultTranslation
@@ -414,7 +462,7 @@ class MainActivity : AppCompatActivity() {
             if (isCorrect) {
                 wordI += 1
                 numberOfTries = 0
-                centerAdapter.insert(combinedWord, 0)
+                centerAdapter.insertWord(currentWord)
 
                 lastResultTranslation = "$combinedWord\n$currentTranslation"
                 lastResultExample = currentExample
@@ -448,7 +496,7 @@ class MainActivity : AppCompatActivity() {
                 if (numberOfTries >= selectedWords.size) {
                     wordI += 1
                     numberOfTries = 0
-                    centerAdapter.insert(combinedWord, 0)
+                    centerAdapter.insertWord(currentWord)
                     lastResultTranslation = "$combinedWord\n$currentTranslation"
                     lastResultExample = currentExample
 
