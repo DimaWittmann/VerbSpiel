@@ -193,6 +193,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun showValueChooser(type: FilterType) {
         val values = when (type) {
             FilterType.PREFIX -> allWords.map { it.prefix }.distinct().sorted()
