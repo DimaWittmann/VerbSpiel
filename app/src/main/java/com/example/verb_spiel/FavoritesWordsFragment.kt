@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -14,6 +13,7 @@ import kotlinx.coroutines.launch
 class FavoritesWordsFragment : Fragment() {
 
     private val repo by lazy { WordRepository.getInstance(requireContext()) }
+    private lateinit var adapter: StatsWordAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,17 +34,19 @@ class FavoritesWordsFragment : Fragment() {
                 .filter { it.isFavorite }
                 .sortedByDescending { it.correctCount - it.failedCount }
 
-            val items = words.map { word ->
-                val attempts = word.triesCount
-                val accuracy = if (attempts == 0) 0 else (word.correctCount * 100 / attempts)
-                "${formatWord(word)} • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
-            }
-
-            list.adapter = ArrayAdapter(
+            adapter = StatsWordAdapter(
                 requireContext(),
-                android.R.layout.simple_list_item_1,
-                items
+                words.toMutableList(),
+                formatter = { word ->
+                    val attempts = word.triesCount
+                    val accuracy = if (attempts == 0) 0 else (word.correctCount * 100 / attempts)
+                    "${formatWord(word)} • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
+                },
+                onOptionsClick = { word ->
+                    WordOptions.show(requireContext(), viewLifecycleOwner.lifecycleScope, repo, adapter, word)
+                }
             )
+            list.adapter = adapter
         }
     }
 }

@@ -54,55 +54,10 @@ class RecentStatsFragment : Fragment() {
                     "${formatWord(word)} • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
                 },
                 onOptionsClick = { word ->
-                    showWordOptions(word, adapter)
+                    WordOptions.show(requireContext(), viewLifecycleOwner.lifecycleScope, repo, adapter, word)
                 }
             )
             list.adapter = adapter
-        }
-    }
-
-    private fun showWordOptions(word: Word, adapter: StatsWordAdapter) {
-        val favoriteLabel = if (word.isFavorite) {
-            getString(R.string.remove_from_favorites)
-        } else {
-            getString(R.string.add_to_favorites)
-        }
-        val options = arrayOf(
-            favoriteLabel,
-            getString(R.string.add_to_learned)
-        )
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle(formatWord(word))
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> toggleFavorite(word, adapter)
-                    1 -> markLearned(word, adapter)
-                }
-            }
-            .show()
-    }
-
-    private fun toggleFavorite(word: Word, adapter: StatsWordAdapter) {
-        val updated = word.copy(isFavorite = !word.isFavorite)
-        viewLifecycleOwner.lifecycleScope.launch {
-            repo.updateWordStats(updated)
-            adapter.updateWord(updated)
-        }
-    }
-
-    private fun markLearned(word: Word, adapter: StatsWordAdapter) {
-        if (word.isLearned) {
-            android.widget.Toast.makeText(
-                requireContext(),
-                R.string.already_learned,
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-        val updated = word.copy(isLearned = true)
-        viewLifecycleOwner.lifecycleScope.launch {
-            repo.updateWordStats(updated)
-            adapter.updateWord(updated)
         }
     }
 

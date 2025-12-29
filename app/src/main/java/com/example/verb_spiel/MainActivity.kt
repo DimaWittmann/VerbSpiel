@@ -3,7 +3,6 @@ package com.example.verb_spiel
 import android.os.Bundle
 import android.util.Log
 import android.content.Intent
-import android.net.Uri
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
@@ -142,55 +141,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             .show()
-    }
-
-    private fun showWordOptions(word: Word) {
-        val favoriteLabel = if (word.isFavorite) {
-            getString(R.string.remove_from_favorites)
-        } else {
-            getString(R.string.add_to_favorites)
-        }
-        val options = arrayOf(
-            favoriteLabel,
-            getString(R.string.add_to_learned)
-        )
-        AlertDialog.Builder(this)
-            .setTitle(formatWord(word))
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> toggleFavorite(word)
-                    1 -> markLearned(word)
-                }
-            }
-            .show()
-    }
-
-    private fun toggleFavorite(word: Word) {
-        val updated = word.copy(isFavorite = !word.isFavorite)
-        activityScope.launch {
-            repo.updateWordStats(updated)
-            updateCenterWord(updated)
-        }
-    }
-
-    private fun markLearned(word: Word) {
-        if (word.isLearned) {
-            Toast.makeText(this, R.string.already_learned, Toast.LENGTH_SHORT).show()
-            return
-        }
-        val updated = word.copy(isLearned = true)
-        activityScope.launch {
-            repo.updateWordStats(updated)
-            updateCenterWord(updated)
-        }
-    }
-
-    private fun updateCenterWord(updated: Word) {
-        val index = centerWords.indexOfFirst { it.id == updated.id }
-        if (index >= 0) {
-            centerWords[index] = updated
-            centerAdapter.notifyDataSetChanged()
-        }
     }
 
 
@@ -369,7 +319,7 @@ class MainActivity : AppCompatActivity() {
         progressBar.setProgress(0)
 
         centerAdapter = CenterWordAdapter(this, centerWords) { word ->
-            showWordOptions(word)
+            WordOptions.show(this, activityScope, repo, centerAdapter, word)
         }
         listCenter.adapter = centerAdapter
 
@@ -386,16 +336,6 @@ class MainActivity : AppCompatActivity() {
             if (rightItems.isNotEmpty()) {
                 selectedRight = rightItems[newValue]
             }
-        }
-
-        listCenter.setOnItemClickListener { _, _, position, _ ->
-            // Get the clicked item from your backing list (centerWords)
-            val selectedItem = centerWords[position]
-            val url = "https://de.wiktionary.org/wiki/" +
-                Uri.encode(selectedItem.prefix + selectedItem.root)
-            // Create an intent to view the URL.
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            startActivity(intent)
         }
 
         buttonStats.setOnClickListener {

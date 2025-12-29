@@ -13,7 +13,7 @@ class StatsWordAdapter(
     private val words: MutableList<Word>,
     private val formatter: (Word) -> String,
     private val onOptionsClick: (Word) -> Unit
-) : ArrayAdapter<Word>(context, R.layout.list_item_stats_action, words) {
+) : ArrayAdapter<Word>(context, R.layout.list_item_stats_action, words), WordListUpdater {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: LayoutInflater.from(context)
@@ -29,7 +29,7 @@ class StatsWordAdapter(
         return view
     }
 
-    fun updateWord(updated: Word) {
+    override fun updateWord(updated: Word) {
         val index = words.indexOfFirst { it.id == updated.id }
         if (index >= 0) {
             words[index] = updated

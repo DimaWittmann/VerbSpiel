@@ -12,7 +12,7 @@ class CenterWordAdapter(
     context: Context,
     private val words: MutableList<Word>,
     private val onOptionsClick: (Word) -> Unit
-) : ArrayAdapter<Word>(context, R.layout.list_item_center_action, words) {
+) : ArrayAdapter<Word>(context, R.layout.list_item_center_action, words), WordListUpdater {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: LayoutInflater.from(context)
@@ -31,5 +31,13 @@ class CenterWordAdapter(
     fun insertWord(word: Word) {
         words.add(0, word)
         notifyDataSetChanged()
+    }
+
+    override fun updateWord(updated: Word) {
+        val index = words.indexOfFirst { it.id == updated.id }
+        if (index >= 0) {
+            words[index] = updated
+            notifyDataSetChanged()
+        }
     }
 }
