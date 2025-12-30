@@ -207,7 +207,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun buildNextMessage(status: String, translation: String): String {
         val highlighted = "<font color=\"#00897B\"><b>$translation</b></font>"
-        return "$status<br>${getString(R.string.msg_next_word)} → $highlighted"
+        return "$status<br>→ $highlighted"
     }
 
     private fun showNextMessage(status: String, translation: String) {
@@ -469,6 +469,11 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 val nextWord = selectedWords[wordI]
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_correct_next, nextWord.translation),
+                    Toast.LENGTH_SHORT
+                ).show()
 
                 showNextMessage(getString(R.string.msg_correct), nextWord.translation)
                 translationText.text = lastResultTranslation
@@ -495,6 +500,16 @@ class MainActivity : AppCompatActivity() {
                         setRoundEnded(true)
                     } else {
                         val nextWord = selectedWords[wordI]
+                        Toast.makeText(
+                            this,
+                            getString(R.string.toast_forced_advance, numberOfTries),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Toast.makeText(
+                            this,
+                            getString(R.string.toast_correct_next, nextWord.translation),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         showNextMessage(
                             "Wrong $numberOfTries times! Let's try another",
                             nextWord.translation
