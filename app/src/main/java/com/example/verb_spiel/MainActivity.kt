@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import android.widget.Toast
+import android.widget.HorizontalScrollView
+import android.widget.ImageView
 import android.os.Build
 import android.util.TypedValue
 import android.widget.NumberPicker
@@ -313,6 +315,13 @@ class MainActivity : AppCompatActivity() {
         buttonReset = findViewById(R.id.button_reset)
         filterStatus = findViewById(R.id.filter_status)
         progressBar = findViewById(R.id.progress_bar)
+        val buttonsScroll: HorizontalScrollView = findViewById(R.id.buttons_scroll)
+        val arrowButtonsLeft: ImageView = findViewById(R.id.arrow_buttons_left)
+        val arrowButtonsRight: ImageView = findViewById(R.id.arrow_buttons_right)
+        val arrowPrefixUp: ImageView = findViewById(R.id.arrow_prefix_up)
+        val arrowPrefixDown: ImageView = findViewById(R.id.arrow_prefix_down)
+        val arrowRootUp: ImageView = findViewById(R.id.arrow_root_up)
+        val arrowRootDown: ImageView = findViewById(R.id.arrow_root_down)
 
         progressBar.max = 10
         progressBar.min = 0
@@ -335,6 +344,21 @@ class MainActivity : AppCompatActivity() {
         listRight.setOnValueChangedListener { _, _, newValue ->
             if (rightItems.isNotEmpty()) {
                 selectedRight = rightItems[newValue]
+            }
+        }
+
+        arrowPrefixUp.setOnClickListener { movePicker(listLeft, -1) }
+        arrowPrefixDown.setOnClickListener { movePicker(listLeft, 1) }
+        arrowRootUp.setOnClickListener { movePicker(listRight, -1) }
+        arrowRootDown.setOnClickListener { movePicker(listRight, 1) }
+
+        buttonsScroll.post {
+            val step = buttonCombine.width + resources.displayMetrics.density.times(12).toInt()
+            arrowButtonsLeft.setOnClickListener {
+                buttonsScroll.smoothScrollBy(-step, 0)
+            }
+            arrowButtonsRight.setOnClickListener {
+                buttonsScroll.smoothScrollBy(step, 0)
             }
         }
 
@@ -500,6 +524,18 @@ class MainActivity : AppCompatActivity() {
         np.wrapSelectorWheel = items.size > 1
         np.displayedValues = items
         styleNumberPicker(np)
+    }
+
+    private fun movePicker(np: NumberPicker, delta: Int) {
+        if (np.maxValue < np.minValue) return
+        val current = np.value
+        val next = current + delta
+        val wrapped = when {
+            next < np.minValue && np.wrapSelectorWheel -> np.maxValue
+            next > np.maxValue && np.wrapSelectorWheel -> np.minValue
+            else -> next.coerceIn(np.minValue, np.maxValue)
+        }
+        np.value = wrapped
     }
 
     private fun styleNumberPicker(np: NumberPicker) {

@@ -75,6 +75,7 @@
                     android:textStyle="bold" />
 
                 <ImageView
+                    android:id="@+id/arrow_prefix_up"
                     android:layout_width="16dp"
                     android:layout_height="8dp"
                     android:layout_marginTop="4dp"
@@ -91,6 +92,7 @@
                     android:dividerHeight="1dp" />
 
                 <ImageView
+                    android:id="@+id/arrow_prefix_down"
                     android:layout_width="16dp"
                     android:layout_height="8dp"
                     android:layout_marginBottom="4dp"
@@ -123,6 +125,7 @@
                     android:textStyle="bold" />
 
                 <ImageView
+                    android:id="@+id/arrow_root_up"
                     android:layout_width="16dp"
                     android:layout_height="8dp"
                     android:layout_marginTop="4dp"
@@ -139,6 +142,7 @@
                     android:dividerHeight="2dp" />
 
                 <ImageView
+                    android:id="@+id/arrow_root_down"
                     android:layout_width="16dp"
                     android:layout_height="8dp"
                     android:layout_marginBottom="4dp"
@@ -172,6 +176,7 @@
         android:paddingTop="8dp">
 
         <ImageView
+            android:id="@+id/arrow_buttons_left"
             android:layout_width="8dp"
             android:layout_height="16dp"
             android:layout_marginEnd="6dp"
@@ -179,6 +184,7 @@
             android:src="@drawable/triangle_left" />
 
         <HorizontalScrollView
+            android:id="@+id/buttons_scroll"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -234,6 +240,7 @@
         </HorizontalScrollView>
 
         <ImageView
+            android:id="@+id/arrow_buttons_right"
             android:layout_width="8dp"
             android:layout_height="16dp"
             android:layout_marginStart="6dp"
