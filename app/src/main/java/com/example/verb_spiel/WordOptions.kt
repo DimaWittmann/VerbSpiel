@@ -3,7 +3,6 @@ package com.example.verb_spiel
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -21,9 +20,14 @@ object WordOptions {
         } else {
             context.getString(R.string.add_to_favorites)
         }
+        val learnedLabel = if (word.isLearned) {
+            context.getString(R.string.remove_from_learned)
+        } else {
+            context.getString(R.string.add_to_learned)
+        }
         val options = arrayOf(
             favoriteLabel,
-            context.getString(R.string.add_to_learned),
+            learnedLabel,
             context.getString(R.string.open_word_info)
         )
         AlertDialog.Builder(context)
@@ -31,7 +35,7 @@ object WordOptions {
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> toggleFavorite(scope, repo, updater, word)
-                    1 -> markLearned(context, scope, repo, updater, word)
+                    1 -> toggleLearned(context, scope, repo, updater, word)
                     2 -> openWordInfo(context, word)
                 }
             }
@@ -51,22 +55,14 @@ object WordOptions {
         }
     }
 
-    private fun markLearned(
+    private fun toggleLearned(
         context: Context,
         scope: CoroutineScope,
         repo: WordRepository,
         updater: WordListUpdater,
         word: Word
     ) {
-        if (word.isLearned) {
-            Toast.makeText(
-                context,
-                R.string.already_learned,
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-        val updated = word.copy(isLearned = true)
+        val updated = word.copy(isLearned = !word.isLearned)
         scope.launch {
             repo.updateWordStats(updated)
             updater.updateWord(updated)
