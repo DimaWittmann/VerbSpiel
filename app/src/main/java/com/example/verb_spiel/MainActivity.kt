@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private var centerWords: MutableList<Word> = mutableListOf()
     private lateinit var centerAdapter: CenterWordAdapter
     private var leftItems: Array<String> = emptyArray()
+    private var leftDisplayItems: Array<String> = emptyArray()
     private var rightItems: Array<String> = emptyArray()
     private var numberOfTries: Int = 0
     private var activeFilter: Filter? = null
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun resetRound(pool: List<Word>) {
         val filtered = if (activeFilter == null) {
-            pool.filterNot { isRetiredWord(it) }
+            pool.filterNot { isRetiredWord(it) || it.isLearned }
         } else {
             pool
         }
@@ -101,9 +102,12 @@ class MainActivity : AppCompatActivity() {
         centerAdapter.notifyDataSetChanged()
 
         leftItems = selectedWords.map { it.prefix }.shuffled().toTypedArray()
+        leftDisplayItems = leftItems.map { prefix ->
+            if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
+        }.toTypedArray()
         rightItems = selectedWords.map { rootLabel(it) }.shuffled().toTypedArray()
-        createNumberPicker(listLeft, leftItems)
-        createNumberPicker(listRight, rightItems)
+        createNumberPicker(listLeft, leftItems, leftDisplayItems)
+        createNumberPicker(listRight, rightItems, rightItems)
         selectedLeft = leftItems.firstOrNull()
         selectedRight = rightItems.firstOrNull()
 
@@ -112,10 +116,7 @@ class MainActivity : AppCompatActivity() {
 
         if (selectedWords.isNotEmpty()) {
             val first = selectedWords[0]
-            messageText.text = Html.fromHtml(
-                buildNextMessage(getString(R.string.msg_greeting), first.translation),
-                Html.FROM_HTML_MODE_LEGACY
-            )
+            showNextMessage(getString(R.string.msg_greeting), first.translation)
             translationText.text = ""
             exampleText.text = "Select correct prefix and root"
 
@@ -160,9 +161,17 @@ class MainActivity : AppCompatActivity() {
             }
             return
         }
+        val displayValues = if (type == FilterType.PREFIX) {
+            values.map { prefix ->
+                if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
+            }
+        } else {
+            values
+        }
+
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.filter_choose_value))
-            .setItems(values.toTypedArray()) { _, which ->
+            .setItems(displayValues.toTypedArray()) { _, which ->
                 val chosen = values[which]
                 applyFilter(Filter(type, chosen))
             }
@@ -185,7 +194,10 @@ class MainActivity : AppCompatActivity() {
         val text = when (val f = activeFilter) {
             null -> getString(R.string.filter_mode_mixed)
             else -> when (f.type) {
-                FilterType.PREFIX -> getString(R.string.filter_mode_prefix, f.value)
+                FilterType.PREFIX -> {
+                    val label = if (f.value.isBlank()) getString(R.string.no_prefix) else f.value
+                    getString(R.string.filter_mode_prefix, label)
+                }
                 FilterType.ROOT -> getString(R.string.filter_mode_root, f.value)
                 FilterType.FAVORITES -> getString(R.string.filter_mode_favorites)
             }
@@ -195,7 +207,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun buildNextMessage(status: String, translation: String): String {
         val highlighted = "<font color=\"#00897B\"><b>$translation</b></font>"
-        return "$status<br>${getString(R.string.msg_next_word)}: $highlighted"
+        return "$status<br>${getString(R.string.msg_next_word)} → $highlighted"
+    }
+
+    private fun showNextMessage(status: String, translation: String) {
+        messageText.text = Html.fromHtml(
+            buildNextMessage(status, translation),
+            Html.FROM_HTML_MODE_LEGACY
+        )
     }
 
     private fun getCurrentPool(): List<Word> {
@@ -400,10 +419,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             val nextWord = selectedWords[wordI]
-            messageText.text = Html.fromHtml(
-                buildNextMessage(getString(R.string.msg_skipped), nextWord.translation),
-                Html.FROM_HTML_MODE_LEGACY
-            )
+            showNextMessage(getString(R.string.msg_skipped), nextWord.translation)
 
             val nextIndex = wordI
             activityScope.launch {
@@ -454,10 +470,7 @@ class MainActivity : AppCompatActivity() {
 
                 val nextWord = selectedWords[wordI]
 
-                messageText.text = Html.fromHtml(
-                    buildNextMessage(getString(R.string.msg_correct), nextWord.translation),
-                    Html.FROM_HTML_MODE_LEGACY
-                )
+                showNextMessage(getString(R.string.msg_correct), nextWord.translation)
                 translationText.text = lastResultTranslation
                 exampleText.text = lastResultExample
 
@@ -482,12 +495,9 @@ class MainActivity : AppCompatActivity() {
                         setRoundEnded(true)
                     } else {
                         val nextWord = selectedWords[wordI]
-                        messageText.text = Html.fromHtml(
-                            buildNextMessage(
-                                "Wrong $numberOfTries times! Let's try another",
-                                nextWord.translation
-                            ),
-                            Html.FROM_HTML_MODE_LEGACY
+                        showNextMessage(
+                            "Wrong $numberOfTries times! Let's try another",
+                            nextWord.translation
                         )
 
                         translationText.text = lastResultTranslation
@@ -499,10 +509,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 } else {
-                    messageText.text = Html.fromHtml(
-                        buildNextMessage(getString(R.string.msg_wrong), currentTranslation),
-                        Html.FROM_HTML_MODE_LEGACY
-                    )
+                    showNextMessage(getString(R.string.msg_wrong), currentTranslation)
                     translationText.text = lastResultTranslation
                     exampleText.text = lastResultExample
                 }
@@ -511,7 +518,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun createNumberPicker(np: NumberPicker, items: Array<String>) {
+    private fun createNumberPicker(
+        np: NumberPicker,
+        items: Array<String>,
+        displayItems: Array<String>
+    ) {
         np.displayedValues = null
         if (items.isEmpty()) {
             np.minValue = 0
@@ -522,7 +533,7 @@ class MainActivity : AppCompatActivity() {
         np.minValue = 0
         np.maxValue = items.size - 1
         np.wrapSelectorWheel = items.size > 1
-        np.displayedValues = items
+        np.displayedValues = displayItems
         styleNumberPicker(np)
     }
 
