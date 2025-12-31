@@ -33,14 +33,21 @@ class FavoritesWordsFragment : Fragment() {
             val words = repo.getAllWords()
                 .filter { it.isFavorite }
                 .sortedByDescending { it.correctCount - it.failedCount }
+            val labelCounts = words.groupingBy { formatWord(it) }.eachCount()
 
             adapter = StatsWordAdapter(
                 requireContext(),
                 words.toMutableList(),
                 formatter = { word ->
+                    val label = formatWord(word)
+                    val displayLabel = if ((labelCounts[label] ?: 0) > 1) {
+                        "$label (${word.translation})"
+                    } else {
+                        label
+                    }
                     val attempts = word.triesCount
                     val accuracy = if (attempts == 0) 0 else (word.correctCount * 100 / attempts)
-                    "${formatWord(word)} • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
+                    "$displayLabel • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
                 },
                 onOptionsClick = { word ->
                     WordOptions.show(

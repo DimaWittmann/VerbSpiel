@@ -33,13 +33,20 @@ class RetiredWordsFragment : Fragment() {
             val words = repo.getAllWords()
                 .filter { word -> word.isLearned || isRetiredWord(word) }
                 .sortedByDescending { it.correctCount - it.failedCount }
+            val labelCounts = words.groupingBy { formatWord(it) }.eachCount()
 
             adapter = StatsWordAdapter(
                 requireContext(),
                 words.toMutableList(),
                 formatter = { word ->
+                    val label = formatWord(word)
+                    val displayLabel = if ((labelCounts[label] ?: 0) > 1) {
+                        "$label (${word.translation})"
+                    } else {
+                        label
+                    }
                     val delta = word.correctCount - word.failedCount
-                    "${formatWord(word)} • +$delta • ${getString(R.string.stats_correct, word.correctCount)}"
+                    "$displayLabel • +$delta • ${getString(R.string.stats_correct, word.correctCount)}"
                 },
                 onOptionsClick = { word ->
                     WordOptions.show(

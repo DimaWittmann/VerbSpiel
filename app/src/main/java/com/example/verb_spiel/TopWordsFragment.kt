@@ -35,6 +35,7 @@ class TopWordsFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             val allShown = repo.getAllWords().filter { it.timesShown > 0 || it.triesCount > 0 }
+            val labelCounts = allShown.groupingBy { formatWord(it) }.eachCount()
             val topCorrect = allShown.sortedWith(
                 compareByDescending<Word> { it.correctCount }
                     .thenByDescending {
@@ -51,15 +52,27 @@ class TopWordsFragment : Fragment() {
             )
 
             val correctItems = topCorrect.map { word ->
+                val label = formatWord(word)
+                val displayLabel = if ((labelCounts[label] ?: 0) > 1) {
+                    "$label (${word.translation})"
+                } else {
+                    label
+                }
                 val accuracy =
                     if (word.triesCount == 0) 0 else (word.correctCount * 100 / word.triesCount)
-                "${formatWord(word)} • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
+                "$displayLabel • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
             }
 
             val failedItems = topFailed.map { word ->
+                val label = formatWord(word)
+                val displayLabel = if ((labelCounts[label] ?: 0) > 1) {
+                    "$label (${word.translation})"
+                } else {
+                    label
+                }
                 val accuracy =
                     if (word.triesCount == 0) 0 else (word.correctCount * 100 / word.triesCount)
-                "${formatWord(word)} • ${getString(R.string.stats_failed, word.failedCount)} • ${accuracy}%"
+                "$displayLabel • ${getString(R.string.stats_failed, word.failedCount)} • ${accuracy}%"
             }
 
             correctList.adapter = ArrayAdapter(

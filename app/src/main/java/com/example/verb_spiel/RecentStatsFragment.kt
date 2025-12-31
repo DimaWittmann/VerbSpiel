@@ -40,18 +40,25 @@ class RecentStatsFragment : Fragment() {
                 TYPE_CORRECT -> repo.getRecentCorrect(50)
                 else -> repo.getRecentFailures(50)
             }.toMutableList()
+            val labelCounts = words.groupingBy { formatWord(it) }.eachCount()
 
             adapter = StatsWordAdapter(
                 requireContext(),
                 words,
                 formatter = { word ->
+                    val label = formatWord(word)
+                    val displayLabel = if ((labelCounts[label] ?: 0) > 1) {
+                        "$label (${word.translation})"
+                    } else {
+                        label
+                    }
                     val stamp = when (type) {
                         TYPE_CORRECT -> word.lastCorrectAt
                         else -> word.lastFailedAt
                     }
                     val formattedDate = if (stamp > 0) dateFormat.format(Date(stamp)) else ""
                     val attempts = if (type == TYPE_CORRECT) word.correctCount else word.failedCount
-                    "${formatWord(word)} • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
+                    "$displayLabel • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
                 },
                 onOptionsClick = { word ->
                     WordOptions.show(
