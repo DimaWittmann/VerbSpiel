@@ -72,6 +72,42 @@ interface WordDao {
     @Query("SELECT * FROM words")
     suspend fun getAllWords(): List<Word>
 
+    @Query(
+        "SELECT * FROM words " +
+            "WHERE isLearned = 0 AND (" +
+            "CASE WHEN failedCount = 0 THEN correctCount >= 2 ELSE correctCount >= 4 END" +
+            ") = 0 " +
+            "ORDER BY RANDOM() LIMIT :limit"
+    )
+    suspend fun getMixedPool(limit: Int): List<Word>
+
+    @Query(
+        "SELECT * FROM words " +
+            "WHERE prefix = :prefix " +
+            "ORDER BY RANDOM() LIMIT :limit"
+    )
+    suspend fun getPrefixPool(prefix: String, limit: Int): List<Word>
+
+    @Query(
+        "SELECT * FROM words " +
+            "WHERE root = :root " +
+            "ORDER BY RANDOM() LIMIT :limit"
+    )
+    suspend fun getRootPool(root: String, limit: Int): List<Word>
+
+    @Query(
+        "SELECT * FROM words " +
+            "WHERE isFavorite = 1 " +
+            "ORDER BY RANDOM() LIMIT :limit"
+    )
+    suspend fun getFavoritesPool(limit: Int): List<Word>
+
+    @Query("SELECT DISTINCT prefix FROM words ORDER BY prefix")
+    suspend fun getAllPrefixes(): List<String>
+
+    @Query("SELECT DISTINCT root FROM words ORDER BY root")
+    suspend fun getAllRoots(): List<String>
+
     @Query("SELECT * FROM words WHERE failedCount > 0 ORDER BY lastFailedAt DESC LIMIT :limit")
     suspend fun getRecentFailures(limit: Int = 20): List<Word>
 
@@ -129,6 +165,30 @@ class WordRepository(context: Context) {
 
     suspend fun getAllWords(): List<Word> = withContext(Dispatchers.IO) {
         wordDao.getAllWords()
+    }
+
+    suspend fun getMixedPool(limit: Int): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getMixedPool(limit)
+    }
+
+    suspend fun getPrefixPool(prefix: String, limit: Int): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getPrefixPool(prefix, limit)
+    }
+
+    suspend fun getRootPool(root: String, limit: Int): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getRootPool(root, limit)
+    }
+
+    suspend fun getFavoritesPool(limit: Int): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getFavoritesPool(limit)
+    }
+
+    suspend fun getAllPrefixes(): List<String> = withContext(Dispatchers.IO) {
+        wordDao.getAllPrefixes()
+    }
+
+    suspend fun getAllRoots(): List<String> = withContext(Dispatchers.IO) {
+        wordDao.getAllRoots()
     }
 
     suspend fun getWordById(id: Int): Word? = withContext(Dispatchers.IO) {

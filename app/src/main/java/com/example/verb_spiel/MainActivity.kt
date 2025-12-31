@@ -42,8 +42,7 @@ class MainActivity : AppCompatActivity() {
     // Variables to track the currently selected items in each list.
     private var selectedLeft: String? = null
     private var selectedRight: String? = null
-    private lateinit var selectedWords: MutableList<Word>
-    private lateinit var allWords: List<Word>
+    private var selectedWords: MutableList<Word> = mutableListOf()
     private var wordI: Int = 0
     private var centerWords: MutableList<Word> = mutableListOf()
     private lateinit var centerAdapter: CenterWordAdapter
@@ -57,6 +56,11 @@ class MainActivity : AppCompatActivity() {
 
     private val repo by lazy { WordRepository.getInstance(this) }
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val mainWordUpdater = object : WordListUpdater {
+        override fun updateWord(updated: Word) {
+            centerAdapter.updateWord(updated)
+        }
+    }
 
     private data class Filter(val type: FilterType, val value: String)
     private enum class FilterType { PREFIX, ROOT, FAVORITES }
@@ -75,6 +79,55 @@ class MainActivity : AppCompatActivity() {
         return updated
     }
 
+    private fun fetchPoolAndReset(filter: Filter?) {
+        activityScope.launch {
+            val pool = when (filter?.type) {
+                FilterType.PREFIX -> repo.getPrefixPool(filter.value, 10)
+                FilterType.ROOT -> repo.getRootPool(filter.value, 10)
+                FilterType.FAVORITES -> repo.getFavoritesPool(10)
+                null -> repo.getMixedPool(10)
+            }
+            resetRound(pool)
+        }
+    }
+
+    private fun showPrefixChooser() {
+        activityScope.launch {
+            val values = repo.getAllPrefixes()
+            if (values.isEmpty()) {
+                Toast.makeText(this@MainActivity, R.string.filter_no_matches, Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            val displayValues = values.map { prefix ->
+                if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
+            }
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle(getString(R.string.filter_choose_value))
+                .setItems(displayValues.toTypedArray()) { _, which ->
+                    val chosen = values[which]
+                    applyFilter(Filter(FilterType.PREFIX, chosen))
+                }
+                .show()
+        }
+    }
+
+    private fun showRootChooser() {
+        activityScope.launch {
+            val values = repo.getAllRoots()
+            if (values.isEmpty()) {
+                Toast.makeText(this@MainActivity, R.string.filter_no_matches, Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            AlertDialog.Builder(this@MainActivity)
+                .setTitle(getString(R.string.filter_choose_value))
+                .setItems(values.toTypedArray()) { _, which ->
+                    val chosen = values[which]
+                    applyFilter(Filter(FilterType.ROOT, chosen))
+                }
+                .show()
+        }
+    }
+
     private fun resetRound(pool: List<Word>) {
         val filtered = if (activeFilter == null) {
             pool.filterNot { isRetiredWord(it) || it.isLearned }
@@ -84,6 +137,7 @@ class MainActivity : AppCompatActivity() {
         if (filtered.isEmpty()) {
             selectedWords = mutableListOf()
             leftItems = emptyArray()
+            leftDisplayItems = emptyArray()
             rightItems = emptyArray()
             messageText.text = getString(R.string.filter_no_matches)
             translationText.text = ""
@@ -95,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setRoundEnded(false)
-        selectedWords = filtered.shuffled().take(10.coerceAtMost(filtered.size)).toMutableList()
+        selectedWords = filtered.toMutableList()
         wordI = 0
         numberOfTries = 0
         centerWords.clear()
@@ -148,46 +202,17 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun showValueChooser(type: FilterType) {
-        val values = when (type) {
-            FilterType.PREFIX -> allWords.map { it.prefix }.distinct().sorted()
-            FilterType.ROOT -> allWords.map { it.root }.distinct().sorted()
-            FilterType.FAVORITES -> emptyList()
+        when (type) {
+            FilterType.FAVORITES -> applyFilter(Filter(FilterType.FAVORITES, ""))
+            FilterType.PREFIX -> showPrefixChooser()
+            FilterType.ROOT -> showRootChooser()
         }
-        if (values.isEmpty()) {
-            if (type == FilterType.FAVORITES) {
-                applyFilter(Filter(FilterType.FAVORITES, ""))
-            } else {
-                Toast.makeText(this, R.string.filter_no_matches, Toast.LENGTH_SHORT).show()
-            }
-            return
-        }
-        val displayValues = if (type == FilterType.PREFIX) {
-            values.map { prefix ->
-                if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
-            }
-        } else {
-            values
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.filter_choose_value))
-            .setItems(displayValues.toTypedArray()) { _, which ->
-                val chosen = values[which]
-                applyFilter(Filter(type, chosen))
-            }
-            .show()
     }
 
     private fun applyFilter(filter: Filter?) {
         activeFilter = filter
-        val filteredPool = when (filter?.type) {
-            FilterType.PREFIX -> allWords.filter { it.prefix == filter.value }
-            FilterType.ROOT -> allWords.filter { it.root == filter.value }
-            FilterType.FAVORITES -> allWords.filter { it.isFavorite }
-            else -> allWords
-        }
         updateFilterStatus()
-        resetRound(filteredPool)
+        fetchPoolAndReset(filter)
     }
 
     private fun updateFilterStatus() {
@@ -217,16 +242,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun getCurrentPool(): List<Word> {
-        return when (val f = activeFilter) {
-            null -> allWords
-            else -> when (f.type) {
-                FilterType.PREFIX -> allWords.filter { it.prefix == f.value }
-                FilterType.ROOT -> allWords.filter { it.root == f.value }
-                FilterType.FAVORITES -> allWords.filter { it.isFavorite }
-            }
-        }
-    }
+    private fun getCurrentPool(): List<Word> = selectedWords
 
     private fun setRoundEnded(ended: Boolean) {
         buttonCombine.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
@@ -304,7 +320,7 @@ class MainActivity : AppCompatActivity() {
         // Link this activity with its layout.
         setContentView(R.layout.activity_main)
 
-        allWords = runBlocking {
+        runBlocking {
             val parsed = parseWordFile()
             if (repo.isEmpty()) {
                 repo.addWords(parsed.words)
@@ -316,7 +332,6 @@ class MainActivity : AppCompatActivity() {
                     repo.setWordVersion(parsed.version)
                 }
             }
-            repo.getAllWords()
         }
 
         // Find views by their IDs.
@@ -347,12 +362,12 @@ class MainActivity : AppCompatActivity() {
         progressBar.setProgress(0)
 
         centerAdapter = CenterWordAdapter(this, centerWords) { word ->
-            WordOptions.show(this, activityScope, repo, centerAdapter, word)
+            WordOptions.show(this, activityScope, repo, mainWordUpdater, word)
         }
         listCenter.adapter = centerAdapter
 
         updateFilterStatus()
-        resetRound(allWords)
+        fetchPoolAndReset(activeFilter)
 
         listLeft.setOnValueChangedListener { _, _, newValue ->
             if (leftItems.isNotEmpty()) {
@@ -386,8 +401,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonFilter.setOnClickListener { showFilterChooser() }
-        buttonResetPrimary.setOnClickListener { resetRound(getCurrentPool()) }
-        buttonReset.setOnClickListener { resetRound(getCurrentPool()) }
+        buttonResetPrimary.setOnClickListener { fetchPoolAndReset(activeFilter) }
+        buttonReset.setOnClickListener { fetchPoolAndReset(activeFilter) }
         buttonSkip.setOnClickListener {
             if (selectedWords.isEmpty() || selectedWords.size <= wordI) {
                 return@setOnClickListener

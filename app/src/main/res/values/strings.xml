@@ -32,13 +32,13 @@
     <string name="filter_mode_favorites">Mode: Favorites</string>
     <string name="label_prefix">Pick a prefix</string>
     <string name="label_root">Pick a root</string>
-    <string name="msg_greeting">Los geht’s!</string>
+    <string name="msg_greeting">Los gehts!</string>
     <string name="msg_next_word">Next</string>
     <string name="msg_correct">OK</string>
     <string name="toast_correct_next">Correct! Next word: %1$s</string>
-    <string name="toast_forced_advance">Wrong %1$d times! Let's try another</string>
+    <string name="toast_forced_advance">Wrong %1$d times! Lets try another</string>
     <string name="msg_wrong">Falsch</string>
-    <string name="msg_done">Fertig – stark!</string>
+    <string name="msg_done">Fertig - stark!</string>
     <string name="skip">Skip</string>
     <string name="msg_skipped">Skipped</string>
     <string name="reset_round">Reset round</string>
