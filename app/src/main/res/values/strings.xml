@@ -36,7 +36,10 @@
     <string name="msg_next_word">Next</string>
     <string name="msg_correct">OK</string>
     <string name="toast_correct_next">Correct! Next word: %1$s</string>
-    <string name="toast_forced_advance">Wrong %1$d times! Lets try another</string>
+    <string name="toast_new_round_next">New round! Next word: %1$s</string>
+    <string name="toast_skipped_next">Skipped! Next word: %1$s</string>
+    <string name="toast_round_done">Round complete!</string>
+    <string name="toast_forced_advance">Wrong %1$d times! Lets try another: %2$s</string>
     <string name="msg_wrong">Falsch</string>
     <string name="msg_done">Fertig - stark!</string>
     <string name="skip">Skip</string>
