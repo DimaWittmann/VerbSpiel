@@ -59,14 +59,6 @@ fun formatWord(word: Word): String {
     return word.prefix + formatRoot(word.root, word.isReflexive)
 }
 
-fun isRetiredWord(word: Word): Boolean {
-    return if (word.failedCount == 0) {
-        word.correctCount >= 2
-    } else {
-        word.correctCount >= 4
-    }
-}
-
 @Dao
 interface WordDao {
     @Query("SELECT * FROM words")
@@ -74,9 +66,7 @@ interface WordDao {
 
     @Query(
         "SELECT * FROM words " +
-            "WHERE isLearned = 0 AND (" +
-            "CASE WHEN failedCount = 0 THEN correctCount >= 2 ELSE correctCount >= 4 END" +
-            ") = 0 " +
+            "WHERE isLearned = 0 " +
             "ORDER BY RANDOM() LIMIT :limit"
     )
     suspend fun getMixedPool(limit: Int): List<Word>
@@ -205,7 +195,7 @@ class WordRepository(context: Context) {
 
     suspend fun getRetiredWords(): List<Word> = withContext(Dispatchers.IO) {
         wordDao.getAllWords()
-            .filter { isRetiredWord(it) }
+            .filter { it.isLearned }
             .sortedByDescending { it.correctCount - it.failedCount }
     }
 

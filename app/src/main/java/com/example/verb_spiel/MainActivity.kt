@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun resetRound(pool: List<Word>) {
         val filtered = if (activeFilter == null) {
-            pool.filterNot { isRetiredWord(it) || it.isLearned }
+            pool.filterNot { it.isLearned }
         } else {
             pool
         }

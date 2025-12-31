@@ -31,7 +31,7 @@ class RetiredWordsFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             val words = repo.getAllWords()
-                .filter { word -> word.isLearned || isRetiredWord(word) }
+                .filter { word -> word.isLearned }
                 .sortedByDescending { it.correctCount - it.failedCount }
             val labelCounts = words.groupingBy { formatWord(it) }.eachCount()
 
@@ -55,7 +55,7 @@ class RetiredWordsFragment : Fragment() {
                         repo,
                         adapter,
                         word
-                    ) { updated -> updated.isLearned || isRetiredWord(updated) }
+                    ) { updated -> updated.isLearned }
                 }
             )
             list.adapter = adapter
