@@ -36,4 +36,12 @@ class StatsWordAdapter(
             notifyDataSetChanged()
         }
     }
+
+    override fun removeWord(wordId: Int) {
+        val index = words.indexOfFirst { it.id == wordId }
+        if (index >= 0) {
+            words.removeAt(index)
+            notifyDataSetChanged()
+        }
+    }
 }

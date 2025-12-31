@@ -54,7 +54,13 @@ class RecentStatsFragment : Fragment() {
                     "${formatWord(word)} • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
                 },
                 onOptionsClick = { word ->
-                    WordOptions.show(requireContext(), viewLifecycleOwner.lifecycleScope, repo, adapter, word)
+                    WordOptions.show(
+                        requireContext(),
+                        viewLifecycleOwner.lifecycleScope,
+                        repo,
+                        adapter,
+                        word
+                    )
                 }
             )
             list.adapter = adapter

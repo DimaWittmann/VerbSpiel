@@ -13,7 +13,8 @@ object WordOptions {
         scope: CoroutineScope,
         repo: WordRepository,
         updater: WordListUpdater,
-        word: Word
+        word: Word,
+        shouldKeep: ((Word) -> Boolean)? = null
     ) {
         val favoriteLabel = if (word.isFavorite) {
             context.getString(R.string.remove_from_favorites)
@@ -34,8 +35,8 @@ object WordOptions {
             .setTitle(formatWord(word))
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> toggleFavorite(scope, repo, updater, word)
-                    1 -> toggleLearned(context, scope, repo, updater, word)
+                    0 -> toggleFavorite(scope, repo, updater, word, shouldKeep)
+                    1 -> toggleLearned(context, scope, repo, updater, word, shouldKeep)
                     2 -> openWordInfo(context, word)
                 }
             }
@@ -46,12 +47,17 @@ object WordOptions {
         scope: CoroutineScope,
         repo: WordRepository,
         updater: WordListUpdater,
-        word: Word
+        word: Word,
+        shouldKeep: ((Word) -> Boolean)?
     ) {
         val updated = word.copy(isFavorite = !word.isFavorite)
         scope.launch {
             repo.updateWordStats(updated)
-            updater.updateWord(updated)
+            if (shouldKeep != null && !shouldKeep(updated)) {
+                updater.removeWord(updated.id)
+            } else {
+                updater.updateWord(updated)
+            }
         }
     }
 
@@ -60,12 +66,17 @@ object WordOptions {
         scope: CoroutineScope,
         repo: WordRepository,
         updater: WordListUpdater,
-        word: Word
+        word: Word,
+        shouldKeep: ((Word) -> Boolean)?
     ) {
         val updated = word.copy(isLearned = !word.isLearned)
         scope.launch {
             repo.updateWordStats(updated)
-            updater.updateWord(updated)
+            if (shouldKeep != null && !shouldKeep(updated)) {
+                updater.removeWord(updated.id)
+            } else {
+                updater.updateWord(updated)
+            }
         }
     }
 

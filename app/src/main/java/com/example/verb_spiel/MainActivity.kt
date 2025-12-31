@@ -60,6 +60,10 @@ class MainActivity : AppCompatActivity() {
         override fun updateWord(updated: Word) {
             centerAdapter.updateWord(updated)
         }
+
+        override fun removeWord(wordId: Int) {
+            centerAdapter.removeWord(wordId)
+        }
     }
 
     private data class Filter(val type: FilterType, val value: String)

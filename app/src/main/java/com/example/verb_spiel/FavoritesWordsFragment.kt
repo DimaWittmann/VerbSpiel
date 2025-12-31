@@ -43,7 +43,13 @@ class FavoritesWordsFragment : Fragment() {
                     "${formatWord(word)} • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
                 },
                 onOptionsClick = { word ->
-                    WordOptions.show(requireContext(), viewLifecycleOwner.lifecycleScope, repo, adapter, word)
+                    WordOptions.show(
+                        requireContext(),
+                        viewLifecycleOwner.lifecycleScope,
+                        repo,
+                        adapter,
+                        word
+                    ) { updated -> updated.isFavorite }
                 }
             )
             list.adapter = adapter

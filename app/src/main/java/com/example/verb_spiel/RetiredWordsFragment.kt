@@ -42,7 +42,13 @@ class RetiredWordsFragment : Fragment() {
                     "${formatWord(word)} • +$delta • ${getString(R.string.stats_correct, word.correctCount)}"
                 },
                 onOptionsClick = { word ->
-                    WordOptions.show(requireContext(), viewLifecycleOwner.lifecycleScope, repo, adapter, word)
+                    WordOptions.show(
+                        requireContext(),
+                        viewLifecycleOwner.lifecycleScope,
+                        repo,
+                        adapter,
+                        word
+                    ) { updated -> updated.isLearned || isRetiredWord(updated) }
                 }
             )
             list.adapter = adapter
