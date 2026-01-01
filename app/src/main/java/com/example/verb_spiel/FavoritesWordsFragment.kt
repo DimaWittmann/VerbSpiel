@@ -41,9 +41,7 @@ class FavoritesWordsFragment : Fragment() {
 
     private fun loadWords() {
         viewLifecycleOwner.lifecycleScope.launch {
-            val words = repo.getAllWords()
-                .filter { it.isFavorite }
-                .sortedByDescending { it.correctCount - it.failedCount }
+            val words = repo.getFavoriteWordsSorted()
             val labelCounts = words.groupingBy { formatWord(it) }.eachCount()
 
             if (!::adapter.isInitialized) {

@@ -34,26 +34,14 @@ class TopWordsFragment : Fragment() {
         failedList.emptyView = failedEmpty
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val allShown = repo.getAllWords().filter { it.timesShown > 0 || it.triesCount > 0 }
-            val labelCounts = allShown.groupingBy { formatWord(it) }.eachCount()
-            val topCorrect = allShown.sortedWith(
-                compareByDescending<Word> { it.correctCount }
-                    .thenByDescending {
-                        if (it.triesCount == 0) 0 else (it.correctCount * 100 / it.triesCount)
-                    }
-                    .thenByDescending { it.triesCount }
-            )
-            val topFailed = allShown.sortedWith(
-                compareByDescending<Word> { it.failedCount }
-                    .thenByDescending {
-                        if (it.triesCount == 0) 0 else (it.failedCount * 100 / it.triesCount)
-                    }
-                    .thenByDescending { it.triesCount }
-            )
+            val topCorrect = repo.getTopCorrect(100)
+            val topFailed = repo.getTopFailed(100)
+            val correctCounts = topCorrect.groupingBy { formatWord(it) }.eachCount()
+            val failedCounts = topFailed.groupingBy { formatWord(it) }.eachCount()
 
             val correctItems = topCorrect.map { word ->
                 val label = formatWord(word)
-                val displayLabel = if ((labelCounts[label] ?: 0) > 1) {
+                val displayLabel = if ((correctCounts[label] ?: 0) > 1) {
                     "$label (${word.translation})"
                 } else {
                     label
@@ -65,7 +53,7 @@ class TopWordsFragment : Fragment() {
 
             val failedItems = topFailed.map { word ->
                 val label = formatWord(word)
-                val displayLabel = if ((labelCounts[label] ?: 0) > 1) {
+                val displayLabel = if ((failedCounts[label] ?: 0) > 1) {
                     "$label (${word.translation})"
                 } else {
                     label

@@ -64,6 +64,13 @@ interface WordDao {
     @Query("SELECT * FROM words")
     suspend fun getAllWords(): List<Word>
 
+    @Query("SELECT * FROM words WHERE isLearned = 1 ORDER BY (correctCount - failedCount) DESC")
+    suspend fun getLearnedWordsSorted(): List<Word>
+
+    @Query("SELECT * FROM words WHERE isFavorite = 1 ORDER BY (correctCount - failedCount) DESC")
+    suspend fun getFavoriteWordsSorted(): List<Word>
+
+
     @Query(
         "SELECT * FROM words " +
             "WHERE isLearned = 0 " +
@@ -104,10 +111,22 @@ interface WordDao {
     @Query("SELECT * FROM words WHERE correctCount > 0 ORDER BY lastCorrectAt DESC LIMIT :limit")
     suspend fun getRecentCorrect(limit: Int = 20): List<Word>
 
-    @Query("SELECT * FROM words WHERE correctCount > 0 ORDER BY correctCount DESC LIMIT :limit")
+    @Query(
+        "SELECT * FROM words WHERE correctCount > 0 " +
+            "ORDER BY correctCount DESC, " +
+            "CASE WHEN triesCount = 0 THEN 0 ELSE (correctCount * 100 / triesCount) END DESC, " +
+            "triesCount DESC " +
+            "LIMIT :limit"
+    )
     suspend fun getTopCorrect(limit: Int = 20): List<Word>
 
-    @Query("SELECT * FROM words WHERE failedCount > 0 ORDER BY failedCount DESC LIMIT :limit")
+    @Query(
+        "SELECT * FROM words WHERE failedCount > 0 " +
+            "ORDER BY failedCount DESC, " +
+            "CASE WHEN triesCount = 0 THEN 0 ELSE (failedCount * 100 / triesCount) END DESC, " +
+            "triesCount DESC " +
+            "LIMIT :limit"
+    )
     suspend fun getTopFailed(limit: Int = 20): List<Word>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -156,6 +175,15 @@ class WordRepository(context: Context) {
     suspend fun getAllWords(): List<Word> = withContext(Dispatchers.IO) {
         wordDao.getAllWords()
     }
+
+    suspend fun getLearnedWordsSorted(): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getLearnedWordsSorted()
+    }
+
+    suspend fun getFavoriteWordsSorted(): List<Word> = withContext(Dispatchers.IO) {
+        wordDao.getFavoriteWordsSorted()
+    }
+
 
     suspend fun getMixedPool(limit: Int): List<Word> = withContext(Dispatchers.IO) {
         wordDao.getMixedPool(limit)
