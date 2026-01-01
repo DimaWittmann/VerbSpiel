@@ -14,6 +14,8 @@ class RetiredWordsFragment : Fragment() {
 
     private val repo by lazy { WordRepository.getInstance(requireContext()) }
     private lateinit var adapter: StatsWordAdapter
+    private lateinit var list: ListView
+    private lateinit var empty: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,40 +27,53 @@ class RetiredWordsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val list: ListView = view.findViewById(R.id.stats_list)
-        val empty: TextView = view.findViewById(R.id.stats_empty)
+        list = view.findViewById(R.id.stats_list)
+        empty = view.findViewById(R.id.stats_empty)
         list.emptyView = empty
 
+        loadWords()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadWords()
+    }
+
+    private fun loadWords() {
         viewLifecycleOwner.lifecycleScope.launch {
             val words = repo.getAllWords()
                 .filter { word -> word.isLearned }
                 .sortedByDescending { it.correctCount - it.failedCount }
             val labelCounts = words.groupingBy { formatWord(it) }.eachCount()
 
-            adapter = StatsWordAdapter(
-                requireContext(),
-                words.toMutableList(),
-                formatter = { word ->
-                    val label = formatWord(word)
-                    val displayLabel = if ((labelCounts[label] ?: 0) > 1) {
-                        "$label (${word.translation})"
-                    } else {
-                        label
+            if (!::adapter.isInitialized) {
+                adapter = StatsWordAdapter(
+                    requireContext(),
+                    words.toMutableList(),
+                    formatter = { word ->
+                        val label = formatWord(word)
+                        val displayLabel = if ((labelCounts[label] ?: 0) > 1) {
+                            "$label (${word.translation})"
+                        } else {
+                            label
+                        }
+                        val delta = word.correctCount - word.failedCount
+                        "$displayLabel • +$delta • ${getString(R.string.stats_correct, word.correctCount)}"
+                    },
+                    onOptionsClick = { word ->
+                        WordOptions.show(
+                            requireContext(),
+                            viewLifecycleOwner.lifecycleScope,
+                            repo,
+                            adapter,
+                            word
+                        ) { updated -> updated.isLearned }
                     }
-                    val delta = word.correctCount - word.failedCount
-                    "$displayLabel • +$delta • ${getString(R.string.stats_correct, word.correctCount)}"
-                },
-                onOptionsClick = { word ->
-                    WordOptions.show(
-                        requireContext(),
-                        viewLifecycleOwner.lifecycleScope,
-                        repo,
-                        adapter,
-                        word
-                    ) { updated -> updated.isLearned }
-                }
-            )
-            list.adapter = adapter
+                )
+                list.adapter = adapter
+            } else {
+                adapter.setWords(words)
+            }
         }
     }
 

@@ -44,4 +44,10 @@ class StatsWordAdapter(
             notifyDataSetChanged()
         }
     }
+
+    fun setWords(newWords: List<Word>) {
+        words.clear()
+        words.addAll(newWords)
+        notifyDataSetChanged()
+    }
 }
