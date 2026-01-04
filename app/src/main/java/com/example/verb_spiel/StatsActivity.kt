@@ -32,17 +32,31 @@ class StatsActivity : AppCompatActivity() {
             }
         }.attach()
 
+        updateSummary(summaryText)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val summaryText: TextView = findViewById(R.id.stats_summary)
+        updateSummary(summaryText)
+    }
+
+    private fun updateSummary(summaryText: TextView) {
         lifecycleScope.launch {
             val allWords = repo.getAllWords()
             val totalWords = allWords.size
             val correctWords = allWords.count { it.correctCount > 0 }
             val failedWords = allWords.count { it.timesShown > 0 && it.correctCount == 0 }
+            val learnedCount = allWords.count { it.isLearned }
+            val favoriteCount = allWords.count { it.isFavorite }
 
             summaryText.text = getString(
                 R.string.stats_summary,
                 totalWords,
                 formatCountWithPercent(correctWords, totalWords),
-                formatCountWithPercent(failedWords, totalWords)
+                formatCountWithPercent(failedWords, totalWords),
+                formatCountWithPercent(learnedCount, totalWords),
+                formatCountWithPercent(favoriteCount, totalWords)
             )
         }
     }

@@ -4,7 +4,7 @@
     <string name="no_selection_yet">(No selection yet)</string>
     <string name="view_stats">View stats</string>
     <string name="stats_title">Practice statistics</string>
-    <string name="stats_summary">All %1$d | Correct %2$s | Failed %3$s</string>
+    <string name="stats_summary">All %1$d | ✅ %2$s | ❌ %3$s \nLearned %4$s | ★ %5$s</string>
     <string name="stats_count_with_percent">%1$d (%2$d%%)</string>
     <string name="stats_summary_placeholder">Loading stats...</string>
     <string name="stats_empty_state">No learned words. Play a round to see your progress.</string>
