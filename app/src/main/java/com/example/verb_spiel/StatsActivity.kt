@@ -33,26 +33,23 @@ class StatsActivity : AppCompatActivity() {
         }.attach()
 
         lifecycleScope.launch {
-            val wordsWithStats =
-                repo.getAllWords().filter { it.timesShown > 0 || it.triesCount > 0 }
-            if (wordsWithStats.isEmpty()) {
-                summaryText.text = getString(R.string.stats_empty_state)
-                return@launch
-            }
-            val totalShown = wordsWithStats.sumOf { it.timesShown }
-            val totalCorrect = wordsWithStats.sumOf { it.correctCount }
-            val totalFailed = wordsWithStats.sumOf { it.failedCount }
-            val totalAttempts = wordsWithStats.sumOf { it.triesCount }
-            val accuracy = if (totalAttempts == 0) 0 else (totalCorrect * 100 / totalAttempts)
+            val allWords = repo.getAllWords()
+            val totalWords = allWords.size
+            val correctWords = allWords.count { it.correctCount > 0 }
+            val failedWords = allWords.count { it.timesShown > 0 && it.correctCount == 0 }
 
             summaryText.text = getString(
                 R.string.stats_summary,
-                totalShown,
-                totalCorrect,
-                totalFailed,
-                accuracy
+                totalWords,
+                formatCountWithPercent(correctWords, totalWords),
+                formatCountWithPercent(failedWords, totalWords)
             )
         }
+    }
+
+    private fun formatCountWithPercent(count: Int, total: Int): String {
+        val percent = if (total == 0) 0 else (count * 100 / total)
+        return getString(R.string.stats_count_with_percent, count, percent)
     }
 
 }
