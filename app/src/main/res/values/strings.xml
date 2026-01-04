@@ -52,4 +52,5 @@
     <string name="add_to_learned">To learned</string>
     <string name="remove_from_learned">Remove from learned</string>
     <string name="open_word_info">Open word info</string>
+    <string name="filter_type_hint">Type to filter</string>
 </resources>

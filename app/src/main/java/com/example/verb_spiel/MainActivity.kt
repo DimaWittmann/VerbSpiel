@@ -1,7 +1,6 @@
 package com.example.verb_spiel
 
 import android.os.Bundle
-import android.util.Log
 import android.content.Intent
 import android.widget.Button
 import android.widget.ListView
@@ -15,12 +14,17 @@ import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.view.Gravity
 import android.widget.LinearLayout
+import android.widget.EditText
+import android.widget.ArrayAdapter
 import android.os.Build
 import android.util.TypedValue
+import android.util.Log
 import android.widget.NumberPicker
 import android.graphics.drawable.ColorDrawable
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.*
+import android.text.Editable
+import android.text.TextWatcher
 import java.io.BufferedReader
 
 class MainActivity : AppCompatActivity() {
@@ -107,13 +111,13 @@ class MainActivity : AppCompatActivity() {
             val displayValues = values.map { prefix ->
                 if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
             }
-            AlertDialog.Builder(this@MainActivity)
-                .setTitle(getString(R.string.filter_choose_value))
-                .setItems(displayValues.toTypedArray()) { _, which ->
-                    val chosen = values[which]
-                    applyFilter(Filter(FilterType.PREFIX, chosen))
-                }
-                .show()
+            showValueChooserWithFilter(
+                title = getString(R.string.filter_choose_value),
+                values = values,
+                displayValues = displayValues
+            ) { chosen ->
+                applyFilter(Filter(FilterType.PREFIX, chosen))
+            }
         }
     }
 
@@ -124,14 +128,68 @@ class MainActivity : AppCompatActivity() {
                 showTopToast(getString(R.string.filter_no_matches))
                 return@launch
             }
-            AlertDialog.Builder(this@MainActivity)
-                .setTitle(getString(R.string.filter_choose_value))
-                .setItems(values.toTypedArray()) { _, which ->
-                    val chosen = values[which]
-                    applyFilter(Filter(FilterType.ROOT, chosen))
-                }
-                .show()
+            showValueChooserWithFilter(
+                title = getString(R.string.filter_choose_value),
+                values = values,
+                displayValues = values
+            ) { chosen ->
+                applyFilter(Filter(FilterType.ROOT, chosen))
+            }
         }
+    }
+
+    private fun showValueChooserWithFilter(
+        title: String,
+        values: List<String>,
+        displayValues: List<String>,
+        onSelect: (String) -> Unit
+    ) {
+        val input = EditText(this)
+        input.hint = getString(R.string.filter_type_hint)
+        val listView = ListView(this)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, displayValues.toMutableList())
+        listView.adapter = adapter
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            val pad = (resources.displayMetrics.density * 16).toInt()
+            setPadding(pad, pad, pad, pad)
+            addView(input)
+            addView(listView)
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(title)
+            .setView(container)
+            .create()
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val label = adapter.getItem(position) ?: return@setOnItemClickListener
+            val index = displayValues.indexOf(label)
+            if (index >= 0) {
+                onSelect(values[index])
+            }
+            dialog.dismiss()
+        }
+
+        input.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun afterTextChanged(s: Editable?) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s?.toString().orEmpty().trim()
+                val filtered = if (query.isEmpty()) {
+                    displayValues
+                } else {
+                    val lower = query.lowercase()
+                    displayValues.filter { it.lowercase().startsWith(lower) }
+                }
+                adapter.clear()
+                adapter.addAll(filtered)
+                adapter.notifyDataSetChanged()
+            }
+        })
+
+        dialog.show()
     }
 
     private fun showTopToast(message: String) {
