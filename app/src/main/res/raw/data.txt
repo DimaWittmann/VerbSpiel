@@ -2,9 +2,8 @@ version:4
 prefix;root;translation;example
 miss;achten;to disregard, neglect;Wer die Regeln missachtet, wird bestraft.
 nach;ahmen;to mimic;Das Kind ahmt den Lehrer nach.
-ver;anschaulichen;to illustrate;Ein Beispiel veranschaulicht das Konzept.
 be;anspruchen;to claim, demand;Dieser Job beansprucht viel Zeit.
-be;anspruchen;to take up (time);Der Job beansprucht viel Zeit.
+be;anspruchen;require;Der Job beansprucht viel Zeit.
 ;antworten;to answer;Er antwortet schnell.
 be;antworten;to answer (a letter etc.);Beantworte bitte meine E-Mail.
 ;arbeiten;to work;Er arbeitet in einem Büro.
@@ -12,15 +11,17 @@ auf;arbeiten;to work through;Wir arbeiten alte Dokumente auf.
 mit;arbeiten;to collaborate;Wir arbeiten in diesem Projekt eng mit.
 ver;arbeiten;to process;Wir verarbeiten hier Holz zu Möbeln.
 vor;arbeiten;to work ahead;Ich arbeite schon mal für morgen vor.
+zusammen;arbeiten;to work together;Wir arbeiten gut zusammen.
 über;arbeiten;to revise, rework;Wir überarbeiten unseren Bericht.
 um;armen;to hug;Sie umarmt ihre Freundin herzlich.
-ent;arten;to degenerate;Die Diskussion entartet in Streit.
 be;auftragen;to commission, assign;Wir beauftragen eine Agentur mit dem Design.
 ;bauen;to build;Sie bauen ein Haus.
+ab;bauen;to dismantle;Wir bauen die Bühne ab.
 auf;bauen;to build up;Wir bauen auf deinen Erfolg auf.
 auf;bauen;to rely on;Wir bauen auf deine Hilfe auf.
 miss;bauen;to build incorrectly (rare);Die Architekten haben das Haus komplett missbaut.
 zurück;bauen;to dismantle;Die Stadt baut die alten Anlagen zurück.
+zusammen;bauen;to assemble;Wir bauen das Regal zusammen.
 ;beginnen;to begin;Der Film beginnt um acht.
 bei;behalten;to keep, maintain;Wir behalten unseren Plan bei.
 zurück;behalten;to keep for oneself;Ich behalte einen Teil davon zurück.
@@ -33,9 +34,12 @@ ver;bergen;to hide, conceal;Sie verbirgt ihre wahren Gefühle.
 aus;bessern;to repair, mend;Wir bessern das kaputte Fenster aus.
 nach;bessern;to correct/improve afterward;Wir bessern den Entwurf noch nach.
 ver;bessern;to improve;Sie verbessert ihre Sprachkenntnisse täglich.
+vor;bestellen;to pre-order;Wir bestellen die Karten vor.
 vor;beugen;to prevent;Sport hilft, Krankheiten vorzubeugen.
 auf;bewahren;to store, keep;Bewahre deine Unterlagen gut auf.
 weg;bewegen;to move away;Beweg dich ein Stück weg von der Kante.
+an;bieten;to offer;Die Firma bietet einen Service an.
+aus;bilden;to train;Die Firma bildet Lehrlinge aus.
 nach;bilden;to replicate;Das Museum bildet historische Szenen nach.
 miss;billigen;to disapprove of;Sein Chef missbilligt sein Verhalten.
 ent;binden;to release from obligation;Der Vertrag entbindet ihn von weiterer Haftung.
@@ -53,19 +57,24 @@ miss;brauchen;to misuse, abuse;Er missbraucht seine Macht.
 aus;brechen;to erupt, break out;Der Vulkan bricht plötzlich aus.
 unter;brechen;to interrupt;Bitte unterbrich mich nicht.
 zer;brechen;to break into pieces;Das Glas zerbricht auf dem Boden.
+zusammen;brechen;to collapse;Er bricht plötzlich zusammen.
 aus;breiten;to spread out;Der Vogel breitet seine Flügel aus.
 an;brennen;to scorch, burn slightly;Das Essen brennt schnell an, wenn du es vergisst.
 ;bringen;to bring;Ich bringe dir Kaffee.
 bei;bringen;to teach;Sie bringt mir das Backen bei.
 her;bringen;to bring here;Kannst du die Unterlagen herbringen?
+heraus;bringen;to bring out;Die Firma bringt ein neues Modell heraus.
+hinein;bringen;to bring in;Bring die Kisten hinein.
 hinter;bringen;to inform secretly;Er hat mir hinterbracht, was wirklich geschah.
 mit;bringen;to bring along;Ich bringe eine Flasche Wein mit.
 mit;bringen;to entail;Die Entscheidung bringt Risiken mit.
-rein;bringen;to bring in;Ich bringe die Einkäufe rein.
+rein;bringen;to bring in, carry;Ich bringe die Einkäufe rein.
 rüber;bringen;to convey;Er bringt die Idee gut rüber.
+um;bringen;to kill;Der Unfall brachte ihn um.
 unter;bringen;to accommodate;Wir bringen unsere Gäste im Hotel unter.
 ver;bringen;to spend (time);Wir verbringen das Wochenende am See.
 weg;bringen;to bring away, dispose of;Bring bitte den Müll weg.
+zurück;bringen;to bring back;Bring die Flasche zurück.
 ge;bären;to give birth;Sie gebärt einen gesunden Sohn.
 ge;bühren;to be due, deserve;Ihm gebührt Respekt für seine Leistung.
 be;danken|(sich);to thank (formally);Ich bedanke mich für Ihre Hilfe.
@@ -86,6 +95,7 @@ zurück;denken;to think back;Ich denke gern an den Urlaub zurück.
 über;denken;to reconsider;Wir überdenken unsere Strategie.
 miss;deuten;to misinterpret;Ich habe seine Geste wohl missdeutet.
 bei;drehen;to heave to (nautical);Das Schiff dreht bei, um den Sturm abzuwettern.
+um;drehen;to turn around;Dreh dich um.
 ein;dringen;to penetrate;Das Regenwasser dringt durch das Dach ein.
 vor;dringen;to push forward;Die Rettungskräfte dringen langsam vor.
 aus;drucken;to print out;Druck bitte das Dokument aus.
@@ -107,7 +117,10 @@ weg;essen;to eat up someone’s portion;Sie hat mir meinen Kuchen weggegessen!
 ;fahren;to drive, travel;Wir fahren mit dem Auto.
 ab;fahren;to depart;Der Zug fährt um acht ab.
 ab;fahren;to drive off;Der Bus fuhr plötzlich ab.
+heraus;fahren;to pull out;Das Auto fährt aus der Garage heraus.
+hin;fahren;to go there;Wir fahren morgen hin.
 hinterher;fahren;to drive after;Er fährt dem Bus hinterher.
+los;fahren;to set off;Wir fahren um acht los.
 mit;fahren;to drive/travel along;Kann ich bis zur Schule mitfahren?
 vor;fahren;to drive up;Das Taxi fährt vor und wartet.
 weg;fahren;to drive away;Wir fahren morgen in den Urlaub weg.
@@ -121,11 +134,14 @@ ein;fallen;to collapse, cave in;Nach dem Sturm ist das Dach teilweise eingefalle
 ein;fallen;to come to mind;Mir fällt gerade eine Idee ein.
 ein;fallen;to invade, raid;Die Truppen fielen in das Land ein.
 ge;fallen;to please;Die Musik gefällt mir sehr.
+heraus;fallen;to fall out;Beim Schütteln fällt das Geld heraus.
 miss;fallen;to displease;Dein Ton missfällt mir sehr.
+um;fallen;to fall over;Die Vase fällt um.
 weg;fallen;to be omitted, canceled;Das Treffen fällt heute weg.
 zer;fallen;to disintegrate;Das alte Gebäude zerfällt langsam.
 an;fangen;to begin, start;Wir fangen jetzt mit der Arbeit an.
 an;fassen;to touch;Fass bitte die heiße Pfanne nicht an!
+zusammen;fassen;to summarize;Fass den Text zusammen.
 ;fehlen;to be missing;Mir fehlt die Zeit.
 ver;fehlen;to miss (appointment);Ich habe den Termin verfehlt.
 ver;fehlen;to miss (target);Ich habe das Ziel knapp verfehlt.
@@ -134,6 +150,7 @@ ent;fernen;to remove;Bitte entferne den Fleck von der Hose.
 zer;fetzen;to tear to shreds;Der Sturm zerfetzt die Fahne.
 ;finden;to find;Ich finde meinen Schlüssel nicht.
 er;finden;to invent;Wer hat das Telefon erfunden?
+heraus;finden;to find out;Wir finden die Ursache schnell heraus.
 be;finden|(sich);to be located, feel;Ich befinde mich gerade in Hamburg.
 weg;fliegen;to fly away;Die Vögel fliegen im Winter weg.
 über;fliegen;to skim-read;Ich überfliege den Artikel nur kurz.
@@ -141,6 +158,7 @@ zer;fließen;to melt, flow apart;Die Schokolade zerfließt in der Sonne.
 ver;folgen;to follow up;Wir verfolgen den Plan weiter.
 ver;folgen;to pursue;Die Polizei verfolgt den Verdächtigen.
 auf;fordern;to call upon, challenge;Der Lehrer fordert die Schüler zur Mitarbeit auf.
+heraus;fordern;to challenge;Er fordert seinen Gegner heraus.
 unter;fordern;to underchallenge;Die Aufgaben unterfordern mich total.
 zurück;fordern;to demand back;Sie fordert ihr Geld zurück.
 über;fordern;to overwhelm;Ich bin von dieser Aufgabe überfordert.
@@ -159,13 +177,14 @@ be;fördern;to transport;Die Anlage befördert das Material nach oben.
 bei;fügen;to add, enclose;Fügen Sie bitte die Unterlagen bei.
 mit;fühlen;to sympathize;Ich fühle in dieser Situation mit dir mit.
 auf;führen;to perform (stage);Das Theater führt das Stück auf.
-aus;führen;to carry out;Wir führen den Plan aus.
-durch;führen;to carry out;Wir führen den Test morgen durch.
+aus;führen;to carry out, execute;Wir führen den Plan aus.
+durch;führen;to carry out, conduct;Wir führen den Test morgen durch.
 durch;führen;to conduct;Wir führen das Experiment durch.
 ein;führen;to introduce;Die Firma führt ein neues System ein.
 ein;führen;to introduce (policy);Die Schule führt neue Regeln ein.
 ent;führen;to kidnap, hijack;Kriminelle haben den Sohn entführt.
 vor;führen;to demonstrate;Der Lehrer führt das Experiment vor.
+zusammen;führen;to bring together;Wir führen die Gruppen zusammen.
 über;führen;to transfer, extradite;Die Polizei führt ihn über die Grenze.
 aus;füllen;to fill out;Füll bitte das Formular aus.
 be;fürchten;to fear;Ich befürchte, dass es regnen wird.
@@ -178,6 +197,8 @@ auf;geben;to give up;Gib nicht auf.
 auf;geben;to post (mail);Ich gebe das Paket bei der Post auf.
 aus;geben;to spend (money);Ich gebe zu viel Geld aus.
 bei;geben;to add (ingredient);Gib noch etwas Salz bei.
+her;geben;to hand over;Gib das Geld her.
+heraus;geben;to publish;Der Verlag gibt ein neues Buch heraus.
 nach;geben;to give in;Sie gibt schließlich seiner Bitte nach.
 nach;geben;to yield, relent;Er gab dem Druck nach.
 ver;geben;to award (contract);Die Stadt vergibt den Auftrag an eine Firma.
@@ -187,7 +208,7 @@ zurück;geben;to give back;Gib mir mein Buch bitte zurück.
 zurück;geben;to return (money);Er gibt das Geld nicht zurück.
 über;geben;to hand over;Er übergibt ihr das Geschenk.
 ;gehen;to go;Wir gehen nach Hause.
-ab;gehen;to go off (alarm);Der Alarm ging los.
+ab;gehen;to go off, sound;Der Alarm ging los.
 ab;gehen;to take place;Das Konzert ging um acht ab.
 auf;gehen;to open (door, etc.);Die Tür geht von selbst auf.
 auf;gehen;to rise (sun);Die Sonne geht im Sommer sehr früh auf.
@@ -201,17 +222,23 @@ ein;gehen;to be received (payment);Die Zahlung ist gestern eingegangen.
 ein;gehen;to enter, engage;Wir gehen einen Vertrag ein.
 ein;gehen;to respond to;Er geht auf meine Frage ein.
 ent;gehen;to miss (fail to notice);Mir ist nichts entgangen.
+hin;gehen;to go over;Ich gehe kurz hin.
+hinaus;gehen;to go out;Geh bitte hinaus.
+hinein;gehen;to go in;Geh bitte hinein.
 hinter;gehen;to deceive, betray;Sie hat ihn hintergangen.
-los;gehen;to set off;Wann geht es los?
+hinterher;gehen;to follow;Er geht seinem Bruder hinterher.
+los;gehen;to set off, start;Wann geht es los?
 mit;gehen;to go along;Ich gehe heute Abend mit dir mit.
 nach;gehen;to follow;Er geht jeder Spur nach.
-unter;gehen;to go down, sink;Die Sonne geht am Abend unter.
+um;gehen;to handle;Er geht gut mit Kunden um.
+unter;gehen;to go down, set;Die Sonne geht am Abend unter.
 unter;gehen;to perish;Die Firma ist in der Krise untergegangen.
 vor;gehen;to go ahead;Geh schon mal vor, ich komme gleich nach.
 vor;gehen;to proceed;Wir gehen Schritt für Schritt vor.
 vor;gehen;to take action against;Die Polizei geht gegen Betrüger vor.
-weg;gehen;to go away;Ich gehe jetzt weg.
+weg;gehen;to go away, leave;Ich gehe jetzt weg.
 zer;gehen;to dissolve;Die Brausetablette zergeht im Wasser.
+zurück;gehen;to go back;Geh bitte zurück.
 über;gehen;to overlook;Man darf den Fehler nicht übergehen.
 ver;gessen;to forget;Vergiss nicht den Termin.
 miss;gestalten;to misform, shape poorly;Das Projekt wurde völlig missgestaltet.
@@ -238,6 +265,7 @@ ent;haaren;to shed hair;Die Katze enthaart gerade sehr stark.
 vor;haben;to plan, intend;Was hast du am Wochenende vor?
 zer;hacken;to chop up;Er zerhackt die Zwiebeln für die Sauce.
 ;halten;to hold, keep;Er hält das Kind fest.
+an;halten;to stop;Halt bitte kurz an.
 auf;halten;to delay, hold up;Bitte halte mich nicht auf, ich habe es eilig.
 aus;halten;to endure;Ich halte diesen Lärm nicht aus.
 be;halten;to keep;Ich behalte das Buch noch etwas.
@@ -247,6 +275,7 @@ ein;halten;to comply with, keep;Du musst die Frist unbedingt einhalten.
 ent;halten;to contain;Die Flasche enthält einen Liter Wasser.
 er;halten;to receive;Ich erhalte viele Briefe.
 mit;halten;to keep up;Ich kann beim Laufen nicht mit dir mithalten.
+unter;halten;to entertain;Der Film unterhält gut.
 zurück;halten;to hold back;Versuch nicht, deine Gefühle zurückzuhalten.
 zurück;halten;to restrain;Sie hielt ihre Meinung zurück.
 unter;halten|(sich);to converse/entertain;Wir unterhalten uns über das Wetter.
@@ -261,11 +290,11 @@ nach;helfen;to help along, remedy;Eine Tasse Kaffee kann manchmal nachhelfen.
 er;hellen;to brighten;Der Himmel erhellt sich nach dem Regen.
 ver;hindern;to prevent;Ein Stau verhinderte unsere rechtzeitige Ankunft.
 ab;holen;to fetch;Ich hole die Kinder von der Schule ab.
-ab;holen;to pick up;Kannst du mich vom Bahnhof abholen?
+ab;holen;to pick up, collect;Kannst du mich vom Bahnhof abholen?
 bei;holen;to call in for help (rare);Sie holt ihren Bruder bei, um zu helfen.
 ein;holen;to catch up with;Wir holen die verlorene Zeit ein.
 nach;holen;to catch up on;Wir holen den ausgefallenen Termin nach.
-nach;holen;to make up for;Ich hole den Schlaf am Wochenende nach.
+nach;holen;to make up for, compensate;Ich hole den Schlaf am Wochenende nach.
 ge;horchen;to obey;Der Hund gehorcht seinem Besitzer.
 nach;hängen;to dwell on (past);Sie hängt oft alten Erinnerungen nach.
 ;hören;to hear;Ich höre Musik.
@@ -289,7 +318,8 @@ ent;kleiden|(sich);to undress;Er entkleidet sich vor der Untersuchung.
 miss;klingen;to sound bad (rare);Der Ton missklingt in meinen Ohren.
 auf;klären;to clarify;Wir klären die Situation sofort auf.
 er;klären;to explain;Erkläre mir das bitte.
-bei;knien;to kneel by;Sie kniet bei und betet.
+hin;knien|(sich);to kneel down;Ich knie mich kurz hin.
+nieder;knien|(sich);to kneel down;Er kniet sich vor dem Altar nieder.
 zer;knittern;to crumple;Das Papier zerknittert in meiner Tasche.
 ;kochen;to cook;Ich koche Suppe.
 zer;kochen;to overboil;Das Gemüse zerkocht, wenn du es zu lange kochst.
@@ -305,16 +335,21 @@ be;kommen;to agree with (food);Fettiges Essen bekommt mir nicht.
 be;kommen;to get (ill);Ich bekomme Kopfschmerzen.
 be;kommen;to receive, get;Ich bekomme viele E-Mails am Tag.
 bei;kommen;to manage, handle;Wir müssen dem Problem schnell beikommen.
-ein;kommen;to come in;Komm bitte kurz ein.
+ein;kommen;to come in, enter;Komm bitte kurz ein.
 ent;kommen;to escape;Dem Gefangenen gelang es zu entkommen.
+her;kommen;to come here;Komm her.
+heraus;kommen;to come out;Die Wahrheit kommt am Ende heraus.
+hinaus;kommen;to get out;Wir kommen aus dem Stau spät hinaus.
+hinein;kommen;to come in;Er kommt schnell hinein.
 hinter;kommen;to find out;Ich bin noch nicht dahinter gekommen, wie es funktioniert.
 mit;kommen;to come along;Kommst du mit ins Kino?
 mit;kommen;to keep up, understand;Ich komme bei dem Tempo nicht mit.
 nach;kommen;to come later;Ich komme ein bisschen später nach.
+nach;kommen;to follow;Die Kinder kommen nach.
 um;kommen;to perish;Er ist bei dem Unfall umgekommen.
 vor;kommen;to happen, occur;Das kommt manchmal vor.
-weg;kommen;to get away;Ich komme von der Arbeit nicht weg.
-zurück;kommen;to come back;Wann kommst du zurück?
+weg;kommen;to get away, leave;Ich komme von der Arbeit nicht weg.
+zurück;kommen;to come back, return;Wann kommst du zurück?
 über;kommen;to overcome;Die Angst überkommt ihn.
 er;kranken;to fall ill;Viele sind an der Grippe erkrankt.
 ab;kriegen;to get off, remove;Ich kriege den Fleck nicht ab.
@@ -323,10 +358,10 @@ auf;kriegen;to get open;Ich kriege die Dose nicht auf.
 her;kriegen;to get hold of;Kannst du mir das Buch herkriegen?
 hin;kriegen;to manage, get done;Wir kriegen das heute noch hin.
 mit;kriegen;to notice;Hast du das Gespräch mitgekriegt?
-rein;kriegen;to get inside;Ich kriege den Tisch nicht rein.
-rum;kriegen;to get around;Er kriegt die Kurve nicht rum.
+rein;kriegen;to get inside, fit;Ich kriege den Tisch nicht rein.
+rum;kriegen;to get around, manage;Er kriegt die Kurve nicht rum.
 weg;kriegen;to get rid of;Wir kriegen die Fehler nicht weg.
-zusammen;kriegen;to get together;Wir kriegen das Team zusammen.
+zusammen;kriegen;to get together, assemble;Wir kriegen das Team zusammen.
 er;kämpfen;to win by struggle;Sie hat sich den Sieg hart erkämpft.
 unter;kühlen;to cool down too much;Nach dem Schwimmen ist er völlig unterkühlt.
 an;lachen;to laugh at someone;Das Baby lacht seinen Vater an.
@@ -349,6 +384,7 @@ nach;lassen;to decrease, fade;Sein Fleiß lässt nie nach.
 nach;lassen;to let up;Der Regen lässt langsam nach.
 unter;lassen;to refrain from;Bitte unterlass diese Bemerkungen.
 ver;lassen;to leave;Sie verlässt das Haus um 8 Uhr.
+weg;lassen;to omit;Lass bitte den Zucker weg.
 zu;lassen;to allow;Die Schule lässt keine Ausnahmen zu.
 zu;lassen;to approve, permit;Die Behörde lässt den Antrag zu.
 zurück;lassen;to leave behind;Lass mich hier nicht zurück!
@@ -359,11 +395,11 @@ hinterher;laufen;to run after;Der Hund läuft dem Ball hinterher.
 nach;laufen;to run after someone;Der Hund läuft dem Ball nach.
 unter;laufen;to occur inadvertently;Ihm ist ein Fehler unterlaufen.
 vor;laufen;to walk ahead;Lauf ruhig vor, ich hole dich ein.
-weg;laufen;to run away;Der Hund ist wieder weggelaufen.
-zurück;laufen;to run back;Ich laufe schnell nach Hause zurück.
+weg;laufen;to run away, flee;Der Hund ist wieder weggelaufen.
+zurück;laufen;to run back, return;Ich laufe schnell nach Hause zurück.
 über;laufen;to overflow (or defect);Das Wasser läuft über.
 ver;laufen|(sich);to get lost (on foot);Wir verlaufen uns oft im Wald.
-ver;laufen|(sich);to go off course;Wir sind uns in der Stadt verlaufen.
+ver;laufen|(sich);to go off course, stray;Wir sind uns in der Stadt verlaufen.
 ;leben;to live;Sie lebt in Berlin.
 auf;leben;to revive, come alive;Die Natur lebt nach dem Regen auf.
 er;leben;to experience;Wir erleben hier jeden Tag etwas Neues.
@@ -381,7 +417,7 @@ fest;legen;to determine, set;Wir legen den Termin fest.
 hinter;legen;to deposit;Ich hinterlege das Geld auf der Bank.
 vor;legen;to present;Bitte legen Sie die Dokumente vor.
 zer;legen;to dismantle;Wir zerlegen das Regal zum Transport.
-zurück;legen;to put back;Leg das Buch bitte ins Regal zurück.
+zurück;legen;to put back, return;Leg das Buch bitte ins Regal zurück.
 über;legen;to be superior;Unsere Mannschaft ist überlegen.
 über;legen;to consider;Überlege es dir gut.
 hin;legen|(sich);to lie down;Ich lege mich für eine Stunde hin.
@@ -390,27 +426,30 @@ er;leiden;to suffer;Sie erleidet große Schmerzen.
 aus;leihen;to borrow;Ich leihe mir ein Buch aus der Bibliothek aus.
 ;lernen;to learn;Ich lerne Deutsch.
 ;lesen;to read;Ich lese ein Buch.
+heraus;lesen;to infer;Ich lese aus dem Bericht eine klare Warnung heraus.
 mit;lesen;to read along;Lest alle gemeinsam im Buch mit.
 vor;lesen;to read aloud;Er liest den Kindern eine Geschichte vor.
 ver;lieben|(sich);to fall in love;Ich habe mich Hals über Kopf verliebt.
 ;liegen;to lie;Das Buch liegt auf dem Tisch.
 bei;liegen;to be enclosed;Der Rechnung liegt eine Anleitung bei.
 unter;liegen;to succumb, be subject to;Wir unterliegen hier strengen Regeln.
+vor;liegen;to be available;Die Ergebnisse liegen vor.
 ver;lieren;to lose;Ich verliere ständig meine Schlüssel.
 ge;lingen;to succeed;Es gelingt mir endlich, das Puzzle zu lösen.
 miss;lingen;to fail;Der Versuch misslingt leider.
 weg;locken;to lure away;Der Duft lockt die Insekten weg.
 ent;lohnen;to remunerate;Die Firma entlohnt ihre Arbeiter fair.
+heraus;lösen;to detach;Die Schraube lässt sich leicht herauslösen.
 vor;lügen;to lie to someone;Er lügt seinen Eltern etwas vor.
 ;machen;to do, make;Ich mache die Hausaufgaben.
 an;machen;to hit on, flirt with;Er macht sie in der Bar an.
-an;machen;to turn on (device);Mach bitte das Licht an.
+an;machen;to turn on, activate;Mach bitte das Licht an.
 auf;machen;to open;Mach bitte das Fenster auf.
 auf;machen;to open (a shop);Sie macht im Sommer ein kleines Café auf.
 aus;machen;to arrange, make (a date/appointment);Wir machen für Freitag einen Termin aus.
 aus;machen;to identify, make out;Ich konnte die Schrift kaum ausmachen.
 aus;machen;to matter, make a difference;Es macht nichts aus, wenn du später kommst.
-aus;machen;to turn off;Mach bitte das Licht aus.
+aus;machen;to turn off, deactivate;Mach bitte das Licht aus.
 mit;machen;to go along, cooperate;Bei dem Betrug mache ich nicht mit.
 mit;machen;to participate;Machst du beim Wettbewerb mit?
 mit;machen;to play along;Bei diesem Spiel mache ich nicht mit.
@@ -429,6 +468,7 @@ be;merken;to notice;Ich bemerke, dass es kalt wird.
 be;merken;to remark, comment;Er bemerkte leise, dass es spät sei.
 bei;messen;to attribute;Man misst dem Projekt große Bedeutung bei.
 unter;minieren;to undermine;Sein Verhalten unterminiert das Vertrauen.
+über;nachten;to stay overnight;Wir übernachten im Hotel.
 ;nehmen;to take;Ich nehme den Zug.
 ab;nehmen;to decrease, lose weight;Die Temperatur nimmt ab.
 ab;nehmen;to relieve (someone);Ich nehme dir die Arbeit ab.
@@ -439,22 +479,23 @@ auf;nehmen;to absorb;Der Boden nimmt das Wasser schnell auf.
 auf;nehmen;to admit;Die Schule nimmt jedes Jahr neue Schüler auf.
 auf;nehmen;to include;Wir nehmen ihn in die Gruppe auf.
 auf;nehmen;to record;Wir nehmen gerade ein Lied auf.
-auf;nehmen;to take in (food);Das Baby nimmt neue Nahrung gut auf.
-aus;nehmen;to take out;Nimm bitte das Geschirr aus der Spülmaschine.
+auf;nehmen;to take in, tolerate;Das Baby nimmt neue Nahrung gut auf.
+aus;nehmen;to take out, remove;Nimm bitte das Geschirr aus der Spülmaschine.
 ein;nehmen;to take in, ingest;Er nimmt die Tablette ein.
 ent;nehmen;to remove, take out;Der Arzt entnimmt Blut für den Test.
+heraus;nehmen;to take out;Nimm das Geld aus der Tasche heraus.
 hin;nehmen;to accept, put up with;Ich nehme das so hin.
 mit;nehmen;to take along;Nimm eine Jacke mit, es wird kalt.
 mit;nehmen;to take away, learn;Ich habe aus dem Kurs viel mitgenommen.
 unter;nehmen;to attempt;Wir unternehmen einen neuen Versuch.
 unter;nehmen;to undertake;Wir unternehmen viel am Wochenende.
 vor;nehmen;to plan to do;Ich nehme mir vor, mehr Sport zu machen.
-weg;nehmen;to remove;Nimm bitte die Tasse weg.
+weg;nehmen;to take away, remove;Nimm bitte die Tasse weg.
 weg;nehmen;to take away;Sie nimmt ihm das Spielzeug weg.
 zu;nehmen;to increase;Die Temperatur nimmt wieder zu.
-zurück;nehmen;to take back;Ich nehme meine Worte nicht zurück.
+zurück;nehmen;to take back, retract;Ich nehme meine Worte nicht zurück.
 über;nehmen;to assume responsibility;Sie übernimmt die Verantwortung.
-über;nehmen;to take over;Die Firma übernimmt den Konkurrenten.
+über;nehmen;to take over, acquire;Die Firma übernimmt den Konkurrenten.
 ge;nehmigen;to approve;Die Behörde genehmigt den Bau.
 er;nennen;to name, call;Man nennt ihn auch den "Zauberer".
 ge;nesen;to recover;Nach der Operation ist er schnell genesen.
@@ -466,9 +507,10 @@ bei;ordnen;to assign additionally;Der Chef ordnet noch neue Aufgaben bei.
 ein;ordnen;to file, classify;Bitte ordne die Dokumente richtig ein.
 unter;ordnen|(sich);to subordinate;Er ordnet sich den Regeln unter.
 aus;packen;to unpack;Packst du bitte deinen Koffer aus?
+ein;packen;to pack;Pack die Sachen ein.
 an;passen;to adapt, adjust;Wir passen das Konzept an.
 auf;passen;to keep an eye on;Pass bitte auf die Kinder auf.
-ver;passen;to fail to do;Ich habe es verpasst, dich anzurufen.
+ver;passen;to miss;Ich habe es verpasst, dich anzurufen.
 ver;passen;to miss (train, etc.);Ich verpasse den Zug schon wieder.
 hinterher;pfeifen;to whistle after (wolf-whistle);Die Bauarbeiter pfeifen den Passanten hinterher.
 bei;pflichten;to agree with;Ich pflichte dir voll und ganz bei.
@@ -484,8 +526,8 @@ weg;pusten;to blow away;Der Wind pustet die Blätter weg.
 über;queren;to cross;Wir überqueren die Straße bei Grün.
 zer;quetschen;to squash;Pass auf, dass du die Tomaten nicht zerquetschst.
 über;raschen;to surprise;Sie überraschen ihn mit einer Feier.
-ge;raten;to get into, turn out;Wir geraten in einen Stau.
-miss;raten;to turn out badly;Der Kuchen ist missraten.
+ge;raten;to get into, encounter;Wir geraten in einen Stau.
+miss;raten;to turn out badly, fail;Der Kuchen ist missraten.
 aus;reden;to talk something out;Wir müssen das Problem ausreden.
 mit;reden;to join the conversation;Er redet gerne bei allen Themen mit.
 zer;reden;to talk something to death;Wir zerreden jedes neue Thema.
@@ -493,9 +535,10 @@ zer;reden;to talk something to death;Wir zerreden jedes neue Thema.
 auf;regen;to upset someone;Die Nachricht regt ihn sehr auf.
 auf;regen|(sich);to get worked up;Reg dich nicht so auf, es wird schon gut.
 zer;reiben;to rub to pieces;Sie zerreibt die Kräuter im Mörser.
+aus;reichen;to suffice;Das Geld reicht aus.
 er;reichen;to reach, achieve;Wir erreichen unser Ziel bald.
 nach;reichen;to hand in later;Du kannst deine Hausaufgaben morgen nachreichen.
-ver;reisen;to go on a trip;Wir verreisen nächstes Wochenende.
+ver;reisen;to go on a trip, travel;Wir verreisen nächstes Wochenende.
 zer;reißen;to tear apart;Er zerreißt wütend den Brief.
 ein;richten;to adjust, tune;Wir richten die Antenne neu ein.
 ein;richten;to establish, set up;Die Firma richtet eine neue Abteilung ein.
@@ -503,11 +546,16 @@ ein;richten;to set up, furnish;Wir richten unsere neue Wohnung ein.
 unter;richten;to teach;Sie unterrichtet Deutsch als Fremdsprache.
 ge;ringschätzen;to underestimate, belittle;Bitte geringschätze seine Leistung nicht.
 an;rufen;to call (on the phone);Ich rufe dich später an.
+an;rufen;to call;Ich rufe dich heute Abend an.
+heraus;rufen;to call out;Er ruft den Namen heraus.
+hinterher;rufen;to call after;Sie ruft ihm hinterher.
+zurück;rufen;to call back;Ich rufe später zurück.
 aus;ruhen|(sich);to rest;Ruh dich nach dem Lauf aus.
 auf;räumen;to tidy up;Räum bitte dein Zimmer auf.
-ein;räumen;to put away, load (dishwasher);Bitte räum das Geschirr in die Spülmaschine ein.
+ein;räumen;to put away, load;Bitte räum das Geschirr in die Spülmaschine ein.
 weg;räumen;to clear away;Räum bitte deine Sachen weg.
 ;sagen;to say;Was hast du gesagt?
+ab;sagen;to cancel;Wir sagen das Treffen ab.
 an;sagen;to announce;Der Moderator sagt den nächsten Titel an.
 hinterher;sagen;to repeat after someone;Das Kind sagt jedes Wort hinterher.
 zu;sagen;to promise;Kannst du mir morgen zusagen?
@@ -516,11 +564,13 @@ an;schaffen;to purchase, acquire;Wir schaffen neue Computer an.
 aus;schalten;to switch off;Schalt bitte den Fernseher aus.
 ein;schalten;to switch on;Schalte den Computer ein, bitte.
 an;schauen;to look at;Schau dir dieses Buch an.
+nach;schauen;to check;Ich schaue später nach.
 ge;schehen;to happen;Ein Unfall ist auf der Autobahn geschehen.
 ent;scheiden;to decide;Wir entscheiden das morgen.
 hinterher;schicken;to send after;Ich schicke ihm die Unterlagen hinterher.
 mit;schicken;to send along;Schickst du mir die Dateien mit?
 nach;schicken;to send after;Wir schicken dir das Paket nach, wenn du umgezogen bist.
+weg;schicken;to send away;Schick die Leute weg.
 zurück;schicken;to send back;Ich schicke den Artikel zurück.
 ver;schieben;to postpone;Wir verschieben das Treffen auf morgen.
 ;schlafen;to sleep;Das Baby schläft.
@@ -531,12 +581,14 @@ nach;schlagen;to look up (in a dictionary);Schlag das Wort im Wörterbuch nach.
 vor;schlagen;to suggest;Sie schlägt einen Ausflug vor.
 zer;schlagen;to smash;Sie zerschlägt den Teller aus Versehen.
 zurück;schlagen;to strike back;Er schlägt im Spiel sofort zurück.
-weg;schleppen;to carry away;Die Diebe schleppten alles Wertvolle weg.
+weg;schleppen;to carry away, steal;Die Diebe schleppten alles Wertvolle weg.
 ab;schließen;to conclude (contract);Wir schließen eine Versicherung ab.
 ab;schließen;to lock, finish;Schließ die Tür ab.
+an;schließen;to connect;Schließ das Kabel an.
 ent;schließen|(sich);to decide;Ich entschließe mich, nach Berlin zu ziehen.
 ent;schließen|(sich);to resolve, make up one's mind;Sie entschließt sich, den Job anzunehmen.
 ent;schlüsseln;to decode;Der Hacker entschlüsselt die Daten.
+heraus;schneiden;to cut out;Schneid die Figur vorsichtig heraus.
 mit;schneiden;to record or cut together;Der Regisseur schneidet das Bonusmaterial mit.
 er;schrecken;to frighten, startle;Das laute Geräusch erschreckt mich.
 zurück;schrecken;to recoil;Sie schreckt vor nichts zurück.
@@ -560,18 +612,20 @@ ein;schüchtern;to intimidate (rare usage);Seine laute Art schüchtert mich ein.
 ;sehen;to see;Ich sehe den Bus.
 an;sehen;to look at, watch;Sieh dir diesen Film an!
 an;sehen;to regard, consider;Viele sehen das Problem als harmlos an.
+an;sehen;to look at;Sieh dir das Bild an.
 aus;sehen;to look, appear;Du siehst heute sehr müde aus.
 ein;sehen;to realize, see (one's mistake);Ich sehe ein, dass ich falsch lag.
 nach;sehen;to check;Sie sieht nach dem Herd nach.
 nach;sehen;to check on, look after;Sieh bitte nach, ob die Tür zu ist.
+weg;sehen;to look away;Sie sieht schnell weg.
 über;sehen;to overlook;Ich habe den Fehler leider übersehen.
 über;sehen;to supervise;Er übersieht die Arbeiten am Bau.
-zurück;sehnen|(sich);to long to go back;Sie sehnt sich in ihre Heimat zurück.
+zurück;sehnen|(sich);to long to go back, miss;Sie sehnt sich in ihre Heimat zurück.
 ;sein;to be;Ich bin heute müde.
 ge;sellen|(sich);to join someone;Er gesellt sich zu uns.
 ab;setzen;to cancel (a show);Der Sender setzte die Serie ab.
 ab;setzen;to depose;Der Vorstand setzte den Chef ab.
-ab;setzen;to set down;Setz dich bitte kurz ab.
+ab;setzen;to set down, sit;Setz dich bitte kurz ab.
 an;setzen;to apply, start;Wir setzen eine neue Regel an.
 aus;setzen;to suspend;Die Sitzung wird ausgesetzt.
 bei;setzen;to bury;Man setzt ihn im Familiengrab bei.
@@ -586,6 +640,7 @@ um;setzen;to implement;Wir setzen den Plan um.
 um;setzen;to move to another seat;Die Lehrerin setzte ihn nach vorne um.
 über;setzen;to ferry across;Wir setzten mit der Fähre über.
 über;setzen;to translate;Bitte übersetze diesen Text ins Deutsche.
+hin;setzen|(sich);to sit down;Setz dich bitte hin.
 hinter;sich bringen;to get something over with;Ich bringe die Prüfung schnell hinter mich.
 vor;singen;to sing in front of others;Sie singt den Song der Klasse vor.
 hinter;sinnen;to reflect upon (archaic);Man kann lange über das Problem hintersinnen.
@@ -600,15 +655,16 @@ hinterher;spionieren;to spy after someone;Er spioniert ihr ständig hinterher.
 zer;splittern;to splinter;Das Holz zersplittert beim Aufprall.
 ;sprechen;to speak;Wir sprechen Deutsch.
 aus;sprechen;to pronounce;Wie spricht man dieses Wort aus?
+ent;sprechen;to correspond;Das Ergebnis entspricht den Erwartungen.
 ver;sprechen;to promise;Er verspricht Besserung.
 vor;sprechen;to audition;Ich spreche morgen für das Theaterstück vor.
 bei;springen;to jump in to help;Er springt bei, wenn ich Hilfe brauche.
 weg;spülen;to wash away;Das Hochwasser spült die Brücke weg.
 ge;stalten;to shape, form;Wir gestalten das Zimmer neu.
 ge;statten;to allow, permit;Gestatten Sie eine Frage?
-weg;stecken;to put away (in a pocket/bag);Steck dein Handy bitte weg.
+weg;stecken;to put away, stow;Steck dein Handy bitte weg.
 ;stehen;to stand;Der Mann steht vor der Tür.
-auf;stehen;to get up;Ich stehe jeden Morgen um sieben Uhr auf.
+auf;stehen;to get up, rise;Ich stehe jeden Morgen um sieben Uhr auf.
 auf;stehen;to stand up;Bitte steh auf, wenn der Lehrer hereinkommt.
 bei;stehen;to stand by, support;In der Not stehe ich dir bei.
 ent;stehen;to arise, develop;Hier entsteht ein neues Gebäude.
@@ -617,17 +673,17 @@ ver;stehen;to interpret;Die Aussage ist so zu verstehen.
 ver;stehen;to understand;Ich verstehe dich gut.
 über;stehen;to withstand, endure;Wir überstehen gemeinsam jede Krise.
 an;steigen;to rise;Die Preise steigen jedes Jahr an.
-aus;steigen;to get off (a vehicle);Wir steigen an der nächsten Haltestelle aus.
+aus;steigen;to get off, disembark;Wir steigen an der nächsten Haltestelle aus.
 aus;steigen;to quit, opt out;Er steigt nach dem Streit aus dem Projekt aus.
 ein;steigen;to enter, join (a business);Sie steigt ins Geschäft ihres Vaters ein.
-ein;steigen;to get in/on (vehicle);Steig bitte ins Auto ein.
+ein;steigen;to get in, board;Steig bitte ins Auto ein.
 um;steigen;to change trains;Wir müssen in Köln umsteigen.
 ab;stellen;to park, station;Stell den Wagen bitte dort ab.
 ab;stellen;to switch off;Stell bitte den Motor ab.
 an;stellen;to employ;Die Firma stellt ihn an.
 an;stellen;to switch on (device/gas);Stell bitte den Herd an.
 auf;stellen;to draw up, compile;Wir stellen eine Liste der Aufgaben auf.
-auf;stellen;to set up;Wir stellen die Stühle auf.
+auf;stellen;to set up, arrange;Wir stellen die Stühle auf.
 be;stellen;to cultivate (land);Der Bauer bestellt das Feld.
 be;stellen;to order (goods);Wir bestellen eine Pizza.
 dar;stellen;to depict;Der Film stellt die Zeit gut dar.
@@ -635,6 +691,7 @@ ein;stellen;to discontinue;Die Produktion wird nächstes Jahr eingestellt.
 ein;stellen;to hire, adjust;Die Firma stellt neue Mitarbeiter ein.
 ein;stellen;to tune in (radio);Stell den Sender bitte richtig ein.
 her;stellen;to produce;Die Fabrik stellt Autos her.
+hin;stellen;to place;Stell die Kiste hin.
 um;stellen;to rearrange;Wir stellen die Möbel um.
 um;stellen;to reset (clock);Stell bitte die Uhr um.
 unter;stellen;to insinuate;Unterstelle mir bitte nichts Falsches!
@@ -645,6 +702,8 @@ vor;stellen;to introduce;Darf ich dir meinen Freund vorstellen?
 vor;stellen;to present, introduce;Ich stelle dir einen Plan vor.
 zu;stellen;to deliver, provide;Der Lieferant stellt die Ware zu.
 zurück;stellen;to put back, postpone;Wir stellen das Treffen auf nächste Woche zurück.
+zusammen;stellen;to compile;Stell die Liste zusammen.
+heraus;stellen|(sich);to turn out;Es stellte sich heraus, dass er recht hatte.
 vor;stellen|(sich);to imagine;Ich kann mir das gut vorstellen.
 vor;stellen|(sich);to introduce oneself;Ich stelle mich der neuen Klasse vor.
 an;stoßen;to bump into;Ich habe mir den Kopf an der Tür angestoßen.
@@ -660,6 +719,7 @@ unter;stützen;to support;Wir unterstützen ein Kinderhilfswerk.
 ;suchen;to search;Wir suchen eine Wohnung.
 be;suchen;to attend (a course);Sie besucht einen Deutschkurs.
 be;suchen;to visit;Ich besuche meine Eltern am Wochenende.
+heraus;suchen;to pick out;Such dir ein Buch heraus.
 ver;suchen;to try;Er versucht es immer wieder.
 auf;tauchen;to surface, appear;Das U-Boot taucht langsam auf.
 hinterher;tauchen;to dive after something;Der Taucher taucht dem Schatz hinterher.
@@ -673,6 +733,7 @@ ver;teilen;to distribute;Wir verteilen die Broschüren an Passanten.
 hinterher;telefonieren;to call repeatedly;Ich muss dem Kundenservice hinterhertelefonieren.
 miss;tippen;to mistype;Ich habe mich beim Passwort misstippt.
 bei;tragen;to contribute;Jeder trägt etwas zum Erfolg bei.
+ein;tragen;to enter;Trag deinen Namen ein.
 mit;tragen;to bear jointly, support;Wir tragen die Kosten alle mit.
 miss;trauen;to distrust;Sie misstraut ihm seit dem Vorfall.
 nach;trauern;to mourn;Sie trauert noch ihrer verlorenen Liebe nach.
@@ -703,9 +764,11 @@ zurück;verlangen;to ask for something back;Er verlangt sein Buch zurück.
 unter;vermieten;to sublet;Ich untervermiete mein Zimmer für den Sommer.
 miss;verstehen;to misunderstand;Bitte missversteh meine Worte nicht.
 nach;vollziehen;to comprehend;Ich kann deine Gedanken gut nachvollziehen.
+auf;wachen;to wake up;Ich wache um sieben auf.
 er;wachen;to awake;Sie erwacht jeden Morgen um sechs Uhr.
 nach;wachsen;to regrow;Die Haare wachsen nach dem Schnitt schnell nach.
 ein;wandern;to immigrate;Viele Menschen wandern in dieses Land ein.
+ab;warten;to wait;Wir warten erst mal ab.
 aus;wechseln;to exchange;Ich wechsle mein Geld in Euro aus.
 zurück;weichen;to back away;Er weicht langsam zurück.
 ab;weisen;to reject;Die Firma weist die Forderung ab.
@@ -721,12 +784,13 @@ zu;weisen;to assign;Der Chef weist ihr neue Aufgaben zu.
 zurück;weisen;to reject, refuse;Das Gericht weist die Klage zurück.
 über;weisen;to transfer (money);Ich überweise das Geld auf dein Konto.
 ;werden;to become;Er wird Arzt.
-ein;werfen;to throw in;Wir werfen den Brief in den Kasten ein.
+los;werden;to get rid of;Ich werde die Sorgen los.
+ein;werfen;to throw in, mail;Wir werfen den Brief in den Kasten ein.
 ent;werfen;to design;Sie entwirft eine neue Kollektion.
 ent;werfen;to draft, design;Sie entwirft ein neues Logo.
 hinterher;werfen;to throw after someone;Sie wirft ihm den Schlüssel hinterher.
 vor;werfen;to accuse;Er wirft mir vor, gelogen zu haben.
-weg;werfen;to throw away;Wir werfen den alten Müll weg.
+weg;werfen;to throw away, discard;Wir werfen den alten Müll weg.
 aus;werten;to evaluate, analyze;Wir werten die Daten gerade aus.
 ge;wichten;to weight (factors);Wir gewichten die Faktoren unterschiedlich.
 hinterher;winken;to wave after someone;Sie winkt ihrem Freund hinterher.
@@ -757,23 +821,27 @@ vor;zeichnen;to outline, sketch;Der Trainer zeichnet die Strategie vor.
 ;zeigen;to show;Zeig mir dein Foto.
 auf;zeigen;to demonstrate, point out;Die Studie zeigt das Problem klar auf.
 ver;zeihen;to forgive;Kannst du mir jemals verzeihen?
+über;zeugen;to convince;Die Zahlen überzeugen mich.
 ab;ziehen;to pull off;Zieh die Schuhe ab.
 ab;ziehen;to withdraw troops;Die Armee zog sich ab.
+ab;ziehen;to deduct;Zieh die Steuer ab.
 an;ziehen;to attract;Das Angebot zieht viele Leute an.
-an;ziehen;to put on (clothes);Ich ziehe eine Jacke an, weil es kalt ist.
+an;ziehen;to put on, wear;Ich ziehe eine Jacke an, weil es kalt ist.
 an;ziehen;to tighten (screw);Zieh die Schraube bitte fest an.
-aus;ziehen;to move out;Meine Schwester zieht nächste Woche aus.
-ein;ziehen;to move in;Sie ziehen nächste Woche ein.
+aus;ziehen;to move out, leave;Meine Schwester zieht nächste Woche aus.
+ein;ziehen;to move in, settle;Sie ziehen nächste Woche ein.
 ent;ziehen;to withdraw;Man hat ihm die Lizenz entzogen.
-er;ziehen;to bring up, educate;Sie erzieht ihre Kinder sehr liebevoll.
+er;ziehen;to bring up, raise;Sie erzieht ihre Kinder sehr liebevoll.
+heraus;ziehen;to pull out;Zieh den Stecker heraus.
 hinter;ziehen;to evade (taxes, etc.);Er hat Steuern hinterzogen.
 hinterher;ziehen;to pull behind;Sie zieht den Koffer hinter sich her.
 hoch;ziehen;to pull up;Zieh den Reißverschluss hoch.
 um;ziehen;to move house;Wir ziehen nächste Woche um.
+um;ziehen;to change clothes;Ich ziehe mich um.
 unter;ziehen;to subject to;Wir unterziehen das Produkt einem Test.
 unter;ziehen;to undergo;Er unterzog sich einer Operation.
 vor;ziehen;to prefer;Ich ziehe Tee Kaffee vor.
-weg;ziehen;to move away;Er zieht im nächsten Monat weg.
+weg;ziehen;to move away, relocate;Er zieht im nächsten Monat weg.
 an;ziehen|(sich);to get dressed;Ich ziehe mich morgens schnell an.
 aus;ziehen|(sich);to undress;Ich ziehe mich für die Untersuchung aus.
 um;ziehen|(sich);to change clothes;Ich ziehe mich nach der Arbeit schnell um.
@@ -784,5 +852,6 @@ mit;zählen;to count in;Zähl mich bitte auch mit.
 nach;zählen;to recount;Zähl nochmal nach, ob das Geld stimmt.
 an;zünden;to light, ignite;Zünde bitte die Kerze an.
 ent;zünden;to ignite;Eine kleine Flamme entzündet das Feuer.
+ver;ändern;to change;Wir ändern den Plan.
 er;öffnen;to open, inaugurate;Sie eröffnet ein neues Geschäft.
 ein;üben;to practice;Übe den Dialog gut ein.
