@@ -108,8 +108,11 @@ class MainActivity : AppCompatActivity() {
                 showTopToast(getString(R.string.filter_no_matches))
                 return@launch
             }
+            val prefixCounts = repo.getAllWords().groupingBy { it.prefix }.eachCount()
             val displayValues = values.map { prefix ->
-                if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
+                val label = if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
+                val count = prefixCounts[prefix] ?: 0
+                "$label (${getString(R.string.count_verbs, count)})"
             }
             showValueChooserWithFilter(
                 title = getString(R.string.filter_choose_value),
@@ -128,10 +131,15 @@ class MainActivity : AppCompatActivity() {
                 showTopToast(getString(R.string.filter_no_matches))
                 return@launch
             }
+            val rootCounts = repo.getAllWords().groupingBy { it.root }.eachCount()
+            val displayValues = values.map { root ->
+                val count = rootCounts[root] ?: 0
+                "$root (${getString(R.string.count_verbs, count)})"
+            }
             showValueChooserWithFilter(
                 title = getString(R.string.filter_choose_value),
                 values = values,
-                displayValues = values
+                displayValues = displayValues
             ) { chosen ->
                 applyFilter(Filter(FilterType.ROOT, chosen))
             }
