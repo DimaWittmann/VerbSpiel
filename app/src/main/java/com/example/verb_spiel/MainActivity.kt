@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import android.widget.Toast
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
-import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.EditText
 import android.widget.ArrayAdapter
@@ -203,14 +202,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showTopToast(message: String) {
-        val toast = Toast(this)
-        val view = layoutInflater.inflate(R.layout.toast_top, null) as LinearLayout
-        view.findViewById<TextView>(R.id.toast_text).text = message
-        toast.view = view
-        toast.duration = Toast.LENGTH_LONG
-        val offset = (resources.displayMetrics.density * 24).toInt()
-        toast.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, offset)
-        toast.show()
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     private fun resetRound(pool: List<Word>) {
