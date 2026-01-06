@@ -5,7 +5,6 @@ import android.content.Intent
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
-import android.text.Html
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
@@ -30,7 +29,6 @@ import android.net.Uri
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var messageText: TextView
     private lateinit var nextWordText: TextView
     private lateinit var translationText: TextView
     private lateinit var exampleText: TextView
@@ -225,7 +223,6 @@ class MainActivity : AppCompatActivity() {
             leftItems = emptyArray()
             leftDisplayItems = emptyArray()
             rightItems = emptyArray()
-            messageText.text = getString(R.string.filter_no_matches)
             setNextWord(null)
             translationText.text = ""
             exampleText.text = ""
@@ -258,7 +255,7 @@ class MainActivity : AppCompatActivity() {
         if (selectedWords.isNotEmpty()) {
             val first = selectedWords[0]
             showTopToast(getString(R.string.toast_new_round_next, first.translation))
-            showNextMessage(getString(R.string.msg_greeting), first)
+            showNextMessage(first)
             translationText.text = ""
             exampleText.text = "Select correct prefix and root"
 
@@ -318,8 +315,7 @@ class MainActivity : AppCompatActivity() {
         filterStatus.text = text
     }
 
-    private fun showNextMessage(status: String, nextWord: Word?) {
-        messageText.text = status
+    private fun showNextMessage(nextWord: Word?) {
         setNextWord(nextWord)
     }
 
@@ -428,7 +424,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Find views by their IDs.
-        messageText = findViewById(R.id.message_text)
         nextWordText = findViewById(R.id.next_word_text)
         translationText = findViewById(R.id.translation_text)
         exampleText = findViewById(R.id.example_text)
@@ -527,7 +522,6 @@ class MainActivity : AppCompatActivity() {
             exampleText.text = lastResultExample
 
             if (wordI >= selectedWords.size) {
-                messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
                 setNextWord(null)
                 translationText.text = "$combinedWord\n$currentTranslation"
                 exampleText.text = "$currentExample"
@@ -538,7 +532,7 @@ class MainActivity : AppCompatActivity() {
 
             val nextWord = selectedWords[wordI]
             showTopToast(getString(R.string.toast_skipped_next, nextWord.translation))
-            showNextMessage(getString(R.string.msg_skipped), nextWord)
+            showNextMessage(nextWord)
 
             val nextIndex = wordI
             activityScope.launch {
@@ -580,7 +574,6 @@ class MainActivity : AppCompatActivity() {
                 exampleText.text = currentExample
 
                 if (selectedWords.size <= wordI) {
-                    messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
                     setNextWord(null)
                     translationText.text = "$combinedWord\n$currentTranslation"
                     exampleText.text = "$currentExample"
@@ -592,7 +585,7 @@ class MainActivity : AppCompatActivity() {
                 val nextWord = selectedWords[wordI]
                 showTopToast(getString(R.string.toast_correct_next, nextWord.translation))
 
-                showNextMessage(getString(R.string.msg_correct), nextWord)
+                showNextMessage(nextWord)
                 translationText.text = lastResultTranslation
                 exampleText.text = lastResultExample
 
@@ -610,7 +603,6 @@ class MainActivity : AppCompatActivity() {
                     lastResultExample = currentExample
 
                     if (wordI >= selectedWords.size) {
-                        messageText.text = Html.fromHtml(getString(R.string.msg_done), Html.FROM_HTML_MODE_LEGACY)
                         setNextWord(null)
                         translationText.text = "$combinedWord\n$currentTranslation"
                         exampleText.text = "$currentExample"
@@ -619,10 +611,7 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         val nextWord = selectedWords[wordI]
                         showTopToast(getString(R.string.toast_forced_advance, numberOfTries, nextWord.translation))
-                        showNextMessage(
-                            "Wrong $numberOfTries times! Let's try another",
-                            nextWord
-                        )
+                        showNextMessage(nextWord)
 
                         translationText.text = lastResultTranslation
                         exampleText.text = lastResultExample
@@ -635,7 +624,8 @@ class MainActivity : AppCompatActivity() {
 
                     numberOfTries = 0
                 } else {
-                    showNextMessage(getString(R.string.msg_wrong), currentWord)
+                    showTopToast(getString(R.string.toast_wrong_try))
+                    showNextMessage(currentWord)
                     translationText.text = lastResultTranslation
                     exampleText.text = lastResultExample
                 }
