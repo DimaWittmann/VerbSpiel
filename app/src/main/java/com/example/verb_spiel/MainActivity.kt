@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
     private var lastResultTranslation: String = ""
     private var lastResultExample: String = ""
     private var currentNextWord: Word? = null
+    private var statusLabel: String = ""
 
     private val repo by lazy { WordRepository.getInstance(this) }
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -224,6 +225,7 @@ class MainActivity : AppCompatActivity() {
             leftDisplayItems = emptyArray()
             rightItems = emptyArray()
             setNextWord(null)
+            setStatus("")
             translationText.text = ""
             exampleText.text = ""
             centerWords.clear()
@@ -233,6 +235,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setRoundEnded(false)
+        setStatus("")
         selectedWords = filtered.toMutableList()
         wordI = 0
         numberOfTries = 0
@@ -301,7 +304,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateFilterStatus() {
-        val text = when (val f = activeFilter) {
+        val modeText = when (val f = activeFilter) {
             null -> getString(R.string.filter_mode_mixed)
             else -> when (f.type) {
                 FilterType.PREFIX -> {
@@ -312,7 +315,21 @@ class MainActivity : AppCompatActivity() {
                 FilterType.FAVORITES -> getString(R.string.filter_mode_favorites)
             }
         }
-        filterStatus.text = text
+        filterStatus.text = if (statusLabel.isBlank()) {
+            modeText
+        } else {
+            getString(R.string.status_with_mode, statusLabel, modeText)
+        }
+    }
+
+    private fun setStatus(label: String, colorRes: Int? = null) {
+        statusLabel = label
+        if (colorRes != null) {
+            filterStatus.setTextColor(ContextCompat.getColor(this, colorRes))
+        } else {
+            filterStatus.setTextColor(ContextCompat.getColor(this, R.color.black))
+        }
+        updateFilterStatus()
     }
 
     private fun showNextMessage(nextWord: Word?) {
@@ -523,6 +540,7 @@ class MainActivity : AppCompatActivity() {
 
             if (wordI >= selectedWords.size) {
                 setNextWord(null)
+                setStatus(getString(R.string.status_done), R.color.gray)
                 translationText.text = "$combinedWord\n$currentTranslation"
                 exampleText.text = "$currentExample"
                 showTopToast(getString(R.string.toast_round_done))
@@ -533,6 +551,7 @@ class MainActivity : AppCompatActivity() {
             val nextWord = selectedWords[wordI]
             showTopToast(getString(R.string.toast_skipped_next, nextWord.translation))
             showNextMessage(nextWord)
+            setStatus(getString(R.string.status_skipped), R.color.orange)
 
             val nextIndex = wordI
             activityScope.launch {
@@ -575,6 +594,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (selectedWords.size <= wordI) {
                     setNextWord(null)
+                    setStatus(getString(R.string.status_done), R.color.gray)
                     translationText.text = "$combinedWord\n$currentTranslation"
                     exampleText.text = "$currentExample"
                     showTopToast(getString(R.string.toast_round_done))
@@ -586,6 +606,7 @@ class MainActivity : AppCompatActivity() {
                 showTopToast(getString(R.string.toast_correct_next, nextWord.translation))
 
                 showNextMessage(nextWord)
+                setStatus(getString(R.string.status_correct), R.color.teal_700)
                 translationText.text = lastResultTranslation
                 exampleText.text = lastResultExample
 
@@ -604,6 +625,7 @@ class MainActivity : AppCompatActivity() {
 
                     if (wordI >= selectedWords.size) {
                         setNextWord(null)
+                        setStatus(getString(R.string.status_done), R.color.gray)
                         translationText.text = "$combinedWord\n$currentTranslation"
                         exampleText.text = "$currentExample"
                         showTopToast(getString(R.string.toast_round_done))
@@ -612,6 +634,7 @@ class MainActivity : AppCompatActivity() {
                         val nextWord = selectedWords[wordI]
                         showTopToast(getString(R.string.toast_forced_advance, numberOfTries, nextWord.translation))
                         showNextMessage(nextWord)
+                        setStatus(getString(R.string.status_forced), R.color.orange)
 
                         translationText.text = lastResultTranslation
                         exampleText.text = lastResultExample
@@ -626,6 +649,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     showTopToast(getString(R.string.toast_wrong_try))
                     showNextMessage(currentWord)
+                    setStatus(getString(R.string.status_wrong), R.color.red)
                     translationText.text = lastResultTranslation
                     exampleText.text = lastResultExample
                 }

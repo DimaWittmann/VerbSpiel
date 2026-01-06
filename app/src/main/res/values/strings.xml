@@ -50,4 +50,10 @@
     <string name="filter_type_hint">Type to filter</string>
     <string name="count_verbs">x%1$d</string>
     <string name="next_word_label">Next word</string>
+    <string name="status_with_mode">%1$s • %2$s</string>
+    <string name="status_correct">Correct</string>
+    <string name="status_wrong">Wrong</string>
+    <string name="status_skipped">Skipped</string>
+    <string name="status_forced">Forced</string>
+    <string name="status_done">Done</string>
 </resources>
