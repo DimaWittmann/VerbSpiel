@@ -12,6 +12,7 @@ import android.widget.Toast
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ImageButton
 import android.widget.EditText
 import android.widget.ArrayAdapter
 import android.os.Build
@@ -25,12 +26,16 @@ import android.text.Editable
 import android.text.TextWatcher
 import java.io.BufferedReader
 import android.net.Uri
+import androidx.appcompat.widget.TooltipCompat
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var nextWordText: TextView
     private lateinit var translationText: TextView
     private lateinit var exampleText: TextView
+    private lateinit var buttonLastFavorite: ImageButton
+    private lateinit var buttonLastLearned: ImageButton
+    private lateinit var buttonLastWiki: ImageButton
 
     private lateinit var listLeft: NumberPicker
     private lateinit var listRight: NumberPicker
@@ -55,6 +60,7 @@ class MainActivity : AppCompatActivity() {
     private var activeFilter: Filter? = null
     private var lastResultTranslation: String = ""
     private var lastResultExample: String = ""
+    private var lastResultWord: Word? = null
     private var currentNextWord: Word? = null
     private var statusLabel: String = ""
 
@@ -205,6 +211,7 @@ class MainActivity : AppCompatActivity() {
             leftDisplayItems = emptyArray()
             rightItems = emptyArray()
             setNextWord(null)
+            setLastWord(null)
             setStatus("")
             translationText.text = ""
             exampleText.text = ""
@@ -235,6 +242,7 @@ class MainActivity : AppCompatActivity() {
             val first = selectedWords[0]
             showTopToast(getString(R.string.toast_new_round_next, first.translation))
             showNextMessage(first)
+            setLastWord(null)
             translationText.text = ""
             exampleText.text = "Select correct prefix and root"
 
@@ -315,6 +323,49 @@ class MainActivity : AppCompatActivity() {
     private fun setNextWord(word: Word?) {
         currentNextWord = word
         nextWordText.text = word?.translation.orEmpty()
+    }
+
+    private fun setLastWord(word: Word?) {
+        lastResultWord = word
+        buttonLastFavorite.isEnabled = true
+        buttonLastLearned.isEnabled = true
+        buttonLastWiki.isEnabled = true
+        val favoriteIcon = if (word?.isFavorite == true) {
+            R.drawable.ic_favorite
+        } else {
+            R.drawable.ic_favorite_border
+        }
+        val learnedIcon = if (word?.isLearned == true) {
+            R.drawable.ic_learned_on
+        } else {
+            R.drawable.ic_learned_off
+        }
+        buttonLastFavorite.setImageResource(favoriteIcon)
+        buttonLastLearned.setImageResource(learnedIcon)
+        val favoriteHint = if (word == null) {
+            getString(R.string.add_to_favorites)
+        } else if (word.isFavorite) {
+            getString(R.string.remove_from_favorites)
+        } else {
+            getString(R.string.add_to_favorites)
+        }
+        val learnedHint = if (word == null) {
+            getString(R.string.add_to_learned)
+        } else if (word.isLearned) {
+            getString(R.string.remove_from_learned)
+        } else {
+            getString(R.string.add_to_learned)
+        }
+        TooltipCompat.setTooltipText(buttonLastFavorite, favoriteHint)
+        TooltipCompat.setTooltipText(buttonLastLearned, learnedHint)
+        buttonLastFavorite.contentDescription = favoriteHint
+        buttonLastLearned.contentDescription = learnedHint
+    }
+
+    private fun openGermanWordInfo(word: Word) {
+        val url = "https://de.wiktionary.org/wiki/" + Uri.encode(word.prefix + word.root)
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
     }
 
     private fun toEnglishLookup(translation: String): String {
@@ -420,6 +471,10 @@ class MainActivity : AppCompatActivity() {
         nextWordText = findViewById(R.id.next_word_text)
         translationText = findViewById(R.id.translation_text)
         exampleText = findViewById(R.id.example_text)
+        buttonLastFavorite = findViewById(R.id.button_last_favorite)
+        buttonLastLearned = findViewById(R.id.button_last_learned)
+        buttonLastWiki = findViewById(R.id.button_last_wiki)
+        TooltipCompat.setTooltipText(buttonLastWiki, getString(R.string.last_word_wiki))
         listLeft = findViewById(R.id.list_left)
         listRight = findViewById(R.id.list_right)
         buttonCombine = findViewById(R.id.button_combine)
@@ -450,6 +505,28 @@ class MainActivity : AppCompatActivity() {
             val url = "https://en.wiktionary.org/wiki/" + Uri.encode(toEnglishLookup(word.translation)) + "#English"
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
+        }
+
+        setLastWord(null)
+        buttonLastFavorite.setOnClickListener {
+            val word = lastResultWord ?: return@setOnClickListener
+            val updated = word.copy(isFavorite = !word.isFavorite)
+            activityScope.launch {
+                repo.updateWordStats(updated)
+            }
+            setLastWord(updated)
+        }
+        buttonLastLearned.setOnClickListener {
+            val word = lastResultWord ?: return@setOnClickListener
+            val updated = word.copy(isLearned = !word.isLearned)
+            activityScope.launch {
+                repo.updateWordStats(updated)
+            }
+            setLastWord(updated)
+        }
+        buttonLastWiki.setOnClickListener {
+            val word = lastResultWord ?: return@setOnClickListener
+            openGermanWordInfo(word)
         }
 
         listLeft.setOnValueChangedListener { _, _, newValue ->
@@ -504,11 +581,13 @@ class MainActivity : AppCompatActivity() {
             numberOfTries = 0
             lastResultTranslation = "$combinedWord\n$currentTranslation"
             lastResultExample = currentExample
+            setLastWord(currentWord)
             translationText.text = lastResultTranslation
             exampleText.text = lastResultExample
 
             if (wordI >= selectedWords.size) {
                 setNextWord(null)
+                setLastWord(currentWord)
                 setStatus(getString(R.string.status_done), R.color.gray)
                 translationText.text = "$combinedWord\n$currentTranslation"
                 exampleText.text = "$currentExample"
@@ -556,11 +635,13 @@ class MainActivity : AppCompatActivity() {
                 numberOfTries = 0
                 lastResultTranslation = "$combinedWord\n$currentTranslation"
                 lastResultExample = currentExample
+                setLastWord(currentWord)
                 translationText.text = lastResultTranslation
                 exampleText.text = currentExample
 
                 if (selectedWords.size <= wordI) {
                     setNextWord(null)
+                    setLastWord(currentWord)
                     setStatus(getString(R.string.status_done), R.color.gray)
                     translationText.text = "$combinedWord\n$currentTranslation"
                     exampleText.text = "$currentExample"
@@ -588,9 +669,11 @@ class MainActivity : AppCompatActivity() {
                     wordI += 1
                     lastResultTranslation = "$combinedWord\n$currentTranslation"
                     lastResultExample = currentExample
+                    setLastWord(currentWord)
 
                     if (wordI >= selectedWords.size) {
                         setNextWord(null)
+                        setLastWord(currentWord)
                         setStatus(getString(R.string.status_done), R.color.gray)
                         translationText.text = "$combinedWord\n$currentTranslation"
                         exampleText.text = "$currentExample"

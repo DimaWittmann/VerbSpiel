@@ -56,4 +56,7 @@
     <string name="status_skipped">Skipped</string>
     <string name="status_forced">Forced</string>
     <string name="status_done">Done</string>
+    <string name="last_word_favorite">Favorite</string>
+    <string name="last_word_learned">Learned</string>
+    <string name="last_word_wiki">Wiki</string>
 </resources>

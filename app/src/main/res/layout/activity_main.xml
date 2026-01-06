@@ -28,6 +28,47 @@
         android:background="@drawable/translation_chip"
         android:elevation="2dp" />
 
+    <LinearLayout
+        android:id="@+id/last_word_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/button_last_favorite"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/last_word_favorite"
+            android:src="@drawable/ic_favorite_border"
+            android:tooltipText="@string/last_word_favorite"
+            app:tint="@color/teal_700" />
+
+        <ImageButton
+            android:id="@+id/button_last_learned"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/last_word_learned"
+            android:src="@drawable/ic_learned_off"
+            android:tooltipText="@string/last_word_learned"
+            app:tint="@color/teal_700" />
+
+        <ImageButton
+            android:id="@+id/button_last_wiki"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/last_word_wiki"
+            android:src="@drawable/ic_info"
+            android:tooltipText="@string/last_word_wiki"
+            app:tint="@color/teal_700" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/example_text"
         android:layout_width="match_parent"
