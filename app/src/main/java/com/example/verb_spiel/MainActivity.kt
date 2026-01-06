@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var exampleText: TextView
 
     private lateinit var listLeft: NumberPicker
-    private lateinit var listCenter: ListView
     private lateinit var listRight: NumberPicker
     private lateinit var buttonCombine: Button
     private lateinit var buttonStats: Button
@@ -49,8 +48,6 @@ class MainActivity : AppCompatActivity() {
     private var selectedRight: String? = null
     private var selectedWords: MutableList<Word> = mutableListOf()
     private var wordI: Int = 0
-    private var centerWords: MutableList<Word> = mutableListOf()
-    private lateinit var centerAdapter: CenterWordAdapter
     private var leftItems: Array<String> = emptyArray()
     private var leftDisplayItems: Array<String> = emptyArray()
     private var rightItems: Array<String> = emptyArray()
@@ -63,15 +60,6 @@ class MainActivity : AppCompatActivity() {
 
     private val repo by lazy { WordRepository.getInstance(this) }
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    private val mainWordUpdater = object : WordListUpdater {
-        override fun updateWord(updated: Word) {
-            centerAdapter.updateWord(updated)
-        }
-
-        override fun removeWord(wordId: Int) {
-            centerAdapter.removeWord(wordId)
-        }
-    }
 
     private data class Filter(val type: FilterType, val value: String)
     private enum class FilterType { PREFIX, ROOT, FAVORITES }
@@ -220,8 +208,6 @@ class MainActivity : AppCompatActivity() {
             setStatus("")
             translationText.text = ""
             exampleText.text = ""
-            centerWords.clear()
-            centerAdapter.notifyDataSetChanged()
             setRoundEnded(true)
             return
         }
@@ -231,8 +217,6 @@ class MainActivity : AppCompatActivity() {
         selectedWords = filtered.toMutableList()
         wordI = 0
         numberOfTries = 0
-        centerWords.clear()
-        centerAdapter.notifyDataSetChanged()
 
         leftItems = selectedWords.map { it.prefix }.shuffled().toTypedArray()
         leftDisplayItems = leftItems.map { prefix ->
@@ -437,7 +421,6 @@ class MainActivity : AppCompatActivity() {
         translationText = findViewById(R.id.translation_text)
         exampleText = findViewById(R.id.example_text)
         listLeft = findViewById(R.id.list_left)
-        listCenter = findViewById(R.id.list_center)
         listRight = findViewById(R.id.list_right)
         buttonCombine = findViewById(R.id.button_combine)
         buttonStats = findViewById(R.id.button_stats)
@@ -458,11 +441,6 @@ class MainActivity : AppCompatActivity() {
         progressBar.max = 10
         progressBar.min = 0
         progressBar.setProgress(0)
-
-        centerAdapter = CenterWordAdapter(this, centerWords) { word ->
-            WordOptions.show(this, activityScope, repo, mainWordUpdater, word)
-        }
-        listCenter.adapter = centerAdapter
 
         updateFilterStatus()
         fetchPoolAndReset(activeFilter)
@@ -524,7 +502,6 @@ class MainActivity : AppCompatActivity() {
 
             wordI += 1
             numberOfTries = 0
-            centerAdapter.insertWord(currentWord)
             lastResultTranslation = "$combinedWord\n$currentTranslation"
             lastResultExample = currentExample
             translationText.text = lastResultTranslation
@@ -577,8 +554,6 @@ class MainActivity : AppCompatActivity() {
             if (isCorrect) {
                 wordI += 1
                 numberOfTries = 0
-                centerAdapter.insertWord(currentWord)
-
                 lastResultTranslation = "$combinedWord\n$currentTranslation"
                 lastResultExample = currentExample
                 translationText.text = lastResultTranslation
@@ -611,7 +586,6 @@ class MainActivity : AppCompatActivity() {
 
                 if (numberOfTries >= selectedWords.size) {
                     wordI += 1
-                    centerAdapter.insertWord(currentWord)
                     lastResultTranslation = "$combinedWord\n$currentTranslation"
                     lastResultExample = currentExample
 
