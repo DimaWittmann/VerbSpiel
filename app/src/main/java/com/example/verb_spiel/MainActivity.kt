@@ -213,8 +213,8 @@ class MainActivity : AppCompatActivity() {
             setNextWord(null)
             setLastWord(null)
             setStatus("")
-            translationText.text = ""
-            exampleText.text = ""
+            setTextWithTooltip(translationText, "")
+            setTextWithTooltip(exampleText, "")
             setRoundEnded(true)
             return
         }
@@ -243,8 +243,8 @@ class MainActivity : AppCompatActivity() {
             showTopToast(getString(R.string.toast_new_round_next, first.translation))
             showNextMessage(first)
             setLastWord(null)
-            translationText.text = ""
-            exampleText.text = "Select correct prefix and root"
+            setTextWithTooltip(translationText, "")
+            setTextWithTooltip(exampleText, "Select correct prefix and root")
 
             activityScope.launch {
                 selectedWords[0] = recordShown(first)
@@ -299,11 +299,12 @@ class MainActivity : AppCompatActivity() {
                 FilterType.FAVORITES -> getString(R.string.filter_mode_favorites)
             }
         }
-        filterStatus.text = if (statusLabel.isBlank()) {
+        val text = if (statusLabel.isBlank()) {
             modeText
         } else {
             getString(R.string.status_with_mode, statusLabel, modeText)
         }
+        setTextWithTooltip(filterStatus, text)
     }
 
     private fun setStatus(label: String, colorRes: Int? = null) {
@@ -322,7 +323,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setNextWord(word: Word?) {
         currentNextWord = word
-        nextWordText.text = word?.translation.orEmpty()
+        setTextWithTooltip(nextWordText, word?.translation.orEmpty())
+    }
+
+    private fun setTextWithTooltip(view: TextView, text: String) {
+        view.text = text
+        TooltipCompat.setTooltipText(view, text)
     }
 
     private fun setLastWord(word: Word?) {
@@ -582,15 +588,15 @@ class MainActivity : AppCompatActivity() {
             lastResultTranslation = "$combinedWord\n$currentTranslation"
             lastResultExample = currentExample
             setLastWord(currentWord)
-            translationText.text = lastResultTranslation
-            exampleText.text = lastResultExample
+            setTextWithTooltip(translationText, lastResultTranslation)
+            setTextWithTooltip(exampleText, lastResultExample)
 
             if (wordI >= selectedWords.size) {
                 setNextWord(null)
                 setLastWord(currentWord)
                 setStatus(getString(R.string.status_done), R.color.gray)
-                translationText.text = "$combinedWord\n$currentTranslation"
-                exampleText.text = "$currentExample"
+                setTextWithTooltip(translationText, "$combinedWord\n$currentTranslation")
+                setTextWithTooltip(exampleText, "$currentExample")
                 showTopToast(getString(R.string.toast_round_done))
                 setRoundEnded(true)
                 return@setOnClickListener
@@ -636,15 +642,15 @@ class MainActivity : AppCompatActivity() {
                 lastResultTranslation = "$combinedWord\n$currentTranslation"
                 lastResultExample = currentExample
                 setLastWord(currentWord)
-                translationText.text = lastResultTranslation
-                exampleText.text = currentExample
+                setTextWithTooltip(translationText, lastResultTranslation)
+                setTextWithTooltip(exampleText, currentExample)
 
                 if (selectedWords.size <= wordI) {
                     setNextWord(null)
                     setLastWord(currentWord)
                     setStatus(getString(R.string.status_done), R.color.gray)
-                    translationText.text = "$combinedWord\n$currentTranslation"
-                    exampleText.text = "$currentExample"
+                    setTextWithTooltip(translationText, "$combinedWord\n$currentTranslation")
+                    setTextWithTooltip(exampleText, "$currentExample")
                     showTopToast(getString(R.string.toast_round_done))
                     setRoundEnded(true)
                     return@setOnClickListener
@@ -655,8 +661,8 @@ class MainActivity : AppCompatActivity() {
 
                 showNextMessage(nextWord)
                 setStatus(getString(R.string.status_correct), R.color.teal_700)
-                translationText.text = lastResultTranslation
-                exampleText.text = lastResultExample
+                setTextWithTooltip(translationText, lastResultTranslation)
+                setTextWithTooltip(exampleText, lastResultExample)
 
                 val nextIndex = wordI
                 activityScope.launch {
@@ -675,8 +681,8 @@ class MainActivity : AppCompatActivity() {
                         setNextWord(null)
                         setLastWord(currentWord)
                         setStatus(getString(R.string.status_done), R.color.gray)
-                        translationText.text = "$combinedWord\n$currentTranslation"
-                        exampleText.text = "$currentExample"
+                        setTextWithTooltip(translationText, "$combinedWord\n$currentTranslation")
+                        setTextWithTooltip(exampleText, "$currentExample")
                         showTopToast(getString(R.string.toast_round_done))
                         setRoundEnded(true)
                     } else {
@@ -685,8 +691,8 @@ class MainActivity : AppCompatActivity() {
                         showNextMessage(nextWord)
                         setStatus(getString(R.string.status_forced), R.color.orange)
 
-                        translationText.text = lastResultTranslation
-                        exampleText.text = lastResultExample
+                        setTextWithTooltip(translationText, lastResultTranslation)
+                        setTextWithTooltip(exampleText, lastResultExample)
 
                         val nextIndex = wordI
                         activityScope.launch {
@@ -699,8 +705,8 @@ class MainActivity : AppCompatActivity() {
                     showTopToast(getString(R.string.toast_wrong_try))
                     showNextMessage(currentWord)
                     setStatus(getString(R.string.status_wrong), R.color.red)
-                    translationText.text = lastResultTranslation
-                    exampleText.text = lastResultExample
+                    setTextWithTooltip(translationText, lastResultTranslation)
+                    setTextWithTooltip(exampleText, lastResultExample)
                 }
             }
             progressBar.setProgress(numberOfTries, true)

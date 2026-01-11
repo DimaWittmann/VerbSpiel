@@ -1,40 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:dividerPadding="4dp"
-    android:orientation="vertical"
     android:padding="16dp">
 
     <TextView
         android:id="@+id/filter_status"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="@string/filter_mode_mixed"
         android:textAlignment="center"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/translation_text"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
+        android:ellipsize="end"
+        android:maxLines="2"
         android:minLines="2"
+        android:background="@drawable/translation_chip"
+        android:elevation="2dp"
+        android:padding="6dp"
+        android:textAlignment="center"
         android:textSize="26sp"
         android:textStyle="bold"
-        android:padding="6dp"
-        android:background="@drawable/translation_chip"
-        android:elevation="2dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filter_status" />
 
     <LinearLayout
         android:id="@+id/last_word_actions"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/translation_text">
 
         <ImageButton
             android:id="@+id/button_last_favorite"
@@ -71,26 +82,33 @@
 
     <TextView
         android:id="@+id/example_text"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="2"
+        android:minLines="2"
         android:textAlignment="center"
         android:textSize="18sp"
-        android:textStyle="italic" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/last_word_actions"
+        app:layout_constraintVertical_chainStyle="spread" />
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
+        android:id="@+id/next_word_card"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         app:cardElevation="2dp"
         app:cardUseCompatPadding="true"
         app:strokeWidth="1dp"
-        app:strokeColor="@color/teal_700">
+        app:strokeColor="@color/teal_700"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/example_text">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -113,7 +131,11 @@
                 android:background="@drawable/translation_chip"
                 android:clickable="true"
                 android:elevation="2dp"
+                android:ellipsize="end"
                 android:focusable="true"
+                android:gravity="center_vertical"
+                android:maxLines="2"
+                android:minLines="2"
                 android:padding="6dp"
                 android:textAlignment="center"
                 android:textSize="26sp"
@@ -121,17 +143,16 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/pickers_row"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/next_word_card">
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
@@ -234,24 +255,30 @@
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
     <ProgressBar
         android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/buttons_row"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pickers_row"
+        app:layout_constraintVertical_bias="1.0" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/buttons_row"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingTop="8dp">
+        android:paddingTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/arrow_buttons_left"
@@ -326,4 +353,4 @@
             android:src="@drawable/triangle_right" />
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
