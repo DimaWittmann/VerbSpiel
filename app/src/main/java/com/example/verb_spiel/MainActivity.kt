@@ -27,6 +27,7 @@ import android.text.TextWatcher
 import java.io.BufferedReader
 import android.net.Uri
 import androidx.appcompat.widget.TooltipCompat
+import android.content.ActivityNotFoundException
 
 class MainActivity : AppCompatActivity() {
 
@@ -508,9 +509,21 @@ class MainActivity : AppCompatActivity() {
 
         nextWordText.setOnClickListener {
             val word = currentNextWord ?: return@setOnClickListener
-            val url = "https://en.wiktionary.org/wiki/" + Uri.encode(toEnglishLookup(word.translation)) + "#English"
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            startActivity(intent)
+            val text = word.translation
+            val url = "https://translate.google.com/?sl=en&tl=de&text=" +
+                Uri.encode(text) + "&op=translate"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                setPackage("com.google.android.apps.translate")
+            }
+            try {
+                startActivity(intent)
+            } catch (_: ActivityNotFoundException) {
+                val webIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://www.google.com/search?q=" + Uri.encode(text))
+                )
+                startActivity(webIntent)
+            }
         }
 
         setLastWord(null)
