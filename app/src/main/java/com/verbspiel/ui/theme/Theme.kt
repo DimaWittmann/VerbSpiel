@@ -1,4 +1,4 @@
-package com.example.verb_spiel.ui.theme
+package com.verbspiel.ui.theme
 
 import android.app.Activity
 import android.os.Build

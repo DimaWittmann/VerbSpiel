@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Verb-Spiel</string>
+    <string name="app_name">VerbSpiel</string>
     <string name="combine">Combine</string>
     <string name="no_selection_yet">(No selection yet)</string>
     <string name="view_stats">View stats</string>

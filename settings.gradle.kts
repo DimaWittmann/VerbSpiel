@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Verb-Spiel"
+rootProject.name = "VerbSpiel"
 include(":app")
  

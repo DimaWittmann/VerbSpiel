@@ -1,4 +1,4 @@
-package com.example.verb_spiel
+package com.verbspiel
 
 interface WordListUpdater {
     fun updateWord(updated: Word)

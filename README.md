@@ -11,13 +11,8 @@ Built mostly by codex.
 - Room database with stats tracking and word sync
 
 ## Project Structure
-- `app/src/main/java/com/example/verb_spiel` - Kotlin source
+- `app/src/main/java/com/verbspiel` - Kotlin source
 - `app/src/main/res` - layouts, strings, and `raw/data.txt` word list
-
-## Setup
-1. Open the project in Android Studio.
-2. Sync Gradle.
-3. Run on an emulator or device.
 
 ## Word List Format
 `app/src/main/res/raw/data.txt`:

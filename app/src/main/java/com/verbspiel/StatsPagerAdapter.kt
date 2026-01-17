@@ -1,4 +1,4 @@
-package com.example.verb_spiel
+package com.verbspiel
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity

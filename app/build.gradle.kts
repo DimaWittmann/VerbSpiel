@@ -6,15 +6,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.verb_spiel"
+    namespace = "com.verbspiel"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.verb_spiel"
+        applicationId = "com.verbspiel"
         minSdk = 28
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.3.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

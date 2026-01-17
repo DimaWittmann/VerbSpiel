@@ -1,4 +1,4 @@
-package com.example.verb_spiel.ui.theme
+package com.verbspiel.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

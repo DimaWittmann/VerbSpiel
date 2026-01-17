@@ -1,4 +1,4 @@
-package com.example.verb_spiel
+package com.verbspiel
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.verb_spiel", appContext.packageName)
+        assertEquals("com.verbspiel", appContext.packageName)
     }
 }

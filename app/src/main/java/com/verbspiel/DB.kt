@@ -1,4 +1,4 @@
-package com.example.verb_spiel
+package com.verbspiel
 
 import android.content.Context
 import androidx.room.Entity
