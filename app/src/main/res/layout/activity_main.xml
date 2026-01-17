@@ -32,25 +32,27 @@
         android:textAlignment="center"
         android:textSize="26sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/last_word_actions"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filter_status" />
 
     <LinearLayout
         android:id="@+id/last_word_actions"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
         android:gravity="center"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/translation_text">
+        app:layout_constraintStart_toEndOf="@id/translation_text"
+        app:layout_constraintTop_toTopOf="@id/translation_text"
+        app:layout_constraintBottom_toBottomOf="@id/translation_text">
 
         <ImageButton
             android:id="@+id/button_last_favorite"
             android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/last_word_favorite"
             android:src="@drawable/ic_favorite_border"
@@ -60,8 +62,8 @@
         <ImageButton
             android:id="@+id/button_last_learned"
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="12dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/last_word_learned"
             android:src="@drawable/ic_learned_off"
@@ -71,14 +73,21 @@
         <ImageButton
             android:id="@+id/button_last_wiki"
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="12dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/last_word_wiki"
             android:src="@drawable/ic_info"
             android:tooltipText="@string/last_word_wiki"
             app:tint="@color/teal_700" />
     </LinearLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/top_block_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="translation_text,last_word_actions" />
 
     <TextView
         android:id="@+id/example_text"
@@ -94,7 +103,8 @@
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/last_word_actions"
+        app:layout_constraintTop_toBottomOf="@id/top_block_barrier"
+        app:layout_constraintBottom_toTopOf="@id/next_word_card"
         app:layout_constraintVertical_chainStyle="spread" />
 
     <com.google.android.material.card.MaterialCardView
@@ -108,7 +118,8 @@
         app:strokeColor="@color/teal_700"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/example_text">
+        app:layout_constraintTop_toBottomOf="@id/example_text"
+        app:layout_constraintBottom_toTopOf="@id/pickers_row">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -152,7 +163,8 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/next_word_card">
+        app:layout_constraintTop_toBottomOf="@id/next_word_card"
+        app:layout_constraintBottom_toTopOf="@id/progress_bar">
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
@@ -170,12 +182,6 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
                 android:padding="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_prefix"
-                    android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/arrow_prefix_up"
@@ -221,12 +227,6 @@
                 android:orientation="vertical"
                 android:padding="8dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_root"
-                    android:textStyle="bold" />
-
                 <ImageView
                     android:id="@+id/arrow_root_up"
                     android:layout_width="16dp"
@@ -264,10 +264,8 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@id/buttons_row"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pickers_row"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@id/pickers_row" />
 
     <LinearLayout
         android:id="@+id/buttons_row"
