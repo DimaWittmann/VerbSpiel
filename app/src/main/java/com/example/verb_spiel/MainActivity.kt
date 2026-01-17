@@ -50,8 +50,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
 
     // Variables to track the currently selected items in each list.
-    private var selectedLeft: String? = null
-    private var selectedRight: String? = null
     private var selectedWords: MutableList<Word> = mutableListOf()
     private var wordI: Int = 0
     private var leftItems: Array<String> = emptyArray()
@@ -233,8 +231,6 @@ class MainActivity : AppCompatActivity() {
         rightItems = selectedWords.map { rootLabel(it) }.shuffled().toTypedArray()
         createNumberPicker(listLeft, leftItems, leftDisplayItems)
         createNumberPicker(listRight, rightItems, rightItems)
-        selectedLeft = leftItems.firstOrNull()
-        selectedRight = rightItems.firstOrNull()
 
         progressBar.max = selectedWords.size
         progressBar.setProgress(0, true)
@@ -548,17 +544,6 @@ class MainActivity : AppCompatActivity() {
             openGermanWordInfo(word)
         }
 
-        listLeft.setOnValueChangedListener { _, _, newValue ->
-            if (leftItems.isNotEmpty()) {
-                selectedLeft = leftItems[newValue]
-            }
-        }
-
-        listRight.setOnValueChangedListener { _, _, newValue ->
-            if (rightItems.isNotEmpty()) {
-                selectedRight = rightItems[newValue]
-            }
-        }
 
         arrowPrefixUp.setOnClickListener { movePicker(listLeft, -1) }
         arrowPrefixDown.setOnClickListener { movePicker(listLeft, 1) }
@@ -629,13 +614,21 @@ class MainActivity : AppCompatActivity() {
 
         // When the "Combine" button is clicked, combine the selected items.
         buttonCombine.setOnClickListener {
-            if (selectedLeft == null || selectedRight == null) {
+            if (leftItems.isEmpty() || rightItems.isEmpty()) {
                 return@setOnClickListener
             }
 
             if (selectedWords.isEmpty() || selectedWords.size <= wordI) {
                 return@setOnClickListener
             }
+
+            val leftIndex = listLeft.value
+            val rightIndex = listRight.value
+            if (leftIndex !in leftItems.indices || rightIndex !in rightItems.indices) {
+                return@setOnClickListener
+            }
+            val currentLeft = leftItems[leftIndex]
+            val currentRight = rightItems[rightIndex]
 
             val currentIndex = wordI
             val currentWord = selectedWords[currentIndex]
@@ -644,7 +637,7 @@ class MainActivity : AppCompatActivity() {
             val currentExample = currentWord.example
 
             val isCorrect =
-                (selectedLeft == selectedWords[currentIndex].prefix && selectedRight == rootLabel(selectedWords[currentIndex]))
+                (currentLeft == selectedWords[currentIndex].prefix && currentRight == rootLabel(selectedWords[currentIndex]))
             activityScope.launch {
                 selectedWords[currentIndex] = recordAttempt(currentWord, isCorrect)
             }
