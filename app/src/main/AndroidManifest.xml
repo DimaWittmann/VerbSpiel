@@ -16,11 +16,13 @@
             android:name=".StatsActivity"
             android:exported="false"
             android:label="@string/stats_title"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.VerbSpiel" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.VerbSpiel.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
