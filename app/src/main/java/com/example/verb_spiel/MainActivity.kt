@@ -224,13 +224,7 @@ class MainActivity : AppCompatActivity() {
         wordI = 0
         numberOfTries = 0
 
-        leftItems = selectedWords.map { it.prefix }.shuffled().toTypedArray()
-        leftDisplayItems = leftItems.map { prefix ->
-            if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
-        }.toTypedArray()
-        rightItems = selectedWords.map { rootLabel(it) }.shuffled().toTypedArray()
-        createNumberPicker(listLeft, leftItems, leftDisplayItems)
-        createNumberPicker(listRight, rightItems, rightItems)
+        initializeNumberPickers()
 
         progressBar.max = selectedWords.size
         progressBar.setProgress(0, true)
@@ -267,6 +261,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             .show()
+    }
+
+    private fun initializeNumberPickers() {
+        val leftAll = selectedWords.map { it.prefix }.shuffled()
+        val leftCounts = leftAll.groupingBy { it }.eachCount()
+        leftItems = leftAll.distinct().toTypedArray()
+        leftDisplayItems = leftItems.map { prefix ->
+            val label = if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
+            val count = leftCounts[prefix] ?: 0
+            if (count > 1) "$label (x$count)" else label
+        }.toTypedArray()
+
+        val rightAll = selectedWords.map { rootLabel(it) }.shuffled()
+        val rightCounts = rightAll.groupingBy { it }.eachCount()
+        rightItems = rightAll.distinct().toTypedArray()
+        val rightDisplayItems = rightItems.map { root ->
+            val count = rightCounts[root] ?: 0
+            if (count > 1) "$root (x$count)" else root
+        }.toTypedArray()
+
+        createNumberPicker(listLeft, leftItems, leftDisplayItems)
+        createNumberPicker(listRight, rightItems, rightDisplayItems)
     }
 
 
