@@ -1,4 +1,4 @@
-version:4
+version:1
 prefix;root;translation;example
 miss;achten;to disregard, neglect;Wer die Regeln missachtet, wird bestraft.
 nach;ahmen;to mimic;Das Kind ahmt den Lehrer nach.

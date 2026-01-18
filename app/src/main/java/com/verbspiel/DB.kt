@@ -11,13 +11,11 @@ import androidx.room.Update
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-@Database(entities = [Word::class, AppMeta::class], version = 4)
+@Database(entities = [Word::class, AppMeta::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun wordDao(): WordDao
     abstract fun metaDao(): MetaDao
@@ -166,7 +164,6 @@ class WordRepository(context: Context) {
         context.applicationContext,
         AppDatabase::class.java, "my-app-database"
     )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
         .build()
 
     private val wordDao = db.wordDao()
@@ -291,35 +288,6 @@ class WordRepository(context: Context) {
 
         private fun wordKey(word: Word): String {
             return "${word.prefix};${word.root};${word.isReflexive};${word.translation}"
-        }
-
-        val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE words ADD COLUMN timesShown INTEGER NOT NULL DEFAULT 0")
-                db.execSQL("ALTER TABLE words ADD COLUMN correctCount INTEGER NOT NULL DEFAULT 0")
-                db.execSQL("ALTER TABLE words ADD COLUMN failedCount INTEGER NOT NULL DEFAULT 0")
-                db.execSQL("ALTER TABLE words ADD COLUMN triesCount INTEGER NOT NULL DEFAULT 0")
-                db.execSQL("ALTER TABLE words ADD COLUMN lastShownAt INTEGER NOT NULL DEFAULT 0")
-                db.execSQL("ALTER TABLE words ADD COLUMN lastCorrectAt INTEGER NOT NULL DEFAULT 0")
-                db.execSQL("ALTER TABLE words ADD COLUMN lastFailedAt INTEGER NOT NULL DEFAULT 0")
-            }
-        }
-
-        val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("CREATE TABLE IF NOT EXISTS app_meta (key TEXT NOT NULL, intValue INTEGER NOT NULL, PRIMARY KEY(key))")
-                db.execSQL("ALTER TABLE words ADD COLUMN isReflexive INTEGER NOT NULL DEFAULT 0")
-                db.execSQL("UPDATE words SET isReflexive = CASE WHEN root LIKE '%(sich)%' THEN 1 ELSE 0 END")
-                db.execSQL("UPDATE words SET root = REPLACE(root, ' (sich)', '')")
-                db.execSQL("UPDATE words SET root = REPLACE(root, '(sich)', '')")
-            }
-        }
-
-        val MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE words ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0")
-                db.execSQL("ALTER TABLE words ADD COLUMN isLearned INTEGER NOT NULL DEFAULT 0")
-            }
         }
 
         @Volatile
