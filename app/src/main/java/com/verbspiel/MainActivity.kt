@@ -724,7 +724,7 @@ class MainActivity : AppCompatActivity() {
 
                     numberOfTries = 0
                 } else {
-                    showTopToast(getString(R.string.toast_wrong_try))
+                    showTopToast(getString(R.string.toast_wrong_try, currentLeft, currentRight))
                     showNextMessage(currentWord)
                     setStatus(getString(R.string.status_wrong), R.color.red)
                     setTextWithTooltip(translationText, lastResultTranslation)

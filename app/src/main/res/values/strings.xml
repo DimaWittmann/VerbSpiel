@@ -38,7 +38,7 @@
     <string name="toast_skipped_next">Skipped! Next word: %1$s</string>
     <string name="toast_round_done">Round complete!</string>
     <string name="toast_forced_advance">Wrong %1$d times! Lets try another: %2$s</string>
-    <string name="toast_wrong_try">Wrong! Try again</string>
+    <string name="toast_wrong_try">Nope: %1$s + %2$s doesn\'t match here. Try again.</string>
     <string name="skip">Skip</string>
     <string name="reset_round">Reset round</string>
     <string name="options">Options</string>
