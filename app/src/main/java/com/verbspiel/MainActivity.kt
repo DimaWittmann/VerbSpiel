@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonCombine: Button
     private lateinit var buttonStats: Button
     private lateinit var buttonFilter: Button
+    private lateinit var buttonDifficulty: Button
     private lateinit var buttonSkip: Button
     private lateinit var buttonResetPrimary: Button
     private lateinit var buttonReset: Button
@@ -62,12 +63,69 @@ class MainActivity : AppCompatActivity() {
     private var lastResultWord: Word? = null
     private var currentNextWord: Word? = null
     private var statusLabel: String = ""
+    private var roundSize: Int = DEFAULT_ROUND_SIZE
 
     private val repo by lazy { WordRepository.getInstance(this) }
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
+    private val prefs by lazy { getSharedPreferences(PREFS_NAME, MODE_PRIVATE) }
+
     private data class Filter(val type: FilterType, val value: String)
     private enum class FilterType { PREFIX, ROOT, FAVORITES }
+
+    private enum class Difficulty(val labelRes: Int, val size: Int) {
+        EASY(R.string.difficulty_easy, 3),
+        MEDIUM(R.string.difficulty_medium, 5),
+        HARD(R.string.difficulty_hard, 10)
+    }
+
+    private fun getDifficultyLabel(difficulty: Difficulty): String {
+        return getString(difficulty.labelRes, difficulty.size)
+    }
+
+    private fun showDifficultyChooser(force: Boolean) {
+        val difficulties = Difficulty.values()
+        val labels = difficulties.map { getDifficultyLabel(it) }.toTypedArray()
+        val currentIndex = difficulties.indexOfFirst { it.size == roundSize }.let {
+            if (it == -1) 0 else it
+        }
+
+        var selectedIndex = currentIndex
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.difficulty_title)
+            .setSingleChoiceItems(labels, currentIndex) { _, which ->
+                selectedIndex = which
+            }
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val chosen = difficulties[selectedIndex]
+                applyDifficulty(chosen.size)
+            }
+            .apply {
+                if (!force) {
+                    setNegativeButton(android.R.string.cancel, null)
+                }
+            }
+            .create()
+
+        dialog.setCancelable(!force)
+        dialog.setCanceledOnTouchOutside(!force)
+        dialog.show()
+    }
+
+    private fun applyDifficulty(size: Int) {
+        val wasUnset = !prefs.getBoolean(PREFS_KEY_DIFFICULTY_SET, false)
+        val changed = roundSize != size
+        roundSize = size
+        progressBar.max = roundSize
+        if (changed || wasUnset) {
+            fetchPoolAndReset(activeFilter)
+        }
+        prefs.edit()
+            .putInt(PREFS_KEY_DIFFICULTY_SIZE, roundSize)
+            .putBoolean(PREFS_KEY_DIFFICULTY_SET, true)
+            .apply()
+    }
 
     private fun rootLabel(word: Word): String {
         return formatRoot(word.root, word.isReflexive)
@@ -86,10 +144,10 @@ class MainActivity : AppCompatActivity() {
     private fun fetchPoolAndReset(filter: Filter?) {
         activityScope.launch {
             val pool = when (filter?.type) {
-                FilterType.PREFIX -> repo.getPrefixPool(filter.value, 10)
-                FilterType.ROOT -> repo.getRootPool(filter.value, 10)
-                FilterType.FAVORITES -> repo.getFavoritesPool(10)
-                null -> repo.getMixedPool(10)
+                FilterType.PREFIX -> repo.getPrefixPool(filter.value, roundSize)
+                FilterType.ROOT -> repo.getRootPool(filter.value, roundSize)
+                FilterType.FAVORITES -> repo.getFavoritesPool(roundSize)
+                null -> repo.getMixedPool(roundSize)
             }
             resetRound(pool)
         }
@@ -499,6 +557,7 @@ class MainActivity : AppCompatActivity() {
         buttonCombine = findViewById(R.id.button_combine)
         buttonStats = findViewById(R.id.button_stats)
         buttonFilter = findViewById(R.id.button_filter)
+        buttonDifficulty = findViewById(R.id.button_difficulty)
         buttonSkip = findViewById(R.id.button_skip)
         buttonResetPrimary = findViewById(R.id.button_reset_primary)
         buttonReset = findViewById(R.id.button_reset)
@@ -512,12 +571,12 @@ class MainActivity : AppCompatActivity() {
         val arrowRootUp: ImageView = findViewById(R.id.arrow_root_up)
         val arrowRootDown: ImageView = findViewById(R.id.arrow_root_down)
 
-        progressBar.max = 10
+        roundSize = prefs.getInt(PREFS_KEY_DIFFICULTY_SIZE, DEFAULT_ROUND_SIZE)
+        progressBar.max = roundSize
         progressBar.min = 0
         progressBar.setProgress(0)
 
         updateFilterStatus()
-        fetchPoolAndReset(activeFilter)
 
         nextWordText.setOnClickListener {
             val word = currentNextWord ?: return@setOnClickListener
@@ -581,6 +640,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonFilter.setOnClickListener { showFilterChooser() }
+        buttonDifficulty.setOnClickListener { showDifficultyChooser(force = false) }
         buttonResetPrimary.setOnClickListener { fetchPoolAndReset(activeFilter) }
         buttonReset.setOnClickListener { fetchPoolAndReset(activeFilter) }
         buttonSkip.setOnClickListener {
@@ -733,6 +793,12 @@ class MainActivity : AppCompatActivity() {
             }
             progressBar.setProgress(numberOfTries, true)
         }
+
+        if (!prefs.getBoolean(PREFS_KEY_DIFFICULTY_SET, false)) {
+            showDifficultyChooser(force = true)
+        } else {
+            fetchPoolAndReset(activeFilter)
+        }
     }
 
     private fun createNumberPicker(
@@ -794,6 +860,13 @@ class MainActivity : AppCompatActivity() {
             } catch (ignored: Exception) {
             }
         }
+    }
+
+    companion object {
+        private const val PREFS_NAME = "verbspiel_prefs"
+        private const val PREFS_KEY_DIFFICULTY_SIZE = "difficulty_size"
+        private const val PREFS_KEY_DIFFICULTY_SET = "difficulty_set"
+        private const val DEFAULT_ROUND_SIZE = 5
     }
 
     override fun onDestroy() {

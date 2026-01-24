@@ -36,6 +36,11 @@
     <string name="filter_choose_value">Pick one</string>
     <string name="filter_no_matches">No words match this filter.</string>
     <string name="no_prefix">[ no prefix ]</string>
+    <string name="difficulty_level">Difficulty level</string>
+    <string name="difficulty_title">Choose difficulty level</string>
+    <string name="difficulty_easy">Easy (%1$d words in a round)</string>
+    <string name="difficulty_medium">Medium (%1$d words in a round)</string>
+    <string name="difficulty_hard">Hard (%1$d words in a round)</string>
     <string name="filter_mode_favorites">Mode: Favorites</string>
     <string name="label_prefix">Pick a prefix</string>
     <string name="label_root">Pick a root</string>

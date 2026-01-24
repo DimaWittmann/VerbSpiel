@@ -334,6 +334,13 @@
                     android:text="@string/filter_words" />
 
                 <Button
+                    android:id="@+id/button_difficulty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/difficulty_level" />
+
+                <Button
                     android:id="@+id/button_reset"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
