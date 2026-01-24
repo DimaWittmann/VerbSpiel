@@ -24,10 +24,9 @@ class StatsActivity : AppCompatActivity() {
         viewPager.adapter = StatsPagerAdapter(this)
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> getString(R.string.tab_recent_failures)
-                1 -> getString(R.string.tab_recent_correct)
-                2 -> getString(R.string.tab_top_words)
-                3 -> getString(R.string.tab_retired_words)
+                0 -> getString(R.string.tab_recent)
+                1 -> getString(R.string.tab_top_words)
+                2 -> getString(R.string.tab_retired_words)
                 else -> getString(R.string.tab_favorites)
             }
         }.attach()

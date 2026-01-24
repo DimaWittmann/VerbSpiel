@@ -5,14 +5,13 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class StatsPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
-    override fun getItemCount(): Int = 5
+    override fun getItemCount(): Int = 4
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> RecentStatsFragment.newInstance(RecentStatsFragment.TYPE_FAILURES)
-            1 -> RecentStatsFragment.newInstance(RecentStatsFragment.TYPE_CORRECT)
-            2 -> TopWordsFragment()
-            3 -> RetiredWordsFragment()
+            0 -> RecentCombinedStatsFragment()
+            1 -> TopWordsFragment()
+            2 -> RetiredWordsFragment()
             else -> FavoritesWordsFragment()
         }
     }

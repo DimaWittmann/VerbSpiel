@@ -7,7 +7,8 @@
     <string name="stats_summary">All %1$d | ✅ %2$s | ❌ %3$s \nLearned %4$s | ★ %5$s</string>
     <string name="stats_count_with_percent">%1$d (%2$d%%)</string>
     <string name="stats_summary_placeholder">Loading stats...</string>
-    <string name="stats_empty_state">No learned words. Play a round to see your progress.</string>
+    <string name="stats_empty_state">No entries here yet. Play a round to see your progress.</string>
+    <string name="tab_recent">Recent</string>
     <string name="tab_recent_failures">Recent failures</string>
     <string name="tab_recent_correct">Recent correct</string>
     <string name="tab_top_words">Top words</string>
