@@ -55,8 +55,7 @@ class RetiredWordsFragment : Fragment() {
                         } else {
                             label
                         }
-                        val delta = word.correctCount - word.failedCount
-                        "$displayLabel • +$delta • ${getString(R.string.stats_correct, word.correctCount)}"
+                        displayLabel
                     },
                     onOptionsClick = { word ->
                         WordOptions.show(

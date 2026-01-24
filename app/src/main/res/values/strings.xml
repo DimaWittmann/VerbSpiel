@@ -20,15 +20,10 @@
     <string name="stats_percent">%1$d%%</string>
     <string name="tab_retired_words">Learned</string>
     <string name="tab_favorites">Favorites</string>
-    <string name="stats_attempts">%1$d times</string>
-    <string name="stats_correct">%1$d correct</string>
-    <string name="stats_failed">%1$d failed</string>
     <string name="recent_time_just_now">just now</string>
     <string name="recent_time_last_hour">last hour</string>
     <string name="recent_time_today">today</string>
     <string name="recent_time_yesterday">yesterday</string>
-    <string name="stats_top_correct">Most correct combos</string>
-    <string name="stats_top_failed">Most failed combos</string>
     <string name="filter_words">Filter words</string>
     <string name="filter_mode_mixed">Mode: Mixed (all words)</string>
     <string name="filter_mode_prefix">Mode: Prefix \"%1$s\"</string>

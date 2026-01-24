@@ -55,9 +55,7 @@ class FavoritesWordsFragment : Fragment() {
                         } else {
                             label
                         }
-                        val attempts = word.triesCount
-                        val accuracy = if (attempts == 0) 0 else (word.correctCount * 100 / attempts)
-                        "$displayLabel • ${getString(R.string.stats_correct, word.correctCount)} • ${accuracy}%"
+                        displayLabel
                     },
                     onOptionsClick = { word ->
                         WordOptions.show(
