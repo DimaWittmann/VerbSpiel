@@ -103,10 +103,18 @@ interface WordDao {
     @Query("SELECT DISTINCT root FROM words ORDER BY root")
     suspend fun getAllRoots(): List<String>
 
-    @Query("SELECT * FROM words WHERE failedCount > 0 ORDER BY lastFailedAt DESC LIMIT :limit")
+    @Query(
+        "SELECT * FROM words " +
+            "WHERE lastFailedAt > 0 AND lastFailedAt > lastCorrectAt " +
+            "ORDER BY lastFailedAt DESC LIMIT :limit"
+    )
     suspend fun getRecentFailures(limit: Int = 20): List<Word>
 
-    @Query("SELECT * FROM words WHERE correctCount > 0 ORDER BY lastCorrectAt DESC LIMIT :limit")
+    @Query(
+        "SELECT * FROM words " +
+            "WHERE lastCorrectAt > 0 AND lastCorrectAt > lastFailedAt " +
+            "ORDER BY lastCorrectAt DESC LIMIT :limit"
+    )
     suspend fun getRecentCorrect(limit: Int = 20): List<Word>
 
     @Query(

@@ -74,9 +74,12 @@ class RecentCombinedStatsFragment : Fragment() {
                     label
                 }
                 val stamp = if (isCorrect) word.lastCorrectAt else word.lastFailedAt
-                val formattedDate = if (stamp > 0) dateFormat.format(Date(stamp)) else ""
-                val attempts = if (isCorrect) word.correctCount else word.failedCount
-                "$displayLabel • ${getString(R.string.stats_attempts, attempts)} • $formattedDate"
+                val formattedDate = if (stamp > 0) {
+                    formatRecentDate(stamp, dateFormat)
+                } else {
+                    ""
+                }
+                "$displayLabel • $formattedDate"
             },
             onOptionsClick = { word ->
                 WordOptions.show(
@@ -89,5 +92,21 @@ class RecentCombinedStatsFragment : Fragment() {
             }
         )
         return adapter
+    }
+
+    private fun formatRecentDate(stamp: Long, dateFormat: SimpleDateFormat): String {
+        val now = System.currentTimeMillis()
+        val diffMs = (now - stamp).coerceAtLeast(0L)
+        val minuteMs = 60_000L
+        val hourMs = 60 * minuteMs
+        val dayMs = 24 * hourMs
+
+        return when {
+            diffMs < 5 * minuteMs -> getString(R.string.recent_time_just_now)
+            diffMs < hourMs -> getString(R.string.recent_time_last_hour)
+            diffMs < dayMs -> getString(R.string.recent_time_today)
+            diffMs < 2 * dayMs -> getString(R.string.recent_time_yesterday)
+            else -> dateFormat.format(Date(stamp))
+        }
     }
 }
