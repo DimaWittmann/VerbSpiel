@@ -5,17 +5,85 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <TextView
-        android:id="@+id/top_correct_title"
+    <LinearLayout
+        android:id="@+id/prefix_stats_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:text="@string/stats_top_correct"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <TextView
+            android:id="@+id/prefix_header_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:clickable="true"
+            android:focusable="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/stats_prefix_header_prefix"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/prefix_header_correct"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:clickable="true"
+            android:focusable="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/stats_prefix_header_correct"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/prefix_header_failed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:clickable="true"
+            android:focusable="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/stats_prefix_header_failed"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/prefix_header_all"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:clickable="true"
+            android:focusable="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/stats_prefix_header_all"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/prefix_header_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:clickable="true"
+            android:focusable="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/stats_prefix_header_progress"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <ListView
-        android:id="@+id/top_correct_list"
+        android:id="@+id/prefix_stats_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -23,33 +91,7 @@
         android:scrollbars="vertical" />
 
     <TextView
-        android:id="@+id/top_correct_empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="8dp"
-        android:text="@string/stats_empty_state"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/top_failed_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:text="@string/stats_top_failed"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold" />
-
-    <ListView
-        android:id="@+id/top_failed_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:dividerHeight="1dp"
-        android:scrollbars="vertical" />
-
-    <TextView
-        android:id="@+id/top_failed_empty"
+        android:id="@+id/prefix_stats_empty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"

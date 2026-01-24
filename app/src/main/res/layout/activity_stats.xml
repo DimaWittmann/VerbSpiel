@@ -29,7 +29,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        app:tabMode="fixed" />
+        app:tabMode="scrollable"
+        app:tabInlineLabel="true"
+        app:tabMaxWidth="0dp" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/stats_pager"

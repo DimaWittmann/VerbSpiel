@@ -11,7 +11,13 @@
     <string name="tab_recent">Recent</string>
     <string name="tab_recent_failures">Recent failures</string>
     <string name="tab_recent_correct">Recent correct</string>
-    <string name="tab_top_words">Top words</string>
+    <string name="tab_top_words">Prefixes</string>
+    <string name="stats_prefix_header_prefix">Prefix</string>
+    <string name="stats_prefix_header_correct">Correct</string>
+    <string name="stats_prefix_header_failed">Failed</string>
+    <string name="stats_prefix_header_all">All</string>
+    <string name="stats_prefix_header_progress">Progress</string>
+    <string name="stats_percent">%1$d%%</string>
     <string name="tab_retired_words">Learned</string>
     <string name="tab_favorites">Favorites</string>
     <string name="stats_attempts">%1$d times</string>
