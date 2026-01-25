@@ -28,6 +28,11 @@ import java.io.BufferedReader
 import android.net.Uri
 import androidx.appcompat.widget.TooltipCompat
 import android.content.ActivityNotFoundException
+import com.verbspiel.game.RoundFilter
+import com.verbspiel.game.RoundFilterType
+import com.verbspiel.game.RoundManager
+import com.verbspiel.game.RoundState
+import com.verbspiel.game.RoundUi
 
 class MainActivity : AppCompatActivity() {
 
@@ -51,16 +56,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var filterStatus: TextView
     private lateinit var progressBar: ProgressBar
 
-    // Variables to track the currently selected items in each list.
-    private var selectedWords: MutableList<Word> = mutableListOf()
-    private var wordI: Int = 0
-    private var leftItems: Array<String> = emptyArray()
-    private var leftDisplayItems: Array<String> = emptyArray()
-    private var rightItems: Array<String> = emptyArray()
-    private var numberOfTries: Int = 0
-    private var activeFilter: Filter? = null
-    private var lastResultTranslation: String = ""
-    private var lastResultExample: String = ""
+    private var activeFilter: RoundFilter? = null
     private var lastResultWord: Word? = null
     private var currentNextWord: Word? = null
     private var statusLabel: String = ""
@@ -70,9 +66,7 @@ class MainActivity : AppCompatActivity() {
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private val prefs by lazy { getSharedPreferences(PREFS_NAME, MODE_PRIVATE) }
-
-    private data class Filter(val type: FilterType, val value: String)
-    private enum class FilterType { PREFIX, ROOT, FAVORITES }
+    private lateinit var roundManager: RoundManager
 
     private enum class Difficulty(val labelRes: Int, val size: Int) {
         EASY(R.string.difficulty_easy, 3),
@@ -128,30 +122,8 @@ class MainActivity : AppCompatActivity() {
             .apply()
     }
 
-    private fun rootLabel(word: Word): String {
-        return formatRoot(word.root, word.isReflexive)
-    }
-
-    private suspend fun recordShown(word: Word): Word {
-        val latest = repo.getWordById(word.id) ?: word
-        val updated = latest.copy(
-            timesShown = latest.timesShown + 1,
-            lastShownAt = System.currentTimeMillis()
-        )
-        repo.updateWordStats(updated)
-        return updated
-    }
-
-    private fun fetchPoolAndReset(filter: Filter?) {
-        activityScope.launch {
-            val pool = when (filter?.type) {
-                FilterType.PREFIX -> repo.getPrefixPool(filter.value, roundSize)
-                FilterType.ROOT -> repo.getRootPool(filter.value, roundSize)
-                FilterType.FAVORITES -> repo.getFavoritesPool(roundSize)
-                null -> repo.getMixedPool(roundSize)
-            }
-            resetRound(pool)
-        }
+    private fun fetchPoolAndReset(filter: RoundFilter?) {
+        roundManager.startRound(filter, roundSize, excludeLearned = filter == null)
     }
 
     private fun showPrefixChooser() {
@@ -172,7 +144,7 @@ class MainActivity : AppCompatActivity() {
                 values = values,
                 displayValues = displayValues
             ) { chosen ->
-                applyFilter(Filter(FilterType.PREFIX, chosen))
+                applyFilter(RoundFilter(RoundFilterType.PREFIX, chosen))
             }
         }
     }
@@ -194,7 +166,7 @@ class MainActivity : AppCompatActivity() {
                 values = values,
                 displayValues = displayValues
             ) { chosen ->
-                applyFilter(Filter(FilterType.ROOT, chosen))
+                applyFilter(RoundFilter(RoundFilterType.ROOT, chosen))
             }
         }
     }
@@ -257,51 +229,6 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
-    private fun resetRound(pool: List<Word>) {
-        val filtered = if (activeFilter == null) {
-            pool.filterNot { it.isLearned }
-        } else {
-            pool
-        }
-        if (filtered.isEmpty()) {
-            selectedWords = mutableListOf()
-            leftItems = emptyArray()
-            leftDisplayItems = emptyArray()
-            rightItems = emptyArray()
-            setNextWord(null)
-            setLastWord(null)
-            setStatus("")
-            setTextWithTooltip(translationText, "")
-            setTextWithTooltip(exampleText, "")
-            setRoundEnded(true)
-            return
-        }
-
-        setRoundEnded(false)
-        setStatus("")
-        selectedWords = filtered.toMutableList()
-        wordI = 0
-        numberOfTries = 0
-
-        initializeNumberPickers()
-
-        progressBar.max = selectedWords.size
-        progressBar.setProgress(0, true)
-
-        if (selectedWords.isNotEmpty()) {
-            val first = selectedWords[0]
-            showTopToast(getString(R.string.toast_new_round_next, first.translation))
-            showNextMessage(first)
-            setLastWord(null)
-            setTextWithTooltip(translationText, "")
-            setTextWithTooltip(exampleText, "Select correct prefix and root")
-
-            activityScope.launch {
-                selectedWords[0] = recordShown(first)
-            }
-        }
-    }
-
     private fun showFilterChooser() {
         val options = arrayOf(
             getString(R.string.filter_type_prefix),
@@ -313,47 +240,25 @@ class MainActivity : AppCompatActivity() {
             .setTitle(getString(R.string.filter_choose_type))
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> showValueChooser(FilterType.PREFIX)
-                    1 -> showValueChooser(FilterType.ROOT)
-                    2 -> applyFilter(Filter(FilterType.FAVORITES, ""))
+                    0 -> showValueChooser(RoundFilterType.PREFIX)
+                    1 -> showValueChooser(RoundFilterType.ROOT)
+                    2 -> applyFilter(RoundFilter(RoundFilterType.FAVORITES, ""))
                     else -> applyFilter(null)
                 }
             }
             .show()
     }
 
-    private fun initializeNumberPickers() {
-        val leftAll = selectedWords.map { it.prefix }.shuffled()
-        val leftCounts = leftAll.groupingBy { it }.eachCount()
-        leftItems = leftAll.distinct().toTypedArray()
-        leftDisplayItems = leftItems.map { prefix ->
-            val label = if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
-            val count = leftCounts[prefix] ?: 0
-            if (count > 1) "$label (x$count)" else label
-        }.toTypedArray()
 
-        val rightAll = selectedWords.map { rootLabel(it) }.shuffled()
-        val rightCounts = rightAll.groupingBy { it }.eachCount()
-        rightItems = rightAll.distinct().toTypedArray()
-        val rightDisplayItems = rightItems.map { root ->
-            val count = rightCounts[root] ?: 0
-            if (count > 1) "$root (x$count)" else root
-        }.toTypedArray()
-
-        createNumberPicker(listLeft, leftItems, leftDisplayItems)
-        createNumberPicker(listRight, rightItems, rightDisplayItems)
-    }
-
-
-    private fun showValueChooser(type: FilterType) {
+    private fun showValueChooser(type: RoundFilterType) {
         when (type) {
-            FilterType.FAVORITES -> applyFilter(Filter(FilterType.FAVORITES, ""))
-            FilterType.PREFIX -> showPrefixChooser()
-            FilterType.ROOT -> showRootChooser()
+            RoundFilterType.FAVORITES -> applyFilter(RoundFilter(RoundFilterType.FAVORITES, ""))
+            RoundFilterType.PREFIX -> showPrefixChooser()
+            RoundFilterType.ROOT -> showRootChooser()
         }
     }
 
-    private fun applyFilter(filter: Filter?) {
+    private fun applyFilter(filter: RoundFilter?) {
         activeFilter = filter
         updateFilterStatus()
         fetchPoolAndReset(filter)
@@ -363,12 +268,12 @@ class MainActivity : AppCompatActivity() {
         val modeText = when (val f = activeFilter) {
             null -> getString(R.string.filter_mode_mixed)
             else -> when (f.type) {
-                FilterType.PREFIX -> {
+                RoundFilterType.PREFIX -> {
                     val label = if (f.value.isBlank()) getString(R.string.no_prefix) else f.value
                     getString(R.string.filter_mode_prefix, label)
                 }
-                FilterType.ROOT -> getString(R.string.filter_mode_root, f.value)
-                FilterType.FAVORITES -> getString(R.string.filter_mode_favorites)
+                RoundFilterType.ROOT -> getString(R.string.filter_mode_root, f.value)
+                RoundFilterType.FAVORITES -> getString(R.string.filter_mode_favorites)
             }
         }
         val text = if (statusLabel.isBlank()) {
@@ -389,8 +294,17 @@ class MainActivity : AppCompatActivity() {
         updateFilterStatus()
     }
 
-    private fun showNextMessage(nextWord: Word?) {
-        setNextWord(nextWord)
+    private fun renderRoundState(state: RoundState) {
+        setNextWord(state.nextWord)
+        setLastWord(state.lastWord)
+        setStatus(state.statusLabel, state.statusColorRes)
+        setTextWithTooltip(translationText, state.translation)
+        setTextWithTooltip(exampleText, state.example)
+        setRoundEnded(state.roundEnded)
+        progressBar.max = state.progressMax
+        progressBar.setProgress(state.progressValue, true)
+        createNumberPicker(listLeft, state.leftItems, state.leftDisplayItems)
+        createNumberPicker(listRight, state.rightItems, state.rightDisplayItems)
     }
 
     private fun setNextWord(word: Word?) {
@@ -453,26 +367,11 @@ class MainActivity : AppCompatActivity() {
         return cleaned.replace(' ', '_')
     }
 
-    private fun getCurrentPool(): List<Word> = selectedWords
-
     private fun setRoundEnded(ended: Boolean) {
         buttonCombine.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
         buttonSkip.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
         buttonReset.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
         buttonResetPrimary.visibility = if (ended) android.view.View.VISIBLE else android.view.View.GONE
-    }
-
-    private suspend fun recordAttempt(word: Word, isCorrect: Boolean): Word {
-        val latest = repo.getWordById(word.id) ?: word
-        val updatedWord = latest.copy(
-            triesCount = latest.triesCount + 1,
-            correctCount = if (isCorrect) latest.correctCount + 1 else latest.correctCount,
-            failedCount = if (!isCorrect) latest.failedCount + 1 else latest.failedCount,
-            lastCorrectAt = if (isCorrect) System.currentTimeMillis() else latest.lastCorrectAt,
-            lastFailedAt = if (!isCorrect) System.currentTimeMillis() else latest.lastFailedAt
-        )
-        repo.updateWordStats(updatedWord)
-        return updatedWord
     }
 
 
@@ -578,6 +477,16 @@ class MainActivity : AppCompatActivity() {
         progressBar.min = 0
         progressBar.setProgress(0)
 
+        roundManager = RoundManager(
+            repo = repo,
+            scope = activityScope,
+            ui = object : RoundUi {
+                override fun showToast(message: String) = showTopToast(message)
+                override fun render(state: RoundState) = renderRoundState(state)
+            },
+            resources = resources
+        )
+
         updateFilterStatus()
 
         nextWordText.setOnClickListener { openTranslatorForCurrentWord() }
@@ -629,155 +538,11 @@ class MainActivity : AppCompatActivity() {
         buttonDifficulty.setOnClickListener { showDifficultyChooser(force = false) }
         buttonResetPrimary.setOnClickListener { fetchPoolAndReset(activeFilter) }
         buttonReset.setOnClickListener { fetchPoolAndReset(activeFilter) }
-        buttonSkip.setOnClickListener {
-            if (selectedWords.isEmpty() || selectedWords.size <= wordI) {
-                return@setOnClickListener
-            }
-            val currentIndex = wordI
-            val currentWord = selectedWords[currentIndex]
-            val combinedWord = formatWord(currentWord)
-            val currentTranslation = currentWord.translation
-            val currentExample = currentWord.example
-
-            activityScope.launch {
-                selectedWords[currentIndex] = recordAttempt(currentWord, false)
-            }
-
-            wordI += 1
-            numberOfTries = 0
-            lastResultTranslation = "$combinedWord\n$currentTranslation"
-            lastResultExample = currentExample
-            setLastWord(currentWord)
-            setTextWithTooltip(translationText, lastResultTranslation)
-            setTextWithTooltip(exampleText, lastResultExample)
-
-            if (wordI >= selectedWords.size) {
-                setNextWord(null)
-                setLastWord(currentWord)
-                setStatus(getString(R.string.status_done), R.color.gray)
-                setTextWithTooltip(translationText, "$combinedWord\n$currentTranslation")
-                setTextWithTooltip(exampleText, "$currentExample")
-                showTopToast(getString(R.string.toast_round_done))
-                setRoundEnded(true)
-                return@setOnClickListener
-            }
-
-            val nextWord = selectedWords[wordI]
-            showTopToast(getString(R.string.toast_skipped_next, nextWord.translation))
-            showNextMessage(nextWord)
-            setStatus(getString(R.string.status_skipped), R.color.orange)
-
-            val nextIndex = wordI
-            activityScope.launch {
-                selectedWords[nextIndex] = recordShown(nextWord)
-            }
-            progressBar.setProgress(numberOfTries, true)
-        }
+        buttonSkip.setOnClickListener { roundManager.handleSkip() }
 
         // When the "Combine" button is clicked, combine the selected items.
         buttonCombine.setOnClickListener {
-            if (leftItems.isEmpty() || rightItems.isEmpty()) {
-                return@setOnClickListener
-            }
-
-            if (selectedWords.isEmpty() || selectedWords.size <= wordI) {
-                return@setOnClickListener
-            }
-
-            val leftIndex = listLeft.value
-            val rightIndex = listRight.value
-            if (leftIndex !in leftItems.indices || rightIndex !in rightItems.indices) {
-                return@setOnClickListener
-            }
-            val currentLeft = leftItems[leftIndex]
-            val currentRight = rightItems[rightIndex]
-
-            val currentIndex = wordI
-            val currentWord = selectedWords[currentIndex]
-            val combinedWord = formatWord(currentWord)
-            val currentTranslation = currentWord.translation
-            val currentExample = currentWord.example
-
-            val isCorrect =
-                (currentLeft == selectedWords[currentIndex].prefix && currentRight == rootLabel(selectedWords[currentIndex]))
-            activityScope.launch {
-                selectedWords[currentIndex] = recordAttempt(currentWord, isCorrect)
-            }
-
-            if (isCorrect) {
-                wordI += 1
-                numberOfTries = 0
-                lastResultTranslation = "$combinedWord\n$currentTranslation"
-                lastResultExample = currentExample
-                setLastWord(currentWord)
-                setTextWithTooltip(translationText, lastResultTranslation)
-                setTextWithTooltip(exampleText, currentExample)
-
-                if (selectedWords.size <= wordI) {
-                    setNextWord(null)
-                    setLastWord(currentWord)
-                    setStatus(getString(R.string.status_done), R.color.gray)
-                    setTextWithTooltip(translationText, "$combinedWord\n$currentTranslation")
-                    setTextWithTooltip(exampleText, "$currentExample")
-                    showTopToast(getString(R.string.toast_round_done))
-                    setRoundEnded(true)
-                    return@setOnClickListener
-                }
-
-                val nextWord = selectedWords[wordI]
-                showTopToast(getString(R.string.toast_correct_next, nextWord.translation))
-
-                showNextMessage(nextWord)
-                setStatus(getString(R.string.status_correct), R.color.teal_700)
-                setTextWithTooltip(translationText, lastResultTranslation)
-                setTextWithTooltip(exampleText, lastResultExample)
-
-                val nextIndex = wordI
-                activityScope.launch {
-                    selectedWords[nextIndex] = recordShown(nextWord)
-                }
-            } else {
-                numberOfTries += 1
-
-                if (numberOfTries >= selectedWords.size) {
-                    wordI += 1
-                    lastResultTranslation = "$combinedWord\n$currentTranslation"
-                    lastResultExample = currentExample
-                    setLastWord(currentWord)
-
-                    if (wordI >= selectedWords.size) {
-                        setNextWord(null)
-                        setLastWord(currentWord)
-                        setStatus(getString(R.string.status_done), R.color.gray)
-                        setTextWithTooltip(translationText, "$combinedWord\n$currentTranslation")
-                        setTextWithTooltip(exampleText, "$currentExample")
-                        showTopToast(getString(R.string.toast_round_done))
-                        setRoundEnded(true)
-                    } else {
-                        val nextWord = selectedWords[wordI]
-                        showTopToast(getString(R.string.toast_forced_advance, numberOfTries, nextWord.translation))
-                        showNextMessage(nextWord)
-                        setStatus(getString(R.string.status_forced), R.color.orange)
-
-                        setTextWithTooltip(translationText, lastResultTranslation)
-                        setTextWithTooltip(exampleText, lastResultExample)
-
-                        val nextIndex = wordI
-                        activityScope.launch {
-                            selectedWords[nextIndex] = recordShown(nextWord)
-                        }
-                    }
-
-                    numberOfTries = 0
-                } else {
-                    showTopToast(getString(R.string.toast_wrong_try, currentLeft, currentRight))
-                    showNextMessage(currentWord)
-                    setStatus(getString(R.string.status_wrong), R.color.red)
-                    setTextWithTooltip(translationText, lastResultTranslation)
-                    setTextWithTooltip(exampleText, lastResultExample)
-                }
-            }
-            progressBar.setProgress(numberOfTries, true)
+            roundManager.handleCombine(listLeft.value, listRight.value)
         }
 
         if (!prefs.getBoolean(PREFS_KEY_DIFFICULTY_SET, false)) {

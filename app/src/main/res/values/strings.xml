@@ -42,6 +42,7 @@
     <string name="difficulty_medium">Medium (%1$d words in a round)</string>
     <string name="difficulty_hard">Hard (%1$d words in a round)</string>
     <string name="filter_mode_favorites">Mode: Favorites</string>
+    <string name="round_select_prompt">Select correct prefix and root</string>
     <string name="label_prefix">Pick a prefix</string>
     <string name="label_root">Pick a root</string>
     <string name="toast_correct_next">Correct! Next word: %1$s</string>
