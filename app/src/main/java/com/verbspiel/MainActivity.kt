@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonLastFavorite: ImageButton
     private lateinit var buttonLastLearned: ImageButton
     private lateinit var buttonLastWiki: ImageButton
+    private lateinit var buttonTranslateNext: ImageButton
 
     private lateinit var listLeft: NumberPicker
     private lateinit var listRight: NumberPicker
@@ -551,6 +552,7 @@ class MainActivity : AppCompatActivity() {
         buttonLastFavorite = findViewById(R.id.button_last_favorite)
         buttonLastLearned = findViewById(R.id.button_last_learned)
         buttonLastWiki = findViewById(R.id.button_last_wiki)
+        buttonTranslateNext = findViewById(R.id.button_translate_next)
         TooltipCompat.setTooltipText(buttonLastWiki, getString(R.string.last_word_wiki))
         listLeft = findViewById(R.id.list_left)
         listRight = findViewById(R.id.list_right)
@@ -578,24 +580,8 @@ class MainActivity : AppCompatActivity() {
 
         updateFilterStatus()
 
-        nextWordText.setOnClickListener {
-            val word = currentNextWord ?: return@setOnClickListener
-            val text = word.translation
-            val url = "https://translate.google.com/?sl=en&tl=de&text=" +
-                Uri.encode(text) + "&op=translate"
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                setPackage("com.google.android.apps.translate")
-            }
-            try {
-                startActivity(intent)
-            } catch (_: ActivityNotFoundException) {
-                val webIntent = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://www.google.com/search?q=" + Uri.encode(text))
-                )
-                startActivity(webIntent)
-            }
-        }
+        nextWordText.setOnClickListener { openTranslatorForCurrentWord() }
+        buttonTranslateNext.setOnClickListener { openTranslatorForCurrentWord() }
 
         setLastWord(null)
         buttonLastFavorite.setOnClickListener {
@@ -798,6 +784,25 @@ class MainActivity : AppCompatActivity() {
             showDifficultyChooser(force = true)
         } else {
             fetchPoolAndReset(activeFilter)
+        }
+    }
+
+    private fun openTranslatorForCurrentWord() {
+        val word = currentNextWord ?: return
+        val text = word.translation
+        val url = "https://translate.google.com/?sl=en&tl=de&text=" +
+            Uri.encode(text) + "&op=translate"
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+            setPackage("com.google.android.apps.translate")
+        }
+        try {
+            startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            val webIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://www.google.com/search?q=" + Uri.encode(text))
+            )
+            startActivity(webIntent)
         }
     }
 
