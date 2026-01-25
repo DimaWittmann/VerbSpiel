@@ -2,19 +2,12 @@ package com.verbspiel
 
 import android.os.Bundle
 import android.content.Intent
-import android.widget.Button
-import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ProgressBar
-import androidx.appcompat.app.AlertDialog
 import android.widget.Toast
-import android.widget.HorizontalScrollView
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ImageButton
-import android.widget.EditText
-import android.widget.ArrayAdapter
 import android.os.Build
 import android.util.TypedValue
 import android.util.Log
@@ -22,8 +15,6 @@ import android.widget.NumberPicker
 import android.graphics.drawable.ColorDrawable
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.*
-import android.text.Editable
-import android.text.TextWatcher
 import java.io.BufferedReader
 import android.net.Uri
 import androidx.appcompat.widget.TooltipCompat
@@ -33,6 +24,8 @@ import com.verbspiel.game.RoundFilterType
 import com.verbspiel.game.RoundManager
 import com.verbspiel.game.RoundState
 import com.verbspiel.game.RoundUi
+import com.verbspiel.controller.ButtonsBarController
+import com.verbspiel.view.ButtonsBarView
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,15 +39,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var listLeft: NumberPicker
     private lateinit var listRight: NumberPicker
-    private lateinit var buttonCombine: Button
-    private lateinit var buttonStats: Button
-    private lateinit var buttonFilter: Button
-    private lateinit var buttonDifficulty: Button
-    private lateinit var buttonSkip: Button
-    private lateinit var buttonResetPrimary: Button
-    private lateinit var buttonReset: Button
     private lateinit var filterStatus: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var buttonsBarView: ButtonsBarView
+    private lateinit var buttonsBarController: ButtonsBarController
 
     private var activeFilter: RoundFilter? = null
     private var lastResultWord: Word? = null
@@ -67,46 +55,6 @@ class MainActivity : AppCompatActivity() {
 
     private val prefs by lazy { getSharedPreferences(PREFS_NAME, MODE_PRIVATE) }
     private lateinit var roundManager: RoundManager
-
-    private enum class Difficulty(val labelRes: Int, val size: Int) {
-        EASY(R.string.difficulty_easy, 3),
-        MEDIUM(R.string.difficulty_medium, 5),
-        HARD(R.string.difficulty_hard, 10)
-    }
-
-    private fun getDifficultyLabel(difficulty: Difficulty): String {
-        return getString(difficulty.labelRes, difficulty.size)
-    }
-
-    private fun showDifficultyChooser(force: Boolean) {
-        val difficulties = Difficulty.values()
-        val labels = difficulties.map { getDifficultyLabel(it) }.toTypedArray()
-        val currentIndex = difficulties.indexOfFirst { it.size == roundSize }.let {
-            if (it == -1) 0 else it
-        }
-
-        var selectedIndex = currentIndex
-
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(R.string.difficulty_title)
-            .setSingleChoiceItems(labels, currentIndex) { _, which ->
-                selectedIndex = which
-            }
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                val chosen = difficulties[selectedIndex]
-                applyDifficulty(chosen.size)
-            }
-            .apply {
-                if (!force) {
-                    setNegativeButton(android.R.string.cancel, null)
-                }
-            }
-            .create()
-
-        dialog.setCancelable(!force)
-        dialog.setCanceledOnTouchOutside(!force)
-        dialog.show()
-    }
 
     private fun applyDifficulty(size: Int) {
         val wasUnset = !prefs.getBoolean(PREFS_KEY_DIFFICULTY_SET, false)
@@ -126,136 +74,8 @@ class MainActivity : AppCompatActivity() {
         roundManager.startRound(filter, roundSize, excludeLearned = filter == null)
     }
 
-    private fun showPrefixChooser() {
-        activityScope.launch {
-            val values = repo.getAllPrefixes()
-            if (values.isEmpty()) {
-                showTopToast(getString(R.string.filter_no_matches))
-                return@launch
-            }
-            val prefixCounts = repo.getAllWords().groupingBy { it.prefix }.eachCount()
-            val displayValues = values.map { prefix ->
-                val label = if (prefix.isBlank()) getString(R.string.no_prefix) else prefix
-                val count = prefixCounts[prefix] ?: 0
-                "$label (${getString(R.string.count_verbs, count)})"
-            }
-            showValueChooserWithFilter(
-                title = getString(R.string.filter_choose_value),
-                values = values,
-                displayValues = displayValues
-            ) { chosen ->
-                applyFilter(RoundFilter(RoundFilterType.PREFIX, chosen))
-            }
-        }
-    }
-
-    private fun showRootChooser() {
-        activityScope.launch {
-            val values = repo.getAllRoots()
-            if (values.isEmpty()) {
-                showTopToast(getString(R.string.filter_no_matches))
-                return@launch
-            }
-            val rootCounts = repo.getAllWords().groupingBy { it.root }.eachCount()
-            val displayValues = values.map { root ->
-                val count = rootCounts[root] ?: 0
-                "$root (${getString(R.string.count_verbs, count)})"
-            }
-            showValueChooserWithFilter(
-                title = getString(R.string.filter_choose_value),
-                values = values,
-                displayValues = displayValues
-            ) { chosen ->
-                applyFilter(RoundFilter(RoundFilterType.ROOT, chosen))
-            }
-        }
-    }
-
-    private fun showValueChooserWithFilter(
-        title: String,
-        values: List<String>,
-        displayValues: List<String>,
-        onSelect: (String) -> Unit
-    ) {
-        val input = EditText(this)
-        input.hint = getString(R.string.filter_type_hint)
-        val listView = ListView(this)
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, displayValues.toMutableList())
-        listView.adapter = adapter
-
-        val container = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            val pad = (resources.displayMetrics.density * 16).toInt()
-            setPadding(pad, pad, pad, pad)
-            addView(input)
-            addView(listView)
-        }
-
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(title)
-            .setView(container)
-            .create()
-
-        listView.setOnItemClickListener { _, _, position, _ ->
-            val label = adapter.getItem(position) ?: return@setOnItemClickListener
-            val index = displayValues.indexOf(label)
-            if (index >= 0) {
-                onSelect(values[index])
-            }
-            dialog.dismiss()
-        }
-
-        input.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-            override fun afterTextChanged(s: Editable?) = Unit
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val query = s?.toString().orEmpty().trim()
-                val filtered = if (query.isEmpty()) {
-                    displayValues
-                } else {
-                    val lower = query.lowercase()
-                    displayValues.filter { it.lowercase().startsWith(lower) }
-                }
-                adapter.clear()
-                adapter.addAll(filtered)
-                adapter.notifyDataSetChanged()
-            }
-        })
-
-        dialog.show()
-    }
-
     private fun showTopToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-
-    private fun showFilterChooser() {
-        val options = arrayOf(
-            getString(R.string.filter_type_prefix),
-            getString(R.string.filter_type_root),
-            getString(R.string.filter_type_favorites),
-            getString(R.string.filter_type_clear)
-        )
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.filter_choose_type))
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showValueChooser(RoundFilterType.PREFIX)
-                    1 -> showValueChooser(RoundFilterType.ROOT)
-                    2 -> applyFilter(RoundFilter(RoundFilterType.FAVORITES, ""))
-                    else -> applyFilter(null)
-                }
-            }
-            .show()
-    }
-
-
-    private fun showValueChooser(type: RoundFilterType) {
-        when (type) {
-            RoundFilterType.FAVORITES -> applyFilter(RoundFilter(RoundFilterType.FAVORITES, ""))
-            RoundFilterType.PREFIX -> showPrefixChooser()
-            RoundFilterType.ROOT -> showRootChooser()
-        }
     }
 
     private fun applyFilter(filter: RoundFilter?) {
@@ -368,10 +188,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setRoundEnded(ended: Boolean) {
-        buttonCombine.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
-        buttonSkip.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
-        buttonReset.visibility = if (ended) android.view.View.GONE else android.view.View.VISIBLE
-        buttonResetPrimary.visibility = if (ended) android.view.View.VISIBLE else android.view.View.GONE
+        buttonsBarView.setRoundEnded(ended)
     }
 
 
@@ -455,18 +272,8 @@ class MainActivity : AppCompatActivity() {
         TooltipCompat.setTooltipText(buttonLastWiki, getString(R.string.last_word_wiki))
         listLeft = findViewById(R.id.list_left)
         listRight = findViewById(R.id.list_right)
-        buttonCombine = findViewById(R.id.button_combine)
-        buttonStats = findViewById(R.id.button_stats)
-        buttonFilter = findViewById(R.id.button_filter)
-        buttonDifficulty = findViewById(R.id.button_difficulty)
-        buttonSkip = findViewById(R.id.button_skip)
-        buttonResetPrimary = findViewById(R.id.button_reset_primary)
-        buttonReset = findViewById(R.id.button_reset)
         filterStatus = findViewById(R.id.filter_status)
         progressBar = findViewById(R.id.progress_bar)
-        val buttonsScroll: HorizontalScrollView = findViewById(R.id.buttons_scroll)
-        val arrowButtonsLeft: ImageView = findViewById(R.id.arrow_buttons_left)
-        val arrowButtonsRight: ImageView = findViewById(R.id.arrow_buttons_right)
         val arrowPrefixUp: ImageView = findViewById(R.id.arrow_prefix_up)
         val arrowPrefixDown: ImageView = findViewById(R.id.arrow_prefix_down)
         val arrowRootUp: ImageView = findViewById(R.id.arrow_root_up)
@@ -491,6 +298,25 @@ class MainActivity : AppCompatActivity() {
 
         nextWordText.setOnClickListener { openTranslatorForCurrentWord() }
         buttonTranslateNext.setOnClickListener { openTranslatorForCurrentWord() }
+
+        buttonsBarView = ButtonsBarView(findViewById(R.id.buttons_row), resources)
+        buttonsBarController = ButtonsBarController(
+            activity = this,
+            view = buttonsBarView,
+            roundManager = roundManager,
+            repo = repo,
+            scope = activityScope,
+            onOpenStats = { startActivity(Intent(this, StatsActivity::class.java)) },
+            onApplyFilter = { applyFilter(it) },
+            onDifficultySelected = { applyDifficulty(it) },
+            onResetRound = { fetchPoolAndReset(activeFilter) },
+            onShowToast = { showTopToast(it) },
+            getRoundSize = { roundSize },
+            getLeftIndex = { listLeft.value },
+            getRightIndex = { listRight.value }
+        )
+        buttonsBarView.setupScroll()
+        buttonsBarController.bind()
 
         setLastWord(null)
         buttonLastFavorite.setOnClickListener {
@@ -520,33 +346,8 @@ class MainActivity : AppCompatActivity() {
         arrowRootUp.setOnClickListener { movePicker(listRight, -1) }
         arrowRootDown.setOnClickListener { movePicker(listRight, 1) }
 
-        buttonsScroll.post {
-            val step = buttonCombine.width + resources.displayMetrics.density.times(12).toInt()
-            arrowButtonsLeft.setOnClickListener {
-                buttonsScroll.smoothScrollBy(-step, 0)
-            }
-            arrowButtonsRight.setOnClickListener {
-                buttonsScroll.smoothScrollBy(step, 0)
-            }
-        }
-
-        buttonStats.setOnClickListener {
-            startActivity(Intent(this, StatsActivity::class.java))
-        }
-
-        buttonFilter.setOnClickListener { showFilterChooser() }
-        buttonDifficulty.setOnClickListener { showDifficultyChooser(force = false) }
-        buttonResetPrimary.setOnClickListener { fetchPoolAndReset(activeFilter) }
-        buttonReset.setOnClickListener { fetchPoolAndReset(activeFilter) }
-        buttonSkip.setOnClickListener { roundManager.handleSkip() }
-
-        // When the "Combine" button is clicked, combine the selected items.
-        buttonCombine.setOnClickListener {
-            roundManager.handleCombine(listLeft.value, listRight.value)
-        }
-
         if (!prefs.getBoolean(PREFS_KEY_DIFFICULTY_SET, false)) {
-            showDifficultyChooser(force = true)
+            buttonsBarController.showDifficultyChooser(force = true)
         } else {
             fetchPoolAndReset(activeFilter)
         }
