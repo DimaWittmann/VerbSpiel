@@ -6,13 +6,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ProgressBar
 import android.widget.Toast
-import android.widget.ImageView
 import android.widget.ImageButton
-import android.os.Build
-import android.util.TypedValue
 import android.util.Log
-import android.widget.NumberPicker
-import android.graphics.drawable.ColorDrawable
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.*
 import java.io.BufferedReader
@@ -25,7 +20,9 @@ import com.verbspiel.game.RoundManager
 import com.verbspiel.game.RoundState
 import com.verbspiel.game.RoundUi
 import com.verbspiel.controller.ButtonsBarController
+import com.verbspiel.controller.WordPickersController
 import com.verbspiel.view.ButtonsBarView
+import com.verbspiel.view.WordPickersView
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,12 +34,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonLastWiki: ImageButton
     private lateinit var buttonTranslateNext: ImageButton
 
-    private lateinit var listLeft: NumberPicker
-    private lateinit var listRight: NumberPicker
     private lateinit var filterStatus: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var buttonsBarView: ButtonsBarView
     private lateinit var buttonsBarController: ButtonsBarController
+    private lateinit var wordPickersView: WordPickersView
+    private lateinit var wordPickersController: WordPickersController
 
     private var activeFilter: RoundFilter? = null
     private var lastResultWord: Word? = null
@@ -123,8 +120,12 @@ class MainActivity : AppCompatActivity() {
         setRoundEnded(state.roundEnded)
         progressBar.max = state.progressMax
         progressBar.setProgress(state.progressValue, true)
-        createNumberPicker(listLeft, state.leftItems, state.leftDisplayItems)
-        createNumberPicker(listRight, state.rightItems, state.rightDisplayItems)
+        wordPickersView.updatePickers(
+            state.leftItems,
+            state.leftDisplayItems,
+            state.rightItems,
+            state.rightDisplayItems
+        )
     }
 
     private fun setNextWord(word: Word?) {
@@ -270,14 +271,8 @@ class MainActivity : AppCompatActivity() {
         buttonLastWiki = findViewById(R.id.button_last_wiki)
         buttonTranslateNext = findViewById(R.id.button_translate_next)
         TooltipCompat.setTooltipText(buttonLastWiki, getString(R.string.last_word_wiki))
-        listLeft = findViewById(R.id.list_left)
-        listRight = findViewById(R.id.list_right)
         filterStatus = findViewById(R.id.filter_status)
         progressBar = findViewById(R.id.progress_bar)
-        val arrowPrefixUp: ImageView = findViewById(R.id.arrow_prefix_up)
-        val arrowPrefixDown: ImageView = findViewById(R.id.arrow_prefix_down)
-        val arrowRootUp: ImageView = findViewById(R.id.arrow_root_up)
-        val arrowRootDown: ImageView = findViewById(R.id.arrow_root_down)
 
         roundSize = prefs.getInt(PREFS_KEY_DIFFICULTY_SIZE, DEFAULT_ROUND_SIZE)
         progressBar.max = roundSize
@@ -312,11 +307,15 @@ class MainActivity : AppCompatActivity() {
             onResetRound = { fetchPoolAndReset(activeFilter) },
             onShowToast = { showTopToast(it) },
             getRoundSize = { roundSize },
-            getLeftIndex = { listLeft.value },
-            getRightIndex = { listRight.value }
+            getLeftIndex = { wordPickersView.leftIndex() },
+            getRightIndex = { wordPickersView.rightIndex() }
         )
         buttonsBarView.setupScroll()
         buttonsBarController.bind()
+
+        wordPickersView = WordPickersView(findViewById(R.id.pickers_row), resources)
+        wordPickersController = WordPickersController(wordPickersView)
+        wordPickersController.bind()
 
         setLastWord(null)
         buttonLastFavorite.setOnClickListener {
@@ -341,11 +340,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        arrowPrefixUp.setOnClickListener { movePicker(listLeft, -1) }
-        arrowPrefixDown.setOnClickListener { movePicker(listLeft, 1) }
-        arrowRootUp.setOnClickListener { movePicker(listRight, -1) }
-        arrowRootDown.setOnClickListener { movePicker(listRight, 1) }
-
         if (!prefs.getBoolean(PREFS_KEY_DIFFICULTY_SET, false)) {
             buttonsBarController.showDifficultyChooser(force = true)
         } else {
@@ -369,67 +363,6 @@ class MainActivity : AppCompatActivity() {
                 Uri.parse("https://www.google.com/search?q=" + Uri.encode(text))
             )
             startActivity(webIntent)
-        }
-    }
-
-    private fun createNumberPicker(
-        np: NumberPicker,
-        items: Array<String>,
-        displayItems: Array<String>
-    ) {
-        np.displayedValues = null
-        if (items.isEmpty()) {
-            np.minValue = 0
-            np.maxValue = 0
-            np.wrapSelectorWheel = false
-            return
-        }
-        np.minValue = 0
-        np.maxValue = items.size - 1
-        np.wrapSelectorWheel = items.size > 1
-        np.displayedValues = displayItems
-        styleNumberPicker(np)
-    }
-
-    private fun movePicker(np: NumberPicker, delta: Int) {
-        if (np.maxValue < np.minValue) return
-        val current = np.value
-        val next = current + delta
-        val wrapped = when {
-            next < np.minValue && np.wrapSelectorWheel -> np.maxValue
-            next > np.maxValue && np.wrapSelectorWheel -> np.minValue
-            else -> next.coerceIn(np.minValue, np.maxValue)
-        }
-        np.value = wrapped
-    }
-
-    private fun styleNumberPicker(np: NumberPicker) {
-        val desiredSp = 16f
-        for (i in 0 until np.childCount) {
-            val child = np.getChildAt(i)
-            if (child is TextView) {
-                child.setTextSize(TypedValue.COMPLEX_UNIT_SP, desiredSp)
-                child.setTextColor(ContextCompat.getColor(this, R.color.black))
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val sizeInPx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, desiredSp, resources.displayMetrics
-            )
-            np.setTextSize(sizeInPx)
-        } else {
-            try {
-                val fields = NumberPicker::class.java.declaredFields
-                for (field in fields) {
-                    if (field.name == "mSelectionDivider") {
-                        field.isAccessible = true
-                        field.set(np, ColorDrawable(ContextCompat.getColor(this, R.color.teal_700)))
-                        break
-                    }
-                }
-            } catch (ignored: Exception) {
-            }
         }
     }
 
