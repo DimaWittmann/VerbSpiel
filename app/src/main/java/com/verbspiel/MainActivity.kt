@@ -2,48 +2,31 @@ package com.verbspiel
 
 import android.os.Bundle
 import android.content.Intent
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.ProgressBar
 import android.widget.Toast
-import android.widget.ImageButton
 import android.util.Log
-import androidx.core.content.ContextCompat
 import kotlinx.coroutines.*
 import java.io.BufferedReader
-import android.net.Uri
-import androidx.appcompat.widget.TooltipCompat
-import android.content.ActivityNotFoundException
 import com.verbspiel.game.RoundFilter
 import com.verbspiel.game.RoundFilterType
 import com.verbspiel.game.RoundManager
 import com.verbspiel.game.RoundState
 import com.verbspiel.game.RoundUi
 import com.verbspiel.controller.ButtonsBarController
-import com.verbspiel.controller.WordPickersController
+import com.verbspiel.controller.RoundCardController
 import com.verbspiel.view.ButtonsBarView
+import com.verbspiel.view.RoundCardView
 import com.verbspiel.view.WordPickersView
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var nextWordText: TextView
-    private lateinit var translationText: TextView
-    private lateinit var exampleText: TextView
-    private lateinit var buttonLastFavorite: ImageButton
-    private lateinit var buttonLastLearned: ImageButton
-    private lateinit var buttonLastWiki: ImageButton
-    private lateinit var buttonTranslateNext: ImageButton
-
-    private lateinit var filterStatus: TextView
-    private lateinit var progressBar: ProgressBar
+    private lateinit var roundCardView: RoundCardView
+    private lateinit var roundCardController: RoundCardController
     private lateinit var buttonsBarView: ButtonsBarView
     private lateinit var buttonsBarController: ButtonsBarController
     private lateinit var wordPickersView: WordPickersView
-    private lateinit var wordPickersController: WordPickersController
 
     private var activeFilter: RoundFilter? = null
-    private var lastResultWord: Word? = null
-    private var currentNextWord: Word? = null
     private var statusLabel: String = ""
     private var roundSize: Int = DEFAULT_ROUND_SIZE
 
@@ -57,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         val wasUnset = !prefs.getBoolean(PREFS_KEY_DIFFICULTY_SET, false)
         val changed = roundSize != size
         roundSize = size
-        progressBar.max = roundSize
+        roundCardController.initProgress(roundSize)
         if (changed || wasUnset) {
             fetchPoolAndReset(activeFilter)
         }
@@ -77,115 +60,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun applyFilter(filter: RoundFilter?) {
         activeFilter = filter
-        updateFilterStatus()
         fetchPoolAndReset(filter)
     }
 
-    private fun updateFilterStatus() {
-        val modeText = when (val f = activeFilter) {
-            null -> getString(R.string.filter_mode_mixed)
-            else -> when (f.type) {
-                RoundFilterType.PREFIX -> {
-                    val label = if (f.value.isBlank()) getString(R.string.no_prefix) else f.value
-                    getString(R.string.filter_mode_prefix, label)
-                }
-                RoundFilterType.ROOT -> getString(R.string.filter_mode_root, f.value)
-                RoundFilterType.FAVORITES -> getString(R.string.filter_mode_favorites)
-            }
-        }
-        val text = if (statusLabel.isBlank()) {
-            modeText
-        } else {
-            getString(R.string.status_with_mode, statusLabel, modeText)
-        }
-        setTextWithTooltip(filterStatus, text)
-    }
-
-    private fun setStatus(label: String, colorRes: Int? = null) {
-        statusLabel = label
-        if (colorRes != null) {
-            filterStatus.setTextColor(ContextCompat.getColor(this, colorRes))
-        } else {
-            filterStatus.setTextColor(ContextCompat.getColor(this, R.color.black))
-        }
-        updateFilterStatus()
-    }
-
     private fun renderRoundState(state: RoundState) {
-        setNextWord(state.nextWord)
-        setLastWord(state.lastWord)
-        setStatus(state.statusLabel, state.statusColorRes)
-        setTextWithTooltip(translationText, state.translation)
-        setTextWithTooltip(exampleText, state.example)
+        statusLabel = state.statusLabel
         setRoundEnded(state.roundEnded)
-        progressBar.max = state.progressMax
-        progressBar.setProgress(state.progressValue, true)
+        roundCardController.render(state, filterStatusText())
         wordPickersView.updatePickers(
             state.leftItems,
             state.leftDisplayItems,
             state.rightItems,
             state.rightDisplayItems
         )
-    }
-
-    private fun setNextWord(word: Word?) {
-        currentNextWord = word
-        setTextWithTooltip(nextWordText, word?.translation.orEmpty())
-    }
-
-    private fun setTextWithTooltip(view: TextView, text: String) {
-        view.text = text
-        TooltipCompat.setTooltipText(view, text)
-    }
-
-    private fun setLastWord(word: Word?) {
-        lastResultWord = word
-        buttonLastFavorite.isEnabled = true
-        buttonLastLearned.isEnabled = true
-        buttonLastWiki.isEnabled = true
-        val favoriteIcon = if (word?.isFavorite == true) {
-            R.drawable.ic_favorite
-        } else {
-            R.drawable.ic_favorite_border
-        }
-        val learnedIcon = if (word?.isLearned == true) {
-            R.drawable.ic_learned_on
-        } else {
-            R.drawable.ic_learned_off
-        }
-        buttonLastFavorite.setImageResource(favoriteIcon)
-        buttonLastLearned.setImageResource(learnedIcon)
-        val favoriteHint = if (word == null) {
-            getString(R.string.add_to_favorites)
-        } else if (word.isFavorite) {
-            getString(R.string.remove_from_favorites)
-        } else {
-            getString(R.string.add_to_favorites)
-        }
-        val learnedHint = if (word == null) {
-            getString(R.string.add_to_learned)
-        } else if (word.isLearned) {
-            getString(R.string.remove_from_learned)
-        } else {
-            getString(R.string.add_to_learned)
-        }
-        TooltipCompat.setTooltipText(buttonLastFavorite, favoriteHint)
-        TooltipCompat.setTooltipText(buttonLastLearned, learnedHint)
-        buttonLastFavorite.contentDescription = favoriteHint
-        buttonLastLearned.contentDescription = learnedHint
-    }
-
-    private fun openGermanWordInfo(word: Word) {
-        val url = "https://de.wiktionary.org/wiki/" + Uri.encode(word.prefix + word.root)
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        startActivity(intent)
-    }
-
-    private fun toEnglishLookup(translation: String): String {
-        val first = translation.split(",").firstOrNull().orEmpty().trim()
-        val withoutTo = if (first.startsWith("to ")) first.removePrefix("to ").trim() else first
-        val cleaned = withoutTo.replace(Regex("\\s*\\([^)]*\\)"), "").trim()
-        return cleaned.replace(' ', '_')
     }
 
     private fun setRoundEnded(ended: Boolean) {
@@ -262,22 +149,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Find views by their IDs.
-        nextWordText = findViewById(R.id.next_word_text)
-        translationText = findViewById(R.id.translation_text)
-        exampleText = findViewById(R.id.example_text)
-        buttonLastFavorite = findViewById(R.id.button_last_favorite)
-        buttonLastLearned = findViewById(R.id.button_last_learned)
-        buttonLastWiki = findViewById(R.id.button_last_wiki)
-        buttonTranslateNext = findViewById(R.id.button_translate_next)
-        TooltipCompat.setTooltipText(buttonLastWiki, getString(R.string.last_word_wiki))
-        filterStatus = findViewById(R.id.filter_status)
-        progressBar = findViewById(R.id.progress_bar)
-
         roundSize = prefs.getInt(PREFS_KEY_DIFFICULTY_SIZE, DEFAULT_ROUND_SIZE)
-        progressBar.max = roundSize
-        progressBar.min = 0
-        progressBar.setProgress(0)
 
         roundManager = RoundManager(
             repo = repo,
@@ -289,10 +161,16 @@ class MainActivity : AppCompatActivity() {
             resources = resources
         )
 
-        updateFilterStatus()
-
-        nextWordText.setOnClickListener { openTranslatorForCurrentWord() }
-        buttonTranslateNext.setOnClickListener { openTranslatorForCurrentWord() }
+        roundCardView = RoundCardView(findViewById(android.R.id.content))
+        roundCardController = RoundCardController(
+            activity = this,
+            view = roundCardView,
+            repo = repo,
+            scope = activityScope,
+            strings = { resId -> getString(resId) }
+        )
+        roundCardController.bind()
+        roundCardController.initProgress(roundSize)
 
         buttonsBarView = ButtonsBarView(findViewById(R.id.buttons_row), resources)
         buttonsBarController = ButtonsBarController(
@@ -314,55 +192,11 @@ class MainActivity : AppCompatActivity() {
         buttonsBarController.bind()
 
         wordPickersView = WordPickersView(findViewById(R.id.pickers_row), resources)
-        wordPickersController = WordPickersController(wordPickersView)
-        wordPickersController.bind()
-
-        setLastWord(null)
-        buttonLastFavorite.setOnClickListener {
-            val word = lastResultWord ?: return@setOnClickListener
-            val updated = word.copy(isFavorite = !word.isFavorite)
-            activityScope.launch {
-                repo.updateWordStats(updated)
-            }
-            setLastWord(updated)
-        }
-        buttonLastLearned.setOnClickListener {
-            val word = lastResultWord ?: return@setOnClickListener
-            val updated = word.copy(isLearned = !word.isLearned)
-            activityScope.launch {
-                repo.updateWordStats(updated)
-            }
-            setLastWord(updated)
-        }
-        buttonLastWiki.setOnClickListener {
-            val word = lastResultWord ?: return@setOnClickListener
-            openGermanWordInfo(word)
-        }
-
 
         if (!prefs.getBoolean(PREFS_KEY_DIFFICULTY_SET, false)) {
             buttonsBarController.showDifficultyChooser(force = true)
         } else {
             fetchPoolAndReset(activeFilter)
-        }
-    }
-
-    private fun openTranslatorForCurrentWord() {
-        val word = currentNextWord ?: return
-        val text = word.translation
-        val url = "https://translate.google.com/?sl=en&tl=de&text=" +
-            Uri.encode(text) + "&op=translate"
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-            setPackage("com.google.android.apps.translate")
-        }
-        try {
-            startActivity(intent)
-        } catch (_: ActivityNotFoundException) {
-            val webIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://www.google.com/search?q=" + Uri.encode(text))
-            )
-            startActivity(webIntent)
         }
     }
 
@@ -376,5 +210,24 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         activityScope.cancel()
+    }
+
+    private fun filterStatusText(): String {
+        val modeText = when (val f = activeFilter) {
+            null -> getString(R.string.filter_mode_mixed)
+            else -> when (f.type) {
+                RoundFilterType.PREFIX -> {
+                    val label = if (f.value.isBlank()) getString(R.string.no_prefix) else f.value
+                    getString(R.string.filter_mode_prefix, label)
+                }
+                RoundFilterType.ROOT -> getString(R.string.filter_mode_root, f.value)
+                RoundFilterType.FAVORITES -> getString(R.string.filter_mode_favorites)
+            }
+        }
+        return if (statusLabel.isBlank()) {
+            modeText
+        } else {
+            getString(R.string.status_with_mode, statusLabel, modeText)
+        }
     }
 }
