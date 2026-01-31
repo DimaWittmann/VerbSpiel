@@ -79,21 +79,21 @@ interface WordDao {
     @Query(
         "SELECT * FROM words " +
             "WHERE prefix = :prefix " +
-            "ORDER BY RANDOM() LIMIT :limit"
+            "ORDER BY (lastShownAt = 0) DESC, lastCorrectAt ASC, lastShownAt ASC LIMIT :limit"
     )
     suspend fun getPrefixPool(prefix: String, limit: Int): List<Word>
 
     @Query(
         "SELECT * FROM words " +
             "WHERE root = :root " +
-            "ORDER BY RANDOM() LIMIT :limit"
+            "ORDER BY (lastShownAt = 0) DESC, lastCorrectAt ASC, lastShownAt ASC LIMIT :limit"
     )
     suspend fun getRootPool(root: String, limit: Int): List<Word>
 
     @Query(
         "SELECT * FROM words " +
             "WHERE isFavorite = 1 " +
-            "ORDER BY RANDOM() LIMIT :limit"
+            "ORDER BY (lastShownAt = 0) DESC, lastCorrectAt ASC, lastShownAt ASC LIMIT :limit"
     )
     suspend fun getFavoritesPool(limit: Int): List<Word>
 
