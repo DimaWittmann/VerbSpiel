@@ -248,6 +248,8 @@ class RoundManager(
             numberOfTries = 0
             lastWord = null
             nextWord = null
+            lastResultTranslation = ""
+            lastResultExample = ""
             translation = ""
             example = ""
             statusLabel = ""
@@ -263,6 +265,8 @@ class RoundManager(
         selectedWords = filtered.toMutableList()
         wordIndex = 0
         numberOfTries = 0
+        lastResultTranslation = ""
+        lastResultExample = ""
 
         buildPickers()
 
