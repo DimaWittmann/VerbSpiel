@@ -21,4 +21,4 @@ All data stays on your device. Uninstalling the app removes this data.
 You can reset your progress inside the app to clear local data.
 
 ## Contact
-If you have questions, contact: [dimawittmann@gmail.com]
+If you have questions, contact: [wittmannapps@gmail.com]
